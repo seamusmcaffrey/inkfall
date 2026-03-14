@@ -123,6 +123,71 @@ run_batch() {
     return $exit_code
 }
 
+# ── Interactive mode runner (full GPU, no -batchmode) ─────────────
+# Launches Unity with the full Editor GUI so Metal/GPU shaders
+# compile correctly. Used for visual tests that need non-magenta renders.
+run_interactive() {
+    local method="$1"
+    local label="$2"
+
+    if is_unity_running; then
+        echo "ERROR: Unity Editor is already running with this project."
+        echo ""
+        echo "Options:"
+        echo "  1. Use MCP: start the MCP server in Unity (Window > MCP for Unity > Start Server)"
+        echo "  2. Close Unity Editor, then retry this command"
+        echo "  3. Use './agent-bridge.sh health' (works without Unity)"
+        return 1
+    fi
+
+    echo "[$label] Starting (interactive mode — full GPU rendering)..."
+    echo "  Unity: $UNITY"
+    echo "  Project: $PROJECT_PATH"
+    echo "  Method: $method"
+    echo "  Graphics: Metal (interactive — shaders will compile correctly)"
+    echo ""
+
+    local exit_code=0
+    "$UNITY" \
+        -projectPath "$PROJECT_PATH" \
+        -executeMethod "$method" \
+        -logFile "$LOG_FILE" \
+        -timestamps \
+        || exit_code=$?
+
+    if [[ $exit_code -eq 0 ]]; then
+        echo "[$label] PASSED"
+    else
+        echo "[$label] FAILED (exit code: $exit_code)"
+        echo "  Check logs: $LOG_FILE"
+    fi
+
+    return $exit_code
+}
+
+# ── Smart routing for visual tests ────────────────────────────────
+# Uses MCP if Unity is open, otherwise launches in interactive mode.
+run_visual_smart() {
+    local batch_method="$1"
+    local mcp_tool="$2"
+    local mcp_args="${3:-\{\}}"
+    local label="$4"
+
+    if is_unity_running; then
+        if is_mcp_available; then
+            echo "  Mode: MCP (Unity is open, MCP server responding)"
+            call_mcp "$mcp_tool" "$mcp_args" "$label"
+        else
+            echo "ERROR: Unity is open but MCP server is not running."
+            echo "  Start it: Window > MCP for Unity > Start Server"
+            echo "  Or close Unity and retry (will use interactive mode)."
+            return 1
+        fi
+    else
+        run_interactive "$batch_method" "$label"
+    fi
+}
+
 # ── MCP caller (Unity must be open with MCP server running) ──────
 call_mcp() {
     local tool_name="$1"
@@ -314,7 +379,10 @@ case "${1:-help}" in
         ;;
     gameplay)
         # Play Mode capture: boots game, clicks Start Run, screenshots the game board
-        run_batch "Inkshot.Editor.AgentBridge.AgentBridgeEntryPoint.CaptureGameplay" "Gameplay" "true"
+        # Uses interactive mode (not batch) so URP shaders render correctly via Metal
+        run_visual_smart \
+            "Inkshot.Editor.AgentBridge.AgentBridgeEntryPoint.CaptureGameplay" \
+            "execute_menu_item" '{"menu_path":"Inkshot/Agent Bridge/Capture Gameplay"}' "Gameplay"
         if ls "$OUTPUT_DIR"/screenshots/gameplay_*.png 1>/dev/null 2>&1; then
             echo "Gameplay screenshots saved to: $OUTPUT_DIR/screenshots/"
             ls -lt "$OUTPUT_DIR"/screenshots/gameplay_*.png | head -5
@@ -322,7 +390,10 @@ case "${1:-help}" in
         ;;
     dart-test)
         # Play Mode: fires darts at 30/60/100% pull with before/after screenshots
-        run_batch "Inkshot.Editor.AgentBridge.AgentBridgeEntryPoint.DartTest" "DartTest" "true"
+        # Uses interactive mode (not batch) so URP shaders render correctly via Metal
+        run_visual_smart \
+            "Inkshot.Editor.AgentBridge.AgentBridgeEntryPoint.DartTest" \
+            "execute_menu_item" '{"menu_path":"Inkshot/Agent Bridge/Dart Physics Test"}' "DartTest"
         if ls "$OUTPUT_DIR"/screenshots/dart_test_*.png 1>/dev/null 2>&1; then
             echo "Dart test screenshots saved to: $OUTPUT_DIR/screenshots/"
             ls -lt "$OUTPUT_DIR"/screenshots/dart_test_*.png | head -10
@@ -375,7 +446,7 @@ case "${1:-help}" in
         echo "  health       Analyze code for standards violations"
         echo "  report       Run all checks and produce combined report"
         echo "  screenshot   Capture scene screenshot (1080x1920 PNG)"
-        echo "  dart-test    Fire darts at 30/60/100% pull with before/after screenshots"
+        echo "  dart-test    Fire darts at 30/60/100% pull with before/after screenshots (interactive GPU)"
         echo "  smoke-test   Run play-mode smoke test (batch only)"
         echo ""
         echo "Commands (MCP only — requires Unity open + MCP server):"
@@ -388,9 +459,12 @@ case "${1:-help}" in
         echo "  help         Show this help"
         echo ""
         echo "Routing:"
-        echo "  Unity closed → batch mode (launches Unity, runs task, exits)"
+        echo "  Unity closed → batch mode (compile, health) or interactive mode (visual tests)"
         echo "  Unity open + MCP → instant MCP calls (no relaunch)"
         echo "  Unity open, no MCP → 'health' works; others need MCP started"
+        echo ""
+        echo "Visual tests (dart-test, gameplay, screenshot) use interactive mode"
+        echo "for correct Metal GPU shader compilation (avoids magenta renders)."
         echo ""
         echo "Environment:"
         echo "  UNITY_EDITOR_PATH   Path to Unity Editor executable (auto-detected)"

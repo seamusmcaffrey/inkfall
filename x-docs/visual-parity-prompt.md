@@ -32,22 +32,58 @@ Do not attempt everything at once. Break work into focused phases. After each ph
 
 1. `./agent-bridge.sh compile` — must pass with 0 errors
 2. `./agent-bridge.sh health` — must introduce no new violations
-3. **`./agent-bridge.sh gameplay` — capture a screenshot, read the PNG, compare against `visual-refernce.png`**
-4. Identify the gap between current state and reference
-5. If you got 5% closer, that's a successful pass — keep going in that direction
-6. If you didn't get closer, stop and inspect your methods before continuing
+3. **For visual changes:** `./agent-bridge.sh gameplay` — captures a Game View screenshot. Read the output PNG at `Logs/agent-feedback/screenshots/gameplay_*.png` and compare against `visual-refernce.png`
+4. **For physics/trajectory changes:** `./agent-bridge.sh dart-test` — fires scripted darts at 30/60/100% pull with before/after screenshots. Read each PNG and analyze dart behavior (see "Dart physics feedback loop" below)
+5. Identify the gap between current state and reference
+6. If you got 5% closer, that's a successful pass — keep going in that direction
+7. If you didn't get closer, stop and inspect your methods before continuing
 
-**The screenshot step is not optional.** It is your primary feedback mechanism. If batch mode renders magenta, note it and use MCP if Unity is open. But always attempt the capture.
+**The screenshot steps are not optional.** They are your primary feedback mechanism. All visual commands use interactive mode (full Metal GPU) so screenshots render correctly — no magenta.
 
-### Scripted input testing
+### Dart physics feedback loop
 
-You must verify physics feel with actual dart launches, not just by reading code. Script slingshot pulls at varying distances:
+A working, tested scripted dart test is available. **Use it — do not code blind on physics.**
 
-1. Write a test harness or editor script that programmatically calls `SlingshotInput`'s launch path with controlled pull vectors
-2. Test at minimum 3 pull lengths: short (30%), medium (60%), full (100%) of `MAX_PULL_DISTANCE`
-3. For each pull length, capture a screenshot at launch and another ~0.5s after release
-4. The resulting dart trajectories should show **visible arcs** — not flat lines into the bottom row
-5. If all pull lengths produce darts that hit the bottom row, the physics are broken — keep tuning
+**Command:** `./agent-bridge.sh dart-test`
+
+**What it does:**
+1. Opens Unity in interactive mode (full GPU rendering, correct shaders)
+2. Enters Play Mode, clicks START RUN, waits for the game board
+3. Captures a "before" screenshot (full balloon grid, no darts)
+4. Fires 3 darts at controlled pull strengths using `GameConfigSO` values:
+   - **30% pull** → speed = `minLaunchSpeed + pow(0.3, pullSpeedExponent) * (maxLaunchSpeed - minLaunchSpeed)`
+   - **60% pull** → speed = `minLaunchSpeed + pow(0.6, pullSpeedExponent) * (maxLaunchSpeed - minLaunchSpeed)`
+   - **100% pull** → speed = `minLaunchSpeed + pow(1.0, pullSpeedExponent) * (maxLaunchSpeed - minLaunchSpeed)`
+5. Captures a screenshot after each dart's 2-second flight
+6. Captures a "final" screenshot showing cumulative state
+7. Exits Unity automatically
+
+**Output:** `Logs/agent-feedback/screenshots/dart_test_*.png`
+- `dart_test_before_*.png` — baseline, all balloons intact
+- `dart_test_pull_30_*.png` — state after 30% pull dart
+- `dart_test_pull_60_*.png` — state after 60% pull dart
+- `dart_test_pull_100_*.png` — state after 100% pull dart
+- `dart_test_final_*.png` — final cumulative state
+
+**How to iterate with the output:**
+1. Run `./agent-bridge.sh dart-test`
+2. Read each output PNG
+3. Compare before vs. after — which balloons were popped? Where did the darts land?
+4. Diagnose:
+   - All pull levels hit the same rows → velocity curve is too flat, or speed range is too narrow
+   - No visible arc → gravity too weak or dart speed too high
+   - Darts only hit bottom rows → launch speed too low or launch position too close to board
+   - Darts fly off-screen → launch speed too high or gravity too weak
+5. Adjust tuning values in `GameConfigSO` (or constants in `GameConstants.cs`)
+6. Run `./agent-bridge.sh dart-test` again
+7. Repeat until pull strength produces meaningfully different trajectories across the full board height
+
+**What you tune vs. what the test does:** The test reads all values from `GameConfigSO` at runtime. You change the config, re-run the test, see the results. No test code changes needed for physics iteration. Key tuning levers:
+- `GameConfigSO.minLaunchSpeed` / `maxLaunchSpeed` — speed range
+- `GameConfigSO.pullSpeedExponent` — nonlinear pull response (higher = more power at full pull)
+- `GameConstants.LAUNCH_POSITION` — where darts spawn (Y distance from board)
+- `GameConstants.DART_GRAVITY` — downward acceleration during flight
+- `GameConstants.BOARD_BOTTOM` / `BOARD_TOP` — balloon grid position
 
 ### Self-critique
 
@@ -88,7 +124,7 @@ If any answer is no, iterate before moving on.
 3. **Tune the velocity curve**. A full pull should reach the top rows. A light pull should reach the middle. The bottom rows should be hit by angled shots, not every shot by default.
 4. **Add visible arc**. Gravity should create a readable parabolic trajectory. The player should see the dart rise, peak, and descend into the balloon wall. This is the "throwing at a wall" feeling.
 5. **Trajectory preview must match**. The dotted aim line in `SlingshotVisuals` must accurately reflect where the dart will actually go, including the arc.
-6. **Verify with scripted pulls** (see "Scripted input testing" above). Do not consider physics work done until you can show screenshots of darts reaching different rows at different pull strengths.
+6. **Verify with `./agent-bridge.sh dart-test`** (see "Dart physics feedback loop" above). Run the test, read the output PNGs, and confirm darts reach different rows at different pull strengths. Do not consider physics work done until the screenshots prove it.
 
 **The feel target**: Imagine standing 10 feet from a carnival balloon wall. You cock your arm back, aim up slightly, and lob a dart. It arcs through the air, rises above your eye level, then descends into the balloon grid. That's the feel. Not a flat horizontal throw.
 
@@ -149,9 +185,11 @@ You are done when ALL of these are true:
 
 1. `./agent-bridge.sh compile` → 0 errors, 0 warnings
 2. `./agent-bridge.sh health` → no new violations beyond pre-existing
-3. Scripted dart launches at 30%, 60%, 100% pull show **distinct trajectories reaching different board rows**
-4. Darts visibly arc through the air — no flat-line trajectories
-5. `./agent-bridge.sh gameplay` screenshot closely matches `visual-refernce.png`
-6. Every section in "What to Build" above is addressed
-7. The codebase is clean — no half-finished work, no commented-out code, no TODO placeholders
-8. You would score **both** the visual appearance AND the mechanical feel as 10/10
+3. `./agent-bridge.sh dart-test` → read the output PNGs and confirm:
+   - 30%, 60%, 100% pull produce **distinct trajectories reaching different board rows**
+   - Darts visibly arc through the air — no flat-line trajectories
+   - Pull strength meaningfully changes which balloons are reachable
+4. `./agent-bridge.sh gameplay` screenshot closely matches `visual-refernce.png`
+5. Every section in "What to Build" above is addressed
+6. The codebase is clean — no half-finished work, no commented-out code, no TODO placeholders
+7. You would score **both** the visual appearance AND the mechanical feel as 10/10

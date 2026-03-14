@@ -222,15 +222,49 @@ Run `./agent-bridge.sh <command>` to interact with Unity. These are not optional
 
 - **`compile`** — Run after code changes. Must pass with 0 errors before moving on.
 - **`health`** — Run after code changes. Must introduce no new violations.
-- **`gameplay`** — **Run after any visual change** (shaders, materials, UI, VFX, layout, colors). Outputs a Game View PNG to `Logs/agent-feedback/screenshots/`. Read the PNG and compare against the visual reference. This is your feedback loop — use it.
+- **`gameplay`** — **Run after any visual change** (shaders, materials, UI, VFX, layout, colors). Boots the game, clicks START RUN, and captures a Game View PNG. Read the output PNG and compare against the visual reference. This is your visual feedback loop.
+- **`dart-test`** — **Run after any physics, input, or trajectory change.** Fires scripted darts at 30%, 60%, and 100% pull strength, capturing before/after screenshots for each. This is your physics feedback loop — see "Dart Physics Test" below.
 - **`screenshot`** — Scene View render (static, no Play Mode).
 - **`validate`** — Scene structure checks (camera, layers, components).
 - **`report`** — All checks combined.
 - **`health`** / **`status`** — Work without Unity running.
 
-### Known Limitation
+### Dart Physics Test
 
-Batch mode may render URP shaders as magenta (no GPU shader compilation). **This is not a reason to skip screenshots.** When Unity is open, use MCP for instant, correctly-rendered captures.
+`./agent-bridge.sh dart-test` is the primary tool for validating dart physics. **Use it whenever you change anything related to dart launching, gravity, velocity, pull curves, or spatial layout.**
+
+**What it does:**
+1. Opens Unity in interactive mode (full Metal GPU — no magenta)
+2. Loads `InkshotScene`, enters Play Mode, clicks START RUN
+3. Captures a "before" screenshot (full balloon grid, no darts)
+4. Fires 3 darts at controlled pull strengths:
+   - **30% pull** → `dart_test_pull_30_*.png`
+   - **60% pull** → `dart_test_pull_60_*.png`
+   - **100% pull** → `dart_test_pull_100_*.png`
+5. Captures a "final" screenshot showing cumulative state
+6. Exits Unity automatically
+
+**Output location:** `Logs/agent-feedback/screenshots/dart_test_*.png`
+
+**How to use the output:**
+1. Read each PNG after the test completes
+2. Compare before vs after — which balloons were popped at each pull level?
+3. If all pull levels hit the same rows, physics tuning is wrong — adjust velocity curve, gravity, or spatial layout
+4. If darts fly flat with no arc, gravity is too weak or speed is too high
+5. Run again after adjustments — iterate until pull strength produces meaningfully different trajectories
+
+**What the test changes:** The test reads tuning values from `GameConfigSO` at runtime — you tune the config, re-run the test, and see the results. No test code changes needed for physics iteration.
+
+### Rendering Modes
+
+Visual test commands (`dart-test`, `gameplay`, `screenshot`) use **interactive mode** — Unity launches with the full Editor GUI so Metal GPU shaders compile correctly. This avoids the magenta error shader that occurs in `-batchmode`.
+
+Non-visual commands (`compile`, `health`, `validate`) use standard batch mode.
+
+**Routing behavior:**
+- Unity closed → interactive mode launches Unity, runs the test, exits automatically
+- Unity open + MCP → instant MCP call (no relaunch needed)
+- Unity open, no MCP → start MCP server first (`Window > MCP for Unity > Start Server`)
 
 ### MCP (live Unity connection)
 
@@ -238,11 +272,11 @@ When Unity is open, two MCP servers (configured in `.mcp.json`) provide instant 
 - **CoplayDev unity-mcp** — scene graph, scripts, materials, console
 - **uLoopMCP** — screenshots, dynamic C# execution, play mode control
 
-Start via: Unity > Window > MCP for Unity > Start Server. MCP calls take ~1-2s vs batch mode's ~30-60s.
+Start via: Unity > Window > MCP for Unity > Start Server. MCP calls take ~1-2s vs interactive mode's ~60-90s.
 
 ### Output Location
 
-All output goes to `Logs/agent-feedback/` (gitignored): JSON results, `screenshots/scene_*.png`, `screenshots/gameplay_*.png`.
+All output goes to `Logs/agent-feedback/` (gitignored): JSON results, `screenshots/scene_*.png`, `screenshots/gameplay_*.png`, `screenshots/dart_test_*.png`.
 
 ## When In Doubt
 

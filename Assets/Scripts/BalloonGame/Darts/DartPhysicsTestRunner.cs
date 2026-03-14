@@ -28,6 +28,10 @@ public class DartPhysicsTestRunner : MonoBehaviour
         float maxSpeed = config.maxLaunchSpeed;
         float exponent = config.pullSpeedExponent;
 
+        // Force shader compilation before first capture to avoid magenta frames
+        Shader.WarmupAllShaders();
+        yield return null; // Wait one frame for compilation to complete
+
         yield return new WaitForEndOfFrame();
         RenderScreenshot("dart_test_before");
 

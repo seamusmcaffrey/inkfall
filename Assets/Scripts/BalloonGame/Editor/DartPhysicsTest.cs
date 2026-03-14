@@ -7,9 +7,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// Play-mode dart physics test with screenshot capture.
-/// Enters play mode, clicks START RUN, fires darts at 30/60/100% pull,
-/// and captures before/after screenshots for each pull level.
+/// Play-mode dart physics test: enters play, clicks START RUN,
+/// fires darts at 30/60/100% pull, captures before/after screenshots.
 /// </summary>
 public static class DartPhysicsTest
 {
@@ -18,6 +17,7 @@ public static class DartPhysicsTest
     private const string ActiveKey = "Inkshot.DartTest.Active";
     private const string PhaseKey = "Inkshot.DartTest.Phase";
     private const string FinishKey = "Inkshot.DartTest.Finishing";
+    private const string AutoExitKey = "Inkshot.DartTest.AutoExit";
 
     private enum TestPhase
     {
@@ -46,6 +46,8 @@ public static class DartPhysicsTest
     {
         SessionState.SetBool(ActiveKey, true);
         SessionState.SetBool(FinishKey, false);
+        // Auto-exit when launched via -executeMethod (interactive or batch)
+        SessionState.SetBool(AutoExitKey, Application.isBatchMode || IsExecuteMethodLaunch());
         _isFinishing = false;
         DartPhysicsTestRunner.IsComplete = false;
         Advance(TestPhase.EnterPlayMode);
@@ -78,6 +80,7 @@ public static class DartPhysicsTest
                     if (Elapsed(4.0)) Advance(TestPhase.CaptureBeforeShot);
                     break;
                 case TestPhase.CaptureBeforeShot:
+                    Shader.WarmupAllShaders();
                     CaptureScreenshot("dart_test_before");
                     Advance(TestPhase.AttachRunner);
                     break;
@@ -158,11 +161,13 @@ public static class DartPhysicsTest
     private static void FinishAndExit()
     {
         DetachCallbacks();
+        bool shouldExit = SessionState.GetBool(AutoExitKey, false);
         SessionState.EraseBool(ActiveKey);
         SessionState.EraseBool(FinishKey);
         SessionState.EraseInt(PhaseKey);
+        SessionState.EraseBool(AutoExitKey);
         Log("Dart physics test complete.");
-        if (Application.isBatchMode)
+        if (shouldExit)
             EditorApplication.delayCall += () => EditorApplication.Exit(0);
     }
 
@@ -178,6 +183,9 @@ public static class DartPhysicsTest
         EditorApplication.playModeStateChanged -= HandlePlayModeChanged;
         EditorApplication.update -= Update;
     }
+
+    private static bool IsExecuteMethodLaunch() =>
+        Array.Exists(Environment.GetCommandLineArgs(), a => a == "-executeMethod");
 
     private static void Log(string message)
     {
