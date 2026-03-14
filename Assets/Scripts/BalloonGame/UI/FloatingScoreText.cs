@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Pooled floating score popups that rise from popped balloon positions.
+/// Features punch-scale on spawn and combo-aware sizing for higher impact.
 /// </summary>
 [DisallowMultipleComponent]
 public class FloatingScoreText : MonoBehaviour
@@ -16,6 +17,7 @@ public class FloatingScoreText : MonoBehaviour
         public TextMeshProUGUI Label;
         public Vector3 WorldPosition;
         public float Elapsed;
+        public float BaseScale;
     }
 
     private readonly Queue<ActiveText> _pool = new();
@@ -47,19 +49,45 @@ public class FloatingScoreText : MonoBehaviour
             _camera = Camera.main;
         }
 
+        UIConfigSO ui = UIConfigSO.Instance;
+        float duration = ui.floatingTextDuration;
+        float punchDuration = ui.floatingTextPunchDuration;
+
         for (int index = _active.Count - 1; index >= 0; index--)
         {
             ActiveText item = _active[index];
             item.Elapsed += Time.unscaledDeltaTime;
-            float duration = UIConfigSO.Instance.floatingTextDuration;
             float normalized = Mathf.Clamp01(item.Elapsed / duration);
+
+            // Ease-out rise: fast at start, decelerates
+            float riseCurve = 1f - (1f - normalized) * (1f - normalized);
             Vector3 screenPosition = _camera != null
-                ? _camera.WorldToScreenPoint(item.WorldPosition + Vector3.up * UIConfigSO.Instance.floatingTextRisePx * normalized)
+                ? _camera.WorldToScreenPoint(item.WorldPosition + Vector3.up * ui.floatingTextRisePx * riseCurve)
                 : Vector3.zero;
 
             item.Rect.position = screenPosition;
-            item.Group.alpha = 1f - normalized;
-            item.Rect.localScale = Vector3.one * Mathf.Lerp(1f, 1.15f, normalized * 0.3f);
+
+            // Alpha: hold full for first 40%, then fade out with ease
+            float alphaStart = 0.4f;
+            float alpha = normalized < alphaStart
+                ? 1f
+                : 1f - Mathf.Clamp01((normalized - alphaStart) / (1f - alphaStart));
+            item.Group.alpha = alpha;
+
+            // Scale: punch on spawn, settle to base, then slight grow
+            float scale;
+            if (item.Elapsed < punchDuration)
+            {
+                float punchT = item.Elapsed / punchDuration;
+                float punchEase = Mathf.Sin(punchT * Mathf.PI);
+                scale = Mathf.Lerp(item.BaseScale, item.BaseScale * ui.floatingTextPunchScale, punchEase);
+            }
+            else
+            {
+                scale = item.BaseScale;
+            }
+
+            item.Rect.localScale = Vector3.one * scale;
 
             if (normalized >= 1f)
             {
@@ -90,9 +118,14 @@ public class FloatingScoreText : MonoBehaviour
             return;
         }
 
+        UIConfigSO ui = UIConfigSO.Instance;
+        int comboClamped = Mathf.Min(evt.ComboCount, ui.floatingTextComboSizeCap);
+        float comboBoost = comboClamped * ui.floatingTextComboSizeBoost;
+
         ActiveText item = _pool.Dequeue();
         item.WorldPosition = evt.WorldPosition + Vector3.forward * GameConstants.FLOATING_SCORE_Z_OFFSET;
         item.Elapsed = 0f;
+        item.BaseScale = 1f + comboBoost;
         item.Group.alpha = 1f;
         item.Label.text = evt.FinalPoints >= 0 ? $"+{evt.FinalPoints}" : evt.FinalPoints.ToString();
         item.Label.color = UIColors.GetBalloonTextColor(evt.BalloonColor);
@@ -113,7 +146,7 @@ public class FloatingScoreText : MonoBehaviour
             label.alignment = TextAlignmentOptions.Center;
             label.raycastTarget = false;
             group.alpha = 0f;
-            _pool.Enqueue(new ActiveText { Rect = rect, Group = group, Label = label });
+            _pool.Enqueue(new ActiveText { Rect = rect, Group = group, Label = label, BaseScale = 1f });
         }
     }
 }

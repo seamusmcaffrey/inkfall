@@ -35,9 +35,12 @@ public class JuiceConfigSO : ScriptableObject
 
     [Header("Particles - Impact")]
     public bool impactSparkEnabled = true;
-    [Range(4, 20)] public int sparkParticleCount = 10;
-    public float sparkParticleLifetime = 0.15f;
-    public float sparkParticleSpeed = 8f;
+    [Range(4, 20)] public int sparkParticleCount = 12;
+    public float sparkParticleLifetime = 0.12f;
+    public float sparkParticleSpeed = 12f;
+    public Color sparkColorStart = new(1f, 1f, 1f, 1f);
+    public Color sparkColorEnd = new(0.6f, 0.75f, 0.95f, 0f);
+    public float sparkGravity = GameConstants.SPARK_GRAVITY;
 
     [Header("Particles - Wall Hit")]
     public bool wallHitEnabled = true;
@@ -57,6 +60,10 @@ public class JuiceConfigSO : ScriptableObject
     public float shakeIntensityCombo = 0.25f;
     public float shakeIntensityPaint = 0.38f;
     public float shakeDuration = 0.2f;
+    public float shakePerlinSpeed = GameConstants.SHAKE_PERLIN_SPEED;
+    public float shakeDecayExponent = GameConstants.SHAKE_DECAY_EXPONENT;
+    public float shakeComboEscalationPerHit = GameConstants.SHAKE_COMBO_ESCALATION_PER_HIT;
+    public int shakeComboEscalationCap = GameConstants.SHAKE_COMBO_ESCALATION_CAP;
 
     [Header("Chromatic Pulse")]
     public bool chromaticPulseEnabled = true;
@@ -68,14 +75,19 @@ public class JuiceConfigSO : ScriptableObject
     public bool comboFlashEnabled = true;
     public float comboFlashMaxAlpha = 0.15f;
     public float comboFlashDuration = 0.2f;
+    public float comboFlashAttackRatio = 0.15f;
+    public float comboFlashEdgeThickness = GameConstants.COMBO_FLASH_EDGE_THICKNESS;
 
     [Header("Slow Motion")]
     public bool slowMotionEnabled = true;
-    public int slowMotionComboThreshold = 5;
+    public int slowMotionComboThreshold = GameConstants.SLOMO_COMBO_THRESHOLD_DEFAULT;
     public float slowMotionTimeScale = 0.4f;
+    public float slowMotionMinTimeScale = GameConstants.SLOMO_MIN_TIME_SCALE;
     public float slowMotionDuration = 0.8f;
     public float slowMotionRampUpTime = 0.05f;
     public float slowMotionRampDownTime = 0.3f;
+    public float slowMotionComboScalePerHit = GameConstants.SLOMO_COMBO_SCALE_PER_HIT;
+    public float slowMotionComboDurationPerHit = GameConstants.SLOMO_COMBO_DURATION_PER_HIT;
 
     [Header("Audio")]
     public bool audioEnabled = true;
@@ -92,6 +104,15 @@ public class JuiceConfigSO : ScriptableObject
     public float decalMinSize = 0.15f;
     public float decalMaxSize = 0.4f;
     public float decalAlpha = 0.7f;
+
+    [Header("Persistent Splatters")]
+    public bool persistentSplattersEnabled = true;
+    [Range(10, 50)] public int maxPersistentSplatters = GameConstants.MAX_PERSISTENT_SPLATTERS;
+    public float splatterMinScale = GameConstants.SPLATTER_MIN_SCALE;
+    public float splatterMaxScale = GameConstants.SPLATTER_MAX_SCALE;
+    public float splatterNeonBoost = GameConstants.SPLATTER_NEON_BOOST;
+    public float splatterBaseAlpha = GameConstants.SPLATTER_BASE_ALPHA;
+    public float splatterFadeDuration = GameConstants.SPLATTER_FADE_DURATION;
 
     public static JuiceConfigSO Instance
     {

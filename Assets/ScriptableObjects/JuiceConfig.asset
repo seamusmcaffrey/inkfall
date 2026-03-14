@@ -31,6 +31,9 @@ MonoBehaviour:
   sparkParticleCount: 10
   sparkParticleLifetime: 0.15
   sparkParticleSpeed: 8
+  sparkColorStart: {r: 1, g: 1, b: 1, a: 1}
+  sparkColorEnd: {r: 0.6, g: 0.75, b: 0.95, a: 0}
+  sparkGravity: 1.5
   wallHitEnabled: 1
   wallHitParticleCount: 6
   wallHitParticleLifetime: 0.28
@@ -44,6 +47,10 @@ MonoBehaviour:
   shakeIntensityCombo: 0.25
   shakeIntensityPaint: 0.38
   shakeDuration: 0.2
+  shakePerlinSpeed: 25
+  shakeDecayExponent: 2.2
+  shakeComboEscalationPerHit: 0.15
+  shakeComboEscalationCap: 10
   chromaticPulseEnabled: 1
   chromaticComboThreshold: 3
   chromaticMaxIntensity: 0.5
@@ -51,12 +58,17 @@ MonoBehaviour:
   comboFlashEnabled: 1
   comboFlashMaxAlpha: 0.15
   comboFlashDuration: 0.2
+  comboFlashAttackRatio: 0.15
+  comboFlashEdgeThickness: 0.12
   slowMotionEnabled: 1
   slowMotionComboThreshold: 5
   slowMotionTimeScale: 0.4
+  slowMotionMinTimeScale: 0.1
   slowMotionDuration: 0.8
   slowMotionRampUpTime: 0.05
   slowMotionRampDownTime: 0.3
+  slowMotionComboScalePerHit: 0.06
+  slowMotionComboDurationPerHit: 0.1
   audioEnabled: 1
   masterVolume: 0.85
   sfxVolume: 1
@@ -67,3 +79,10 @@ MonoBehaviour:
   decalMinSize: 0.15
   decalMaxSize: 0.4
   decalAlpha: 0.7
+  persistentSplattersEnabled: 1
+  maxPersistentSplatters: 30
+  splatterMinScale: 0.25
+  splatterMaxScale: 0.55
+  splatterNeonBoost: 0.35
+  splatterBaseAlpha: 0.85
+  splatterFadeDuration: 0.6

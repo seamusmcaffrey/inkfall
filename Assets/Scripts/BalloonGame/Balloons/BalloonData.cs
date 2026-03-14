@@ -15,11 +15,11 @@ public static class BalloonColorExtensions
     {
         return color switch
         {
-            BalloonColor.Red => new Color(0.902f, 0.224f, 0.275f),
-            BalloonColor.Blue => new Color(0.271f, 0.482f, 0.616f),
-            BalloonColor.Yellow => new Color(0.945f, 0.980f, 0.933f),
-            BalloonColor.Green => new Color(0.165f, 0.616f, 0.561f),
-            BalloonColor.Purple => new Color(0.608f, 0.349f, 0.714f),
+            BalloonColor.Red => new Color(0.90f, 0.18f, 0.22f),
+            BalloonColor.Blue => new Color(0.20f, 0.50f, 0.85f),
+            BalloonColor.Yellow => new Color(0.95f, 0.82f, 0.12f),
+            BalloonColor.Green => new Color(0.18f, 0.78f, 0.42f),
+            BalloonColor.Purple => new Color(0.58f, 0.22f, 0.82f),
             _ => Color.white
         };
     }

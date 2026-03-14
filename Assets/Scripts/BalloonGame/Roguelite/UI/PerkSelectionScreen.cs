@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Overlay that presents a set of perk choices.
+/// Premium perk selection overlay with dark backdrop and card fan layout.
 /// </summary>
 [DisallowMultipleComponent]
 public class PerkSelectionScreen : MonoBehaviour
 {
     private RectTransform _contentRoot;
     private CanvasGroup _group;
+    private Image _backdrop;
     private readonly List<PerkCardUI> _cards = new();
 
     private void Awake()
@@ -29,13 +30,13 @@ public class PerkSelectionScreen : MonoBehaviour
             _cards.Add(cardGo.AddComponent<PerkCardUI>());
         }
 
-        for (int index = 0; index < _cards.Count; index++)
+        for (int i = 0; i < _cards.Count; i++)
         {
-            bool active = index < perks.Count;
-            _cards[index].gameObject.SetActive(active);
+            bool active = i < perks.Count;
+            _cards[i].gameObject.SetActive(active);
             if (active)
             {
-                _cards[index].Build(perks[index], perk =>
+                _cards[i].Build(perks[i], perk =>
                 {
                     EventBus.Publish(new PerkSelectedEvent { Perk = perk });
                     Hide();
@@ -59,13 +60,10 @@ public class PerkSelectionScreen : MonoBehaviour
 
     private void EnsureUi()
     {
-        if (_contentRoot == null)
-        {
-            for (int i = transform.childCount - 1; i >= 0; i--)
-            {
-                UnityEngine.Object.Destroy(transform.GetChild(i).gameObject);
-            }
-        }
+        if (_contentRoot != null) return;
+
+        for (int i = transform.childCount - 1; i >= 0; i--)
+            UnityEngine.Object.Destroy(transform.GetChild(i).gameObject);
 
         Canvas canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -74,25 +72,27 @@ public class PerkSelectionScreen : MonoBehaviour
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
         scaler.matchWidthOrHeight = 0.5f;
-
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
         _group = ComponentUtility.EnsureComponent<CanvasGroup>(gameObject);
 
-        if (_contentRoot == null)
-        {
-            GameObject panel = new("Panel");
-            panel.transform.SetParent(transform, false);
-            _contentRoot = panel.AddComponent<RectTransform>();
-            _contentRoot.anchorMin = new Vector2(0.5f, 0.5f);
-            _contentRoot.anchorMax = new Vector2(0.5f, 0.5f);
-            _contentRoot.sizeDelta = new Vector2(960f, 420f);
-            HorizontalLayoutGroup layout = panel.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = 24f;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
-            Image background = panel.AddComponent<Image>();
-            background.color = UIColors.PanelBackground;
-        }
+        GameObject bg = new("Backdrop");
+        bg.transform.SetParent(transform, false);
+        RectTransform bgRect = bg.AddComponent<RectTransform>();
+        bgRect.anchorMin = Vector2.zero;
+        bgRect.anchorMax = Vector2.one;
+        bgRect.offsetMin = bgRect.offsetMax = Vector2.zero;
+        _backdrop = bg.AddComponent<Image>();
+        _backdrop.color = new Color(0.02f, 0.02f, 0.04f, 0.88f);
+
+        GameObject panel = new("CardPanel");
+        panel.transform.SetParent(transform, false);
+        _contentRoot = panel.AddComponent<RectTransform>();
+        _contentRoot.anchorMin = _contentRoot.anchorMax = new Vector2(0.5f, 0.5f);
+        _contentRoot.sizeDelta = new Vector2(960f, 400f);
+        HorizontalLayoutGroup layout = panel.AddComponent<HorizontalLayoutGroup>();
+        layout.spacing = 20f;
+        layout.childAlignment = TextAnchor.MiddleCenter;
+        layout.childControlWidth = false;
+        layout.childControlHeight = false;
     }
 }

@@ -65,6 +65,7 @@ Shader "Inkshot/BalloonLit"
                 float3 normalWS : TEXCOORD0;
                 float3 viewDirWS : TEXCOORD1;
                 float2 uv : TEXCOORD2;
+                float3 positionWS : TEXCOORD3;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
                 UNITY_VERTEX_OUTPUT_STEREO
             };
@@ -79,6 +80,7 @@ Shader "Inkshot/BalloonLit"
                 output.positionCS = positionInputs.positionCS;
                 output.normalWS = TransformObjectToWorldNormal(input.normalOS);
                 output.viewDirWS = GetWorldSpaceNormalizeViewDir(positionInputs.positionWS);
+                output.positionWS = positionInputs.positionWS;
                 output.uv = input.uv;
                 return output;
             }
@@ -95,14 +97,54 @@ Shader "Inkshot/BalloonLit"
                 half3 viewDir = normalize(input.viewDirWS);
                 Light mainLight = GetMainLight();
                 half3 lightDir = normalize(mainLight.direction);
+
+                // Wrap lighting for soft balloon shading
                 half NdotL = saturate(dot(normalWS, lightDir) * 0.5 + 0.5);
+                half NdotL_hard = saturate(dot(normalWS, lightDir));
+
+                // Dual specular: sharp highlight + broad sheen
                 half3 halfDir = normalize(lightDir + viewDir);
-                half specular = pow(saturate(dot(normalWS, halfDir)), _SpecularSize) * _SpecularIntensity * _Glossiness;
-                half rim = pow(1.0 - saturate(dot(normalWS, viewDir)), _RimPower) * _RimIntensity;
+                half NdotH = saturate(dot(normalWS, halfDir));
+                half specSharp = pow(NdotH, _SpecularSize) * _SpecularIntensity;
+                half specBroad = pow(NdotH, 8.0) * 0.35 * _Glossiness;
+
+                // Fresnel rim with color tint
+                half fresnel = 1.0 - saturate(dot(normalWS, viewDir));
+                half rim = pow(fresnel, _RimPower) * _RimIntensity;
+
+                // Subsurface scattering approximation for latex translucency
+                half sss = saturate(dot(viewDir, -lightDir)) * fresnel * 0.15;
+
+                // Vertical gradient for depth curvature
                 half gradient = lerp(1.0, 1.0 + _GradientStrength, input.uv.y);
-                half3 color = baseColor.rgb * (NdotL + _AmbientBoost) * gradient;
-                color += specular * mainLight.color;
+
+                // Darken underside subtly
+                half topLight = lerp(0.85, 1.0, saturate(input.uv.y));
+
+                half3 color = baseColor.rgb * (NdotL + _AmbientBoost) * gradient * topLight;
+                color += (specSharp + specBroad) * mainLight.color;
                 color += rim * _RimColor.rgb;
+                color += sss * baseColor.rgb * mainLight.color;
+
+                // Additional lights (neon point lights)
+                #ifdef _ADDITIONAL_LIGHTS
+                uint additionalLightCount = GetAdditionalLightsCount();
+                for (uint li = 0u; li < additionalLightCount; li++)
+                {
+                    Light addLight = GetAdditionalLight(li, float4(input.positionWS, 1));
+                    half addNdotL = saturate(dot(normalWS, normalize(addLight.direction)));
+                    half3 addHalf = normalize(normalize(addLight.direction) + viewDir);
+                    half addSpec = pow(saturate(dot(normalWS, addHalf)), _SpecularSize * 0.5) * 0.4;
+                    half atten = addLight.distanceAttenuation * addLight.shadowAttenuation;
+                    color += baseColor.rgb * addNdotL * addLight.color * atten * 0.6;
+                    color += addSpec * addLight.color * atten;
+                }
+                #endif
+
+                // Slight saturation boost for vibrancy
+                half luma = dot(color, half3(0.299, 0.587, 0.114));
+                color = lerp(half3(luma, luma, luma), color, 1.15);
+
                 return half4(color, 1);
             }
             ENDHLSL

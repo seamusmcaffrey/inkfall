@@ -33,6 +33,7 @@ public class SlingshotVisuals : MonoBehaviour
     private Transform[] _dots;
     private MeshRenderer[] _dotRenderers;
     private Material _dotMaterial;
+    private MaterialPropertyBlock _dotPropertyBlock;
 
     private static readonly Color BandColor = new(0.8f, 0.3f, 0.2f, 0.95f);
     private static readonly Color DotColor = new(1f, 1f, 1f, 0.85f);
@@ -198,11 +199,10 @@ public class SlingshotVisuals : MonoBehaviour
             scale *= Mathf.Lerp(1f, 0.5f, normalizedIndex);
             _dots[i].localScale = Vector3.one * scale;
 
-            // Apply color with computed alpha via MaterialPropertyBlock for efficiency
-            MaterialPropertyBlock block = new();
-            block.SetColor("_BaseColor", new Color(DotColor.r, DotColor.g, DotColor.b, alpha));
-            block.SetColor("_Color", new Color(DotColor.r, DotColor.g, DotColor.b, alpha));
-            _dotRenderers[i].SetPropertyBlock(block);
+            _dotPropertyBlock ??= new MaterialPropertyBlock();
+            _dotPropertyBlock.SetColor("_BaseColor", new Color(DotColor.r, DotColor.g, DotColor.b, alpha));
+            _dotPropertyBlock.SetColor("_Color", new Color(DotColor.r, DotColor.g, DotColor.b, alpha));
+            _dotRenderers[i].SetPropertyBlock(_dotPropertyBlock);
         }
     }
 

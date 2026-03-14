@@ -107,30 +107,17 @@ public class DartLauncher : MonoBehaviour
         }
 
         Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-        _bodyMaterial = new Material(shader)
-        {
-            color = new Color(0.7f, 0.72f, 0.75f)
-        };
+        Color chromeBody = new(0.78f, 0.80f, 0.84f);
+        _bodyMaterial = new Material(shader) { color = chromeBody };
 
         if (_bodyMaterial.HasProperty("_BaseColor"))
-        {
-            _bodyMaterial.SetColor("_BaseColor", new Color(0.7f, 0.72f, 0.75f));
-        }
-
+            _bodyMaterial.SetColor("_BaseColor", chromeBody);
         if (_bodyMaterial.HasProperty("_Glossiness"))
-        {
-            _bodyMaterial.SetFloat("_Glossiness", 0.8f);
-        }
-
+            _bodyMaterial.SetFloat("_Glossiness", 0.92f);
         if (_bodyMaterial.HasProperty("_Smoothness"))
-        {
-            _bodyMaterial.SetFloat("_Smoothness", 0.8f);
-        }
-
+            _bodyMaterial.SetFloat("_Smoothness", 0.92f);
         if (_bodyMaterial.HasProperty("_Metallic"))
-        {
-            _bodyMaterial.SetFloat("_Metallic", 0.6f);
-        }
+            _bodyMaterial.SetFloat("_Metallic", 0.85f);
 
         return _bodyMaterial;
     }
@@ -143,30 +130,17 @@ public class DartLauncher : MonoBehaviour
         }
 
         Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-        _tipMaterial = new Material(shader)
-        {
-            color = new Color(0.85f, 0.85f, 0.85f)
-        };
+        Color chromeTip = new(0.92f, 0.93f, 0.95f);
+        _tipMaterial = new Material(shader) { color = chromeTip };
 
         if (_tipMaterial.HasProperty("_BaseColor"))
-        {
-            _tipMaterial.SetColor("_BaseColor", new Color(0.85f, 0.85f, 0.85f));
-        }
-
+            _tipMaterial.SetColor("_BaseColor", chromeTip);
         if (_tipMaterial.HasProperty("_Glossiness"))
-        {
-            _tipMaterial.SetFloat("_Glossiness", 0.9f);
-        }
-
+            _tipMaterial.SetFloat("_Glossiness", 0.95f);
         if (_tipMaterial.HasProperty("_Smoothness"))
-        {
-            _tipMaterial.SetFloat("_Smoothness", 0.9f);
-        }
-
+            _tipMaterial.SetFloat("_Smoothness", 0.95f);
         if (_tipMaterial.HasProperty("_Metallic"))
-        {
-            _tipMaterial.SetFloat("_Metallic", 0.7f);
-        }
+            _tipMaterial.SetFloat("_Metallic", 0.9f);
 
         return _tipMaterial;
     }

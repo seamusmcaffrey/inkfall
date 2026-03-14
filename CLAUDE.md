@@ -12,6 +12,7 @@
 - **No `FindObjectOfType` in Update loops.** Cache references in `Awake`/`Start` or use `ComponentUtility.ResolveSceneReference<T>()`.
 - **No `GetComponent` in hot paths.** Cache in `Awake` or use `[SerializeField]`.
 - **No snapshot/screenshot tests.** Use behavioral assertions on game state.
+- **No visual changes without visual verification.** After modifying shaders, materials, UI, VFX, or layout, capture and inspect a screenshot via the Agent Bridge (see below). Do not treat batch-mode magenta as an excuse to skip — use MCP when Unity is open.
 
 ## File Size Guide
 
@@ -207,6 +208,41 @@ Before considering any phase complete:
 4. No unbounded collections growing without cleanup.
 5. EventBus subscriptions balanced — every `OnEnable` subscribe has an `OnDisable` unsubscribe.
 6. ScriptableObject references are not null at runtime (validate in `OnValidate` where appropriate).
+7. `./agent-bridge.sh compile` passes with 0 errors.
+8. `./agent-bridge.sh health` shows no new violations.
+9. Visual changes verified via `./agent-bridge.sh gameplay` — inspect the output PNG.
+
+## Agent Bridge — Unity Interaction
+
+**You have full agentic access to the Unity Editor.** Use it. Do not code blind.
+
+### Required Workflow
+
+Run `./agent-bridge.sh <command>` to interact with Unity. These are not optional during development — they are your eyes and ears into the running game.
+
+- **`compile`** — Run after code changes. Must pass with 0 errors before moving on.
+- **`health`** — Run after code changes. Must introduce no new violations.
+- **`gameplay`** — **Run after any visual change** (shaders, materials, UI, VFX, layout, colors). Outputs a Game View PNG to `Logs/agent-feedback/screenshots/`. Read the PNG and compare against the visual reference. This is your feedback loop — use it.
+- **`screenshot`** — Scene View render (static, no Play Mode).
+- **`validate`** — Scene structure checks (camera, layers, components).
+- **`report`** — All checks combined.
+- **`health`** / **`status`** — Work without Unity running.
+
+### Known Limitation
+
+Batch mode may render URP shaders as magenta (no GPU shader compilation). **This is not a reason to skip screenshots.** When Unity is open, use MCP for instant, correctly-rendered captures.
+
+### MCP (live Unity connection)
+
+When Unity is open, two MCP servers (configured in `.mcp.json`) provide instant access:
+- **CoplayDev unity-mcp** — scene graph, scripts, materials, console
+- **uLoopMCP** — screenshots, dynamic C# execution, play mode control
+
+Start via: Unity > Window > MCP for Unity > Start Server. MCP calls take ~1-2s vs batch mode's ~30-60s.
+
+### Output Location
+
+All output goes to `Logs/agent-feedback/` (gitignored): JSON results, `screenshots/scene_*.png`, `screenshots/gameplay_*.png`.
 
 ## When In Doubt
 

@@ -23,10 +23,11 @@ public class PaintDripEffect : MonoBehaviour
     public void Play(Color color, JuiceConfigSO config, Vector3 localOffset)
     {
         transform.localPosition = localOffset;
-        _line.startColor = color;
-        _line.endColor = new Color(color.r, color.g, color.b, 0f);
-        _line.startWidth = 0.04f;
-        _line.endWidth = 0.01f;
+        Color vivid = new(Mathf.Min(color.r * 1.3f, 1f), Mathf.Min(color.g * 1.3f, 1f), Mathf.Min(color.b * 1.3f, 1f), 1f);
+        _line.startColor = vivid;
+        _line.endColor = new Color(vivid.r, vivid.g, vivid.b, 0f);
+        _line.startWidth = 0.08f;
+        _line.endWidth = 0.02f;
         _line.enabled = true;
 
         if (_routine != null)

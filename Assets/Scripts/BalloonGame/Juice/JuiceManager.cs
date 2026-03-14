@@ -11,6 +11,7 @@ public class JuiceManager : MonoBehaviour
     [SerializeField] private ChromaticAberrationPulse _chromaticPulse;
     [SerializeField] private SlowMotionController _slowMotion;
     [SerializeField] private PaintDecalManager _decalManager;
+    [SerializeField] private PersistentSplatterVFX _persistentSplatter;
     [SerializeField] private ComboFlashVFX _comboFlash;
     [SerializeField] private ObjectPool _balloonPopPool;
     [SerializeField] private ObjectPool _impactSparkPool;
@@ -28,6 +29,8 @@ public class JuiceManager : MonoBehaviour
         _chromaticPulse = ComponentUtility.EnsureComponent<ChromaticAberrationPulse>(gameObject);
         _slowMotion = ComponentUtility.EnsureComponent<SlowMotionController>(gameObject);
         _decalManager = ComponentUtility.EnsureComponent<PaintDecalManager>(gameObject);
+        _persistentSplatter = ComponentUtility.EnsureComponent<PersistentSplatterVFX>(gameObject);
+        _persistentSplatter.SetConfig(_config);
 
         if (_comboFlash == null)
         {
@@ -140,20 +143,21 @@ public class JuiceManager : MonoBehaviour
         }
 
         AudioManager.Instance.PlaySfx(SoundLibrarySO.Instance.comboRise, 0.4f);
-        _screenShake.Shake(_config.shakeIntensityCombo * _config.globalIntensity);
+        _screenShake.ShakeForCombo(_config.shakeIntensityCombo * _config.globalIntensity, evt.ComboCount);
         if (_config.comboFlashEnabled)
         {
-            _comboFlash.Flash(UIColors.GetComboColor(evt.ComboCount), _config);
+            _comboFlash.Flash(UIColors.GetComboColor(evt.ComboCount), _config, evt.ComboCount);
         }
 
         if (_config.chromaticPulseEnabled && evt.ComboCount >= _config.chromaticComboThreshold)
         {
-            _chromaticPulse.Pulse(1f);
+            float chromaticScale = 1f + (evt.ComboCount - _config.chromaticComboThreshold) * GameConstants.CHROMATIC_COMBO_SCALE_PER_HIT;
+            _chromaticPulse.Pulse(Mathf.Min(chromaticScale, GameConstants.CHROMATIC_COMBO_SCALE_MAX));
         }
 
         if (_config.slowMotionEnabled && evt.ComboCount >= _config.slowMotionComboThreshold)
         {
-            _slowMotion.Trigger();
+            _slowMotion.TriggerForCombo(evt.ComboCount);
         }
     }
 

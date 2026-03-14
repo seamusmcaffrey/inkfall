@@ -189,10 +189,15 @@ public class RunManager : MonoBehaviour
         EventBus.Publish(new RunStateChangedEvent { State = CurrentState, RoomNumber = _runData.currentRoomNumber });
         SaveManager.Instance.RecordRun(_runData.currentRoomNumber, _runData.totalScore, _runData.totalInkEarned, clearedRun);
         _runData.isActive = false;
-        string summary = clearedRun
-            ? $"RUN CLEARED\nRooms: {_runData.currentRoomNumber}\nScore: {_runData.totalScore}\nInk: {SaveManager.Instance.Data.totalInk}"
-            : $"RUN OVER\nRoom: {_runData.currentRoomNumber}\nScore: {_runData.totalScore}\nLast Room Score: {latestRoomScore}";
-        _runEndScreen?.Show(summary, RestartRun);
+        var endData = new RunEndData
+        {
+            cleared = clearedRun,
+            roomsReached = _runData.currentRoomNumber,
+            totalScore = _runData.totalScore,
+            lastRoomScore = latestRoomScore,
+            totalInk = SaveManager.Instance.Data.totalInk,
+        };
+        _runEndScreen?.Show(endData, RestartRun);
     }
 
     private void RestartRun()

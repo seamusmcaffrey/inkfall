@@ -31,6 +31,10 @@ public class UIConfigSO : ScriptableObject
     public float floatingTextDuration = 0.8f;
     public float floatingTextFontSize = 8f;
     public int floatingTextPoolSize = 10;
+    public float floatingTextPunchScale = 1.5f;
+    public float floatingTextPunchDuration = 0.12f;
+    public float floatingTextComboSizeBoost = 0.08f;
+    public int floatingTextComboSizeCap = 8;
 
     [Header("Screen Transitions")]
     public float transitionFadeInDuration = 0.3f;

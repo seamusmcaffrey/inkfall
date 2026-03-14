@@ -24,6 +24,10 @@ MonoBehaviour:
   floatingTextDuration: 0.8
   floatingTextFontSize: 8
   floatingTextPoolSize: 10
+  floatingTextPunchScale: 1.5
+  floatingTextPunchDuration: 0.12
+  floatingTextComboSizeBoost: 0.08
+  floatingTextComboSizeCap: 8
   transitionFadeInDuration: 0.3
   transitionFadeOutDuration: 0.2
   cardSlideInDuration: 0.35

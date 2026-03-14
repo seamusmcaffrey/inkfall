@@ -21,7 +21,7 @@ public static class UIColors
     public static readonly Color ComboTier1 = new(1f, 1f, 1f, 1f);
     public static readonly Color ComboTier2 = new(1f, 0.95f, 0.35f, 1f);
     public static readonly Color ComboTier3 = new(1f, 0.62f, 0.14f, 1f);
-    public static readonly Color ComboTier4 = new(1f, 0.2f, 0.2f, 1f);
+    public static readonly Color ComboTier4 = new(1f, 0.2f, 0.65f, 1f);
 
     public static readonly Color CommonWhite = new(0.82f, 0.84f, 0.88f, 1f);
     public static readonly Color RareBlueBorder = new(0.22f, 0.52f, 1f, 1f);
