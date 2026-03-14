@@ -1,0 +1,261 @@
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.Rendering;
+
+public static class BalloonSceneBuilder
+{
+    private const string MaterialsFolder = "Assets/Materials";
+    private const string ScenePath = "Assets/Scenes/InkshotScene.unity";
+    private const string BackWallMaterialPath = MaterialsFolder + "/BackWall.mat";
+    private const string WallFrameMaterialPath = MaterialsFolder + "/WallFrame.mat";
+    private const string LaneFloorMaterialPath = MaterialsFolder + "/LaneFloor.mat";
+    private const string WallBounceMaterialPath = MaterialsFolder + "/WallBounce.asset";
+    private const string WallDeadMaterialPath = MaterialsFolder + "/WallDead.asset";
+    private const string BalloonRedMaterialPath = MaterialsFolder + "/BalloonRed.mat";
+    private const string BalloonBlueMaterialPath = MaterialsFolder + "/BalloonBlue.mat";
+    private const string BalloonYellowMaterialPath = MaterialsFolder + "/BalloonYellow.mat";
+    private const string BalloonGreenMaterialPath = MaterialsFolder + "/BalloonGreen.mat";
+    private const string BalloonPurpleMaterialPath = MaterialsFolder + "/BalloonPurple.mat";
+
+    [MenuItem("BalloonGame/Build Scene")]
+    public static void BuildScene()
+    {
+        EnsureFolder("Assets/Scenes");
+        EnsureFolder(MaterialsFolder);
+
+        var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+        var backWallMaterial = CreateOrUpdateMaterial(BackWallMaterialPath, new Color(0.18f, 0.16f, 0.14f), 0.1f);
+        var frameMaterial = CreateOrUpdateMaterial(WallFrameMaterialPath, new Color(0.15f, 0.12f, 0.10f), 0.05f);
+        var laneMaterial = CreateOrUpdateMaterial(LaneFloorMaterialPath, new Color(0.10f, 0.09f, 0.08f), 0.15f);
+
+        var wallBounce = CreateOrUpdatePhysicsMaterial(
+            WallBounceMaterialPath,
+            GameConstants.WALL_BOUNCINESS,
+            GameConstants.WALL_FRICTION,
+            GameConstants.WALL_FRICTION,
+            PhysicsMaterialCombine.Maximum);
+
+        var wallDead = CreateOrUpdatePhysicsMaterial(
+            WallDeadMaterialPath,
+            0f,
+            1f,
+            1f,
+            PhysicsMaterialCombine.Minimum);
+
+        CreateBalloonMaterials();
+
+        CreateCamera();
+        CreateLighting();
+        CreateBackWall(backWallMaterial);
+        CreateFrameWalls(frameMaterial, wallBounce, wallDead);
+        CreateLane(laneMaterial);
+        CreateLaunchOrigin();
+        CreateGameplayRoots();
+
+        EditorSceneManager.SaveScene(scene, ScenePath);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log("InkshotScene built successfully.");
+    }
+
+    private static void CreateCamera()
+    {
+        var cameraObject = new GameObject("Main Camera");
+        cameraObject.tag = "MainCamera";
+        cameraObject.transform.position = new Vector3(0f, 0f, -10f);
+        cameraObject.AddComponent<Camera>();
+        cameraObject.AddComponent<AudioListener>();
+        cameraObject.AddComponent<BalloonCamera>();
+    }
+
+    private static void CreateLighting()
+    {
+        var lightObject = new GameObject("Directional Light");
+        var light = lightObject.AddComponent<Light>();
+        light.type = LightType.Directional;
+        light.color = new Color(1f, 0.95f, 0.9f);
+        light.intensity = 1f;
+        lightObject.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+
+        RenderSettings.ambientMode = AmbientMode.Flat;
+        RenderSettings.ambientLight = new Color(0.3f, 0.28f, 0.26f);
+    }
+
+    private static void CreateBackWall(Material material)
+    {
+        float boardCenterY = (GameConstants.BOARD_TOP + GameConstants.BOARD_BOTTOM) * 0.5f;
+
+        var backWall = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        backWall.name = "BackWall";
+        backWall.layer = GameConstants.LAYER_ENVIRONMENT;
+        backWall.transform.position = new Vector3(0f, boardCenterY, 1f);
+        backWall.transform.localScale = new Vector3(GameConstants.BOARD_WIDTH + 1f, GameConstants.BOARD_HEIGHT + 1f, 1f);
+        backWall.GetComponent<Renderer>().sharedMaterial = material;
+        Object.DestroyImmediate(backWall.GetComponent<MeshCollider>());
+    }
+
+    private static void CreateFrameWalls(Material material, PhysicsMaterial bounceMaterial, PhysicsMaterial deadMaterial)
+    {
+        float boardCenterY = (GameConstants.BOARD_TOP + GameConstants.BOARD_BOTTOM) * 0.5f;
+        Vector3 wallScale = new(GameConstants.SIDE_WALL_WIDTH, GameConstants.BOARD_HEIGHT + 1f, 2f);
+
+        var leftWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        leftWall.name = "LeftWall";
+        leftWall.layer = GameConstants.LAYER_ENVIRONMENT;
+        leftWall.transform.position = new Vector3(
+            GameConstants.BOARD_LEFT - GameConstants.SIDE_WALL_WIDTH * 0.5f,
+            boardCenterY,
+            0.5f);
+        leftWall.transform.localScale = wallScale;
+        leftWall.GetComponent<Renderer>().sharedMaterial = material;
+        leftWall.GetComponent<BoxCollider>().material = bounceMaterial;
+
+        var rightWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        rightWall.name = "RightWall";
+        rightWall.layer = GameConstants.LAYER_ENVIRONMENT;
+        rightWall.transform.position = new Vector3(
+            GameConstants.BOARD_RIGHT + GameConstants.SIDE_WALL_WIDTH * 0.5f,
+            boardCenterY,
+            0.5f);
+        rightWall.transform.localScale = wallScale;
+        rightWall.GetComponent<Renderer>().sharedMaterial = material;
+        rightWall.GetComponent<BoxCollider>().material = bounceMaterial;
+
+        var topWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        topWall.name = "TopWall";
+        topWall.layer = GameConstants.LAYER_ENVIRONMENT;
+        topWall.transform.position = new Vector3(
+            0f,
+            GameConstants.BOARD_TOP + GameConstants.SIDE_WALL_WIDTH * 0.5f,
+            0.5f);
+        topWall.transform.localScale = new Vector3(
+            GameConstants.BOARD_WIDTH + GameConstants.SIDE_WALL_WIDTH * 2f + 1f,
+            GameConstants.SIDE_WALL_WIDTH,
+            2f);
+        topWall.GetComponent<Renderer>().sharedMaterial = material;
+        topWall.GetComponent<BoxCollider>().material = deadMaterial;
+    }
+
+    private static void CreateLane(Material material)
+    {
+        float laneCenterY = (GameConstants.LANE_TOP + GameConstants.LANE_BOTTOM) * 0.5f;
+
+        var laneFloor = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        laneFloor.name = "LaneFloor";
+        laneFloor.layer = GameConstants.LAYER_ENVIRONMENT;
+        laneFloor.transform.position = new Vector3(0f, laneCenterY, 1f);
+        laneFloor.transform.localScale = new Vector3(8f, GameConstants.LANE_TOP - GameConstants.LANE_BOTTOM, 1f);
+        laneFloor.GetComponent<Renderer>().sharedMaterial = material;
+        Object.DestroyImmediate(laneFloor.GetComponent<MeshCollider>());
+    }
+
+    private static void CreateLaunchOrigin()
+    {
+        var launchOrigin = new GameObject("LaunchOrigin");
+        launchOrigin.transform.position = GameConstants.LAUNCH_POSITION;
+    }
+
+    private static void CreateGameplayRoots()
+    {
+        var balloonWall = new GameObject("BalloonWall");
+        balloonWall.AddComponent<BalloonWall>();
+
+        var slingshotController = new GameObject("SlingshotController");
+        slingshotController.transform.position = GameConstants.LAUNCH_POSITION;
+        slingshotController.AddComponent<SlingshotInput>();
+        slingshotController.AddComponent<SlingshotVisuals>();
+
+        var gameManager = new GameObject("GameManager");
+        gameManager.AddComponent<BalloonGameManager>();
+        gameManager.AddComponent<ScoreManager>();
+        gameManager.AddComponent<GameHUD>();
+    }
+
+    private static void CreateBalloonMaterials()
+    {
+        CreateOrUpdateMaterial(BalloonRedMaterialPath, BalloonColor.Red.ToUnityColor(), 0.7f);
+        CreateOrUpdateMaterial(BalloonBlueMaterialPath, BalloonColor.Blue.ToUnityColor(), 0.7f);
+        CreateOrUpdateMaterial(BalloonYellowMaterialPath, BalloonColor.Yellow.ToUnityColor(), 0.7f);
+        CreateOrUpdateMaterial(BalloonGreenMaterialPath, BalloonColor.Green.ToUnityColor(), 0.7f);
+        CreateOrUpdateMaterial(BalloonPurpleMaterialPath, BalloonColor.Purple.ToUnityColor(), 0.7f);
+    }
+
+    private static Material CreateOrUpdateMaterial(string assetPath, Color color, float smoothness)
+    {
+        var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
+        if (material == null)
+        {
+            material = new Material(GetSurfaceShader());
+            AssetDatabase.CreateAsset(material, assetPath);
+        }
+
+        material.color = color;
+
+        if (material.HasProperty("_Glossiness"))
+        {
+            material.SetFloat("_Glossiness", smoothness);
+        }
+
+        if (material.HasProperty("_Smoothness"))
+        {
+            material.SetFloat("_Smoothness", smoothness);
+        }
+
+        EditorUtility.SetDirty(material);
+        return material;
+    }
+
+    private static PhysicsMaterial CreateOrUpdatePhysicsMaterial(
+        string assetPath,
+        float bounciness,
+        float dynamicFriction,
+        float staticFriction,
+        PhysicsMaterialCombine bounceCombine)
+    {
+        var material = AssetDatabase.LoadAssetAtPath<PhysicsMaterial>(assetPath);
+        if (material == null)
+        {
+            material = new PhysicsMaterial();
+            AssetDatabase.CreateAsset(material, assetPath);
+        }
+
+        material.bounciness = bounciness;
+        material.dynamicFriction = dynamicFriction;
+        material.staticFriction = staticFriction;
+        material.bounceCombine = bounceCombine;
+
+        EditorUtility.SetDirty(material);
+        return material;
+    }
+
+    private static Shader GetSurfaceShader()
+    {
+        return Shader.Find("Standard") ?? Shader.Find("Universal Render Pipeline/Lit");
+    }
+
+    private static void EnsureFolder(string path)
+    {
+        if (AssetDatabase.IsValidFolder(path))
+        {
+            return;
+        }
+
+        string[] parts = path.Split('/');
+        string current = parts[0];
+
+        for (int index = 1; index < parts.Length; index++)
+        {
+            string next = current + "/" + parts[index];
+            if (!AssetDatabase.IsValidFolder(next))
+            {
+                AssetDatabase.CreateFolder(current, parts[index]);
+            }
+
+            current = next;
+        }
+    }
+}
+#endif
