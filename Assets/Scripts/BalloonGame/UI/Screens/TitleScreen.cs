@@ -55,7 +55,9 @@ public class TitleScreen : MonoBehaviour
         ResolveDependencies();
         if (_runManager == null)
         {
+#if UNITY_EDITOR
             Debug.LogError("TitleScreen could not find RunManager in the active scene.");
+#endif
             return;
         }
 

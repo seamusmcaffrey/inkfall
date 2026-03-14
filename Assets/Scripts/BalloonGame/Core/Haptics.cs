@@ -40,7 +40,9 @@ public static class Haptics
                 break;
         }
 #else
+#if UNITY_EDITOR
         Debug.Log($"[Haptics] {type}");
+#endif
 #endif
     }
 }

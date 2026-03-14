@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: GameConfig
   m_EditorClassIdentifier: Assembly-CSharp::GameConfigSO
   pullSpeedExponent: 1.45
-  minLaunchSpeed: 10
-  maxLaunchSpeed: 40
+  minLaunchSpeed: 9
+  maxLaunchSpeed: 14
   minPreviewVelocity: 1
   aimAssistStrength: 0.55
   aimAssistEnabled: 1

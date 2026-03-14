@@ -99,6 +99,12 @@ namespace Inkshot.Editor.AgentBridge
             PlayModeCapture.Run();
         }
 
+        [MenuItem("Inkshot/Agent Bridge/Dart Physics Test")]
+        public static void DartTest()
+        {
+            DartPhysicsTest.Run();
+        }
+
         [MenuItem("Inkshot/Agent Bridge/Smoke Test")]
         public static void SmokeTest()
         {

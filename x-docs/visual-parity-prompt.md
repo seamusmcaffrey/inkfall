@@ -4,9 +4,9 @@
 
 Achieve 10/10 visual AND mechanical parity with the reference materials. Visual polish means nothing if the game doesn't feel right. You are not done until both aspects match. Work autonomously — do not ask questions, do not stop short.
 
-**Priority order: Physics Feel → Visual Quality → Screen Effects → UI Polish**
+**Priority order: Physics Feel & Visual Quality → Screen Effects → GUI Polish**
 
-The game currently looks decent but plays wrong. Fix the feel first.
+The game is TRENDING toward the look of the reference images but still has a long way to go. The physics feel is getting there but still needs A LOT of work. 
 
 ## Reference Materials
 

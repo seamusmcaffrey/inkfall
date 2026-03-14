@@ -119,12 +119,14 @@ public class EnvironmentBuilder : MonoBehaviour
 
     private void BuildLaneGuides()
     {
+        float laneMidY = (GameConstants.LANE_TOP + GameConstants.LANE_BOTTOM) * 0.5f;
+        float laneHeight = GameConstants.LANE_TOP - GameConstants.LANE_BOTTOM;
         EnsurePanel("LaneLineLeft", PrimitiveType.Quad,
-            new Vector3(-1.7f, -5.4f, BoardZ - 0.05f),
-            new Vector3(0.06f, 6.2f, 1f), AccentCyan, 0f, 0f);
+            new Vector3(-1.7f, laneMidY, BoardZ - 0.05f),
+            new Vector3(0.06f, laneHeight, 1f), AccentCyan, 0f, 0f);
         EnsurePanel("LaneLineRight", PrimitiveType.Quad,
-            new Vector3(1.7f, -5.4f, BoardZ - 0.05f),
-            new Vector3(0.06f, 6.2f, 1f), AccentCyan, 0f, 0f);
+            new Vector3(1.7f, laneMidY, BoardZ - 0.05f),
+            new Vector3(0.06f, laneHeight, 1f), AccentCyan, 0f, 0f);
     }
 
     private void EnsurePanel(string name, PrimitiveType type, Vector3 pos, Vector3 scale, Color color, float smoothness, float metallic)

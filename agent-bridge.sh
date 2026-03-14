@@ -320,6 +320,14 @@ case "${1:-help}" in
             ls -lt "$OUTPUT_DIR"/screenshots/gameplay_*.png | head -5
         fi
         ;;
+    dart-test)
+        # Play Mode: fires darts at 30/60/100% pull with before/after screenshots
+        run_batch "Inkshot.Editor.AgentBridge.AgentBridgeEntryPoint.DartTest" "DartTest" "true"
+        if ls "$OUTPUT_DIR"/screenshots/dart_test_*.png 1>/dev/null 2>&1; then
+            echo "Dart test screenshots saved to: $OUTPUT_DIR/screenshots/"
+            ls -lt "$OUTPUT_DIR"/screenshots/dart_test_*.png | head -10
+        fi
+        ;;
     smoke-test)
         run_batch "Inkshot.Editor.AgentBridge.AgentBridgeEntryPoint.SmokeTest" "SmokeTest"
         ;;
@@ -367,6 +375,7 @@ case "${1:-help}" in
         echo "  health       Analyze code for standards violations"
         echo "  report       Run all checks and produce combined report"
         echo "  screenshot   Capture scene screenshot (1080x1920 PNG)"
+        echo "  dart-test    Fire darts at 30/60/100% pull with before/after screenshots"
         echo "  smoke-test   Run play-mode smoke test (batch only)"
         echo ""
         echo "Commands (MCP only — requires Unity open + MCP server):"

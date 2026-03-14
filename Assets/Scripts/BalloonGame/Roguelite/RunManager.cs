@@ -67,7 +67,9 @@ public class RunManager : MonoBehaviour
 
         if (_balloonGameManager == null)
         {
+#if UNITY_EDITOR
             Debug.LogError("RunManager could not find BalloonGameManager in the active scene.");
+#endif
             return;
         }
 

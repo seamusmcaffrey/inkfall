@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class BalloonWall : MonoBehaviour
+public partial class BalloonWall : MonoBehaviour
 {
     private readonly List<BalloonNode> _balloons = new();
     private readonly Dictionary<BalloonColor, Material> _materials = new();
-    private readonly List<BalloonTypeSO> _runtimeTypes = new();
     private readonly BalloonColor[] _colors = { BalloonColor.Red, BalloonColor.Blue, BalloonColor.Yellow, BalloonColor.Green, BalloonColor.Purple };
 
     [SerializeField] private RoomConfig _roomConfig;
@@ -169,6 +168,11 @@ public class BalloonWall : MonoBehaviour
         return GameConstants.PERSPECTIVE_MIN_SCALE + rowRatio * GameConstants.PERSPECTIVE_SCALE_RANGE;
     }
 
+    private void EnsurePropertyBlock()
+    {
+        _materialPropertyBlock ??= new MaterialPropertyBlock();
+    }
+
     private void ApplyAtmosphericFade(Renderer renderer, BalloonTypeSO type, int row, int totalRows)
     {
         EnsurePropertyBlock();
@@ -184,230 +188,5 @@ public class BalloonWall : MonoBehaviour
         _materialPropertyBlock.SetColor("_Color", finalColor);
         _materialPropertyBlock.SetColor("_BaseColor", finalColor);
         renderer.SetPropertyBlock(_materialPropertyBlock);
-    }
-
-    private void EnsureMaterials()
-    {
-        if (_materials.Count > 0) return;
-
-        Shader shader = Shader.Find("Inkshot/BalloonLit")
-            ?? Shader.Find("Universal Render Pipeline/Lit")
-            ?? Shader.Find("Standard");
-
-        foreach (BalloonColor color in _colors)
-        {
-            _materials[color] = CreateBalloonMaterial(shader, color.ToUnityColor());
-        }
-    }
-
-    private static Material CreateBalloonMaterial(Shader shader, Color color, float glossiness = 0.85f, float specular = 1.2f)
-    {
-        var mat = new Material(shader);
-        mat.color = color;
-        if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
-        if (mat.HasProperty("_Glossiness")) mat.SetFloat("_Glossiness", glossiness);
-        if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", glossiness);
-        if (mat.HasProperty("_SpecularIntensity")) mat.SetFloat("_SpecularIntensity", specular);
-        if (mat.HasProperty("_Metallic")) mat.SetFloat("_Metallic", 0f);
-        mat.enableInstancing = true;
-        return mat;
-    }
-
-    private BalloonTypeSO PickBalloonType(int row, int column, List<Vector2Int> specialSlots, int specialCount, int hazardCount)
-    {
-        List<BalloonTypeSO> availableTypes = GetAvailableTypes();
-        Vector2Int slot = new(column, row);
-        bool isSpecialSlot = specialSlots.Contains(slot);
-
-        if (isSpecialSlot)
-        {
-            int slotIndex = specialSlots.IndexOf(slot);
-            BalloonSpecialType requestedType = slotIndex < hazardCount ? BalloonSpecialType.Hazard : BalloonSpecialType.Paint;
-            BalloonTypeSO specialType = availableTypes.Find(type => type.specialType == requestedType);
-            if (specialType != null)
-            {
-                return specialType;
-            }
-        }
-
-        BalloonColor color = _colors[Random.Range(0, _colors.Length)];
-        BalloonTypeSO standardType = availableTypes.Find(type => type.specialType == BalloonSpecialType.Standard && type.balloonColor == color);
-        return standardType ?? availableTypes[0];
-    }
-
-    private Material ResolveMaterial(BalloonTypeSO type)
-    {
-        if (type != null && type.materialOverride != null)
-            return type.materialOverride;
-        if (type != null && type.specialType == BalloonSpecialType.Gold)
-            return GetSpecialMaterial("_gold", new Color(1f, 0.82f, 0.18f), 0.92f, 1.8f);
-        if (type != null && type.specialType == BalloonSpecialType.Hazard)
-            return GetSpecialMaterial("_hazard", new Color(0.18f, 0.14f, 0.16f), 0.6f, 0.8f);
-        BalloonColor color = type != null ? type.balloonColor : BalloonColor.Red;
-        return _materials[color];
-    }
-
-    private readonly Dictionary<string, Material> _specialMaterials = new();
-
-    private Material GetSpecialMaterial(string key, Color color, float gloss, float spec)
-    {
-        if (!_specialMaterials.ContainsKey(key))
-        {
-            Shader shader = Shader.Find("Inkshot/BalloonLit") ?? Shader.Find("Universal Render Pipeline/Lit");
-            _specialMaterials[key] = CreateBalloonMaterial(shader, color, gloss, spec);
-        }
-        return _specialMaterials[key];
-    }
-
-    private Color ResolveDisplayColor(BalloonTypeSO type)
-    {
-        if (type != null && type.materialOverride != null)
-        {
-            if (type.materialOverride.HasProperty("_BaseColor"))
-            {
-                return type.materialOverride.GetColor("_BaseColor");
-            }
-
-            if (type.materialOverride.HasProperty("_Color"))
-            {
-                return type.materialOverride.GetColor("_Color");
-            }
-        }
-
-        return (type != null ? type.balloonColor : BalloonColor.Red).ToUnityColor();
-    }
-
-    private List<BalloonTypeSO> GetAvailableTypes()
-    {
-        if (GameConfigSO.Instance.balloonTypes != null && GameConfigSO.Instance.balloonTypes.Count > 0)
-        {
-            return GameConfigSO.Instance.balloonTypes;
-        }
-
-        if (_runtimeTypes.Count > 0)
-        {
-            return _runtimeTypes;
-        }
-
-        foreach (BalloonColor color in _colors)
-        {
-            BalloonTypeSO standard = ScriptableObject.CreateInstance<BalloonTypeSO>();
-            standard.typeId = $"standard-{color.ToString().ToLowerInvariant()}";
-            standard.displayName = $"{color.ToDisplayName()} Balloon";
-            standard.balloonColor = color;
-            standard.specialType = BalloonSpecialType.Standard;
-            standard.basePoints = GameConstants.SCORE_PER_BALLOON;
-            _runtimeTypes.Add(standard);
-        }
-
-        BalloonTypeSO paint = ScriptableObject.CreateInstance<BalloonTypeSO>();
-        paint.typeId = "paint";
-        paint.displayName = "Paint Balloon";
-        paint.balloonColor = BalloonColor.Blue;
-        paint.specialType = BalloonSpecialType.Paint;
-        paint.basePoints = GameConstants.SCORE_PER_BALLOON + 25;
-        paint.effectRadius = GameConfigSO.Instance.defaultPaintRadius;
-        _runtimeTypes.Add(paint);
-
-        BalloonTypeSO hazard = ScriptableObject.CreateInstance<BalloonTypeSO>();
-        hazard.typeId = "hazard";
-        hazard.displayName = "Hazard Balloon";
-        hazard.balloonColor = BalloonColor.Purple;
-        hazard.specialType = BalloonSpecialType.Hazard;
-        hazard.basePoints = -GameConfigSO.Instance.hazardBalloonPenalty;
-        hazard.hazardPenalty = GameConfigSO.Instance.hazardBalloonPenalty;
-        _runtimeTypes.Add(hazard);
-
-        BalloonTypeSO gold = ScriptableObject.CreateInstance<BalloonTypeSO>();
-        gold.typeId = "gold";
-        gold.displayName = "Gold Balloon";
-        gold.balloonColor = BalloonColor.Yellow;
-        gold.specialType = BalloonSpecialType.Gold;
-        gold.basePoints = GameConstants.SCORE_PER_BALLOON + 50;
-        gold.currencyReward = 3;
-        _runtimeTypes.Add(gold);
-
-        return _runtimeTypes;
-    }
-
-    private static List<Vector2Int> PickUniqueSlots(int rows, int columns, int count)
-    {
-        var slots = new List<Vector2Int>(count);
-        int safety = rows * columns * 2;
-        while (slots.Count < count && safety-- > 0)
-        {
-            Vector2Int candidate = new(Random.Range(0, columns), Random.Range(0, rows));
-            if (!slots.Contains(candidate))
-            {
-                slots.Add(candidate);
-            }
-        }
-
-        return slots;
-    }
-
-    private void EnsurePool()
-    {
-        if (!Application.isPlaying)
-        {
-            return;
-        }
-
-        if (_balloonPool != null)
-        {
-            return;
-        }
-
-        _balloonPrefab = CreateBalloonObject();
-        _balloonPrefab.SetActive(false);
-        _balloonPool = ComponentUtility.EnsureComponent<ObjectPool>(gameObject);
-        _balloonPool.Configure(_balloonPrefab, GetPoolSize());
-    }
-
-    private GameObject GetBalloonInstance()
-    {
-        if (Application.isPlaying && _balloonPool != null)
-        {
-            return _balloonPool.Get();
-        }
-
-        return CreateBalloonObject();
-    }
-
-    private GameObject CreateBalloonObject()
-    {
-        var balloon = new GameObject("Balloon");
-        balloon.AddComponent<MeshFilter>().sharedMesh = BalloonMeshGenerator.GetSharedMesh();
-        balloon.AddComponent<MeshRenderer>();
-        balloon.AddComponent<SphereCollider>();
-        var rigidbody = balloon.AddComponent<Rigidbody>();
-        rigidbody.isKinematic = true;
-        rigidbody.useGravity = false;
-        balloon.AddComponent<BalloonNode>();
-        balloon.AddComponent<BalloonJiggle>();
-        balloon.AddComponent<BalloonEmblem>();
-        return balloon;
-    }
-
-    private int GetPoolSize()
-    {
-        int maxCount = GameConstants.TOTAL_BALLOONS;
-        if (GameConfigSO.Instance.roomTemplates != null)
-        {
-            foreach (RoomTemplateSO template in GameConfigSO.Instance.roomTemplates)
-            {
-                if (template != null)
-                {
-                    maxCount = Mathf.Max(maxCount, template.rows * template.columns);
-                }
-            }
-        }
-
-        return Mathf.Max(GameConstants.TOTAL_BALLOONS, maxCount);
-    }
-
-    private void EnsurePropertyBlock()
-    {
-        _materialPropertyBlock ??= new MaterialPropertyBlock();
     }
 }

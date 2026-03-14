@@ -10,15 +10,15 @@ public static class GameConstants
 
     public const float BOARD_LEFT = -4.0f;
     public const float BOARD_RIGHT = 4.0f;
-    public const float BOARD_TOP = 8.5f;
-    public const float BOARD_BOTTOM = -1.0f;
+    public const float BOARD_TOP = 8.0f;
+    public const float BOARD_BOTTOM = 0.0f;
     public const float BOARD_WIDTH = BOARD_RIGHT - BOARD_LEFT;
     public const float BOARD_HEIGHT = BOARD_TOP - BOARD_BOTTOM;
 
-    public const float LANE_TOP = -2.0f;
-    public const float LANE_BOTTOM = -8.5f;
+    public const float LANE_TOP = -1.5f;
+    public const float LANE_BOTTOM = -9.5f;
 
-    public static readonly Vector3 LAUNCH_POSITION = new(0f, -5.5f, 0f);
+    public static readonly Vector3 LAUNCH_POSITION = new(0f, -7.5f, 0f);
 
     public const float BALLOON_MAX_WIDTH = 0.78f;
     public const float BALLOON_MAX_HEIGHT = 0.94f;
@@ -31,7 +31,7 @@ public static class GameConstants
     public const float PERSPECTIVE_VERTICAL_COMPRESSION = 0.14f;
 
     public const float MAX_PULL_DISTANCE = 3.0f;
-    public const float AIM_ACTIVATION_RADIUS = 4f;
+    public const float AIM_ACTIVATION_RADIUS = 5f;
     public const float MIN_PULL_DISTANCE = 0.5f;
     public const float PULL_CANCEL_RETURN_RADIUS = 0.3f;
     public const float PULL_DEAD_ZONE = 0.2f;
@@ -44,6 +44,7 @@ public static class GameConstants
     public const int COMBO_MAX_STACK = 20;
 
     // Physics
+    public const float DART_GRAVITY = -5.4f;
     public const float SIDE_WALL_WIDTH = 0.3f;
     public const float WALL_BOUNCINESS = 0.8f;
     public const float WALL_FRICTION = 0.1f;
@@ -84,7 +85,7 @@ public static class GameConstants
 
     // Touch / aim polish
     public const int TRAJECTORY_POINT_COUNT = 30;
-    public const float TRAJECTORY_DURATION = 2f;
+    public const float TRAJECTORY_DURATION = 2.5f;
     public const float TRAJECTORY_DOT_SPACING = 0.18f;
     public const float AIM_ASSIST_MAX_ANGLE = 8f;
     public const float AIM_ASSIST_MAX_DISTANCE = 5.5f;

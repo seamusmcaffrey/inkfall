@@ -76,7 +76,7 @@ public class DartController : MonoBehaviour
         _balloonsHitThisFlight = 0;
         _ricochetCount = 0;
         _rigidbody.isKinematic = false;
-        _rigidbody.useGravity = true;
+        _rigidbody.useGravity = false;
         _rigidbody.linearVelocity = velocity;
         _lifetime = 0f;
         if (_capsuleCollider != null)
@@ -104,6 +104,8 @@ public class DartController : MonoBehaviour
         }
 
         _lifetime += Time.fixedDeltaTime;
+
+        _rigidbody.AddForce(new Vector3(0f, GameConstants.DART_GRAVITY, 0f), ForceMode.Acceleration);
 
         if (_rigidbody.linearVelocity.sqrMagnitude > 0.5f)
         {

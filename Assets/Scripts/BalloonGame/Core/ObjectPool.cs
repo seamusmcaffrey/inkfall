@@ -60,7 +60,9 @@ public class ObjectPool : MonoBehaviour
     {
         if (_prefab == null)
         {
+#if UNITY_EDITOR
             Debug.LogError($"[{nameof(ObjectPool)}] Pool on {name} has no prefab configured.");
+#endif
             return null;
         }
 
@@ -81,7 +83,9 @@ public class ObjectPool : MonoBehaviour
         }
         else
         {
+#if UNITY_EDITOR
             Debug.LogWarning($"[{nameof(ObjectPool)}] Pool '{name}' exhausted.");
+#endif
             return null;
         }
 
