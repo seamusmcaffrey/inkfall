@@ -67,6 +67,11 @@ public class TutorialOverlay : MonoBehaviour
 
     private void BuildUi()
     {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            Object.Destroy(transform.GetChild(i).gameObject);
+        }
+
         Canvas canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 720;
@@ -94,6 +99,7 @@ public class TutorialOverlay : MonoBehaviour
         _label = labelGo.AddComponent<TextMeshProUGUI>();
         _label.alignment = TextAlignmentOptions.Center;
         _label.fontSize = 28f;
+        _label.raycastTarget = false;
 
         GameObject buttonGo = new("Next");
         buttonGo.transform.SetParent(panel.transform, false);
@@ -113,5 +119,6 @@ public class TutorialOverlay : MonoBehaviour
         buttonLabel.alignment = TextAlignmentOptions.Center;
         buttonLabel.fontSize = 24f;
         buttonLabel.color = Color.black;
+        buttonLabel.raycastTarget = false;
     }
 }

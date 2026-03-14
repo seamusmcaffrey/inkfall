@@ -55,6 +55,14 @@ public class RunHUD : MonoBehaviour
 
     private void EnsureUi()
     {
+        if (_roomText == null)
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Object.Destroy(transform.GetChild(i).gameObject);
+            }
+        }
+
         Canvas canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 150;
@@ -96,6 +104,7 @@ public class RunHUD : MonoBehaviour
         label.fontSize = fontSize;
         label.color = UIColors.InkCyan;
         label.alignment = TextAlignmentOptions.Left;
+        label.raycastTarget = false;
         return label;
     }
 }

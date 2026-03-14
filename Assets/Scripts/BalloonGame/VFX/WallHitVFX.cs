@@ -19,7 +19,6 @@ public class WallHitVFX : MonoBehaviour
     {
         _system = VFXFactory.EnsureWallHitSystem(transform, _system, config);
         _system.transform.localPosition = Vector3.zero;
-        _system.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         _system.Play(true);
         BeginReturn(config.wallHitParticleLifetime + 0.1f);
     }

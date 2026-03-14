@@ -2,6 +2,8 @@
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.Rendering;
 
 public static class BalloonSceneBuilder
@@ -48,6 +50,7 @@ public static class BalloonSceneBuilder
         CreateBalloonMaterials();
 
         CreateCamera();
+        CreateEventSystem();
         CreateLighting();
         CreateBackWall(backWallMaterial);
         CreateFrameWalls(frameMaterial, wallBounce, wallDead);
@@ -69,6 +72,13 @@ public static class BalloonSceneBuilder
         cameraObject.AddComponent<Camera>();
         cameraObject.AddComponent<AudioListener>();
         cameraObject.AddComponent<BalloonCamera>();
+    }
+
+    private static void CreateEventSystem()
+    {
+        var eventSystemObject = new GameObject("EventSystem");
+        eventSystemObject.AddComponent<EventSystem>();
+        eventSystemObject.AddComponent<InputSystemUIInputModule>();
     }
 
     private static void CreateLighting()
@@ -223,6 +233,11 @@ public static class BalloonSceneBuilder
         }
 
         material.color = color;
+
+        if (material.HasProperty("_BaseColor"))
+        {
+            material.SetColor("_BaseColor", color);
+        }
 
         if (material.HasProperty("_Glossiness"))
         {

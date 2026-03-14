@@ -19,7 +19,6 @@ public class BalloonPopVFX : MonoBehaviour
     {
         _system = VFXFactory.EnsureBalloonPopSystem(transform, _system, config, color);
         _system.transform.localPosition = Vector3.zero;
-        _system.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         _system.Play(true);
         BeginReturn(config.popParticleLifetime + 0.1f);
     }

@@ -54,6 +54,11 @@ public class SettingsPanel : MonoBehaviour
 
     private void BuildUi()
     {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            Object.Destroy(transform.GetChild(i).gameObject);
+        }
+
         Canvas canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 700;
@@ -104,6 +109,7 @@ public class SettingsPanel : MonoBehaviour
         label.alignment = TextAlignmentOptions.Center;
         label.fontSize = 34f;
         label.color = UIColors.ScoreWhite;
+        label.raycastTarget = false;
     }
 
     private static Slider CreateSlider(Transform parent, string labelText, Vector2 anchoredPosition, UnityEngine.Events.UnityAction onChanged)
@@ -126,6 +132,7 @@ public class SettingsPanel : MonoBehaviour
         label.text = labelText;
         label.fontSize = 24f;
         label.color = UIColors.ScoreWhite;
+        label.raycastTarget = false;
 
         Slider slider = root.AddComponent<Slider>();
         slider.minValue = 0f;
@@ -191,6 +198,7 @@ public class SettingsPanel : MonoBehaviour
         valueLabel.alignment = TextAlignmentOptions.Right;
         valueLabel.fontSize = 20f;
         valueLabel.color = UIColors.TargetGray;
+        valueLabel.raycastTarget = false;
         valueLabel.text = "100%";
         slider.onValueChanged.AddListener(value => valueLabel.text = $"{Mathf.RoundToInt(value * 100f)}%");
         return slider;
@@ -238,6 +246,7 @@ public class SettingsPanel : MonoBehaviour
         label.fontSize = 24f;
         label.color = UIColors.ScoreWhite;
         label.alignment = TextAlignmentOptions.Left;
+        label.raycastTarget = false;
 
         toggle.targetGraphic = backgroundImage;
         toggle.graphic = checkmarkImage;
@@ -264,5 +273,6 @@ public class SettingsPanel : MonoBehaviour
         label.alignment = TextAlignmentOptions.Center;
         label.fontSize = 24f;
         label.color = Color.black;
+        label.raycastTarget = false;
     }
 }

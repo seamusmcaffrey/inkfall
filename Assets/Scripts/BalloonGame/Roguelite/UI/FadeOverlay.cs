@@ -56,6 +56,13 @@ public class FadeOverlay : MonoBehaviour
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
         scaler.matchWidthOrHeight = 0.5f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
+
+        // Reuse existing CanvasGroup from scene-saved children before creating a new one.
+        if (_group == null)
+        {
+            _group = GetComponentInChildren<CanvasGroup>(true);
+        }
+
         if (_group == null)
         {
             GameObject cover = new("Cover");
@@ -68,7 +75,10 @@ public class FadeOverlay : MonoBehaviour
             Image image = cover.AddComponent<Image>();
             image.color = Color.black;
             _group = cover.AddComponent<CanvasGroup>();
-            _group.alpha = 0f;
         }
+
+        // Always ensure transparent overlay starts non-blocking.
+        _group.alpha = 0f;
+        _group.blocksRaycasts = false;
     }
 }

@@ -10,6 +10,12 @@ public class BalloonJiggle : MonoBehaviour
     private float _offset;
     private bool _hasBaseScale;
 
+    /// <summary>
+    /// Extra scale multiplier driven by AimAssist highlight pulse.
+    /// 1.0 = no highlight, >1.0 = highlighted.
+    /// </summary>
+    public float HighlightMultiplier { get; set; } = 1f;
+
     private void Awake()
     {
         _offset = Random.Range(0f, Mathf.PI * 2f);
@@ -29,7 +35,7 @@ public class BalloonJiggle : MonoBehaviour
         }
 
         float pulse = Mathf.Sin(Time.time * 1.2f + _offset) * 0.012f;
-        transform.localScale = _baseScale * (1f + pulse);
+        transform.localScale = _baseScale * ((1f + pulse) * HighlightMultiplier);
     }
 
     /// <summary>

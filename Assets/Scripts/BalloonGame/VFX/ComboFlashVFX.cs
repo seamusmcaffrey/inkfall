@@ -39,6 +39,14 @@ public class ComboFlashVFX : MonoBehaviour
 
     private void EnsureUi()
     {
+        if (_group == null)
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Object.Destroy(transform.GetChild(i).gameObject);
+            }
+        }
+
         Canvas canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 800;
@@ -48,6 +56,7 @@ public class ComboFlashVFX : MonoBehaviour
         scaler.matchWidthOrHeight = 0.5f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
         _group = ComponentUtility.EnsureComponent<CanvasGroup>(gameObject);
+        _group.blocksRaycasts = false;
 
         if (GetComponentInChildren<Image>() == null)
         {

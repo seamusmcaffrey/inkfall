@@ -59,6 +59,14 @@ public class PerkSelectionScreen : MonoBehaviour
 
     private void EnsureUi()
     {
+        if (_contentRoot == null)
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Object.Destroy(transform.GetChild(i).gameObject);
+            }
+        }
+
         Canvas canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 450;

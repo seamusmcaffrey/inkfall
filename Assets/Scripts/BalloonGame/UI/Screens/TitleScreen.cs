@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 /// <summary>
@@ -14,9 +16,22 @@ public class TitleScreen : MonoBehaviour
 
     private void Awake()
     {
+        EnsureEventSystem();
         ResolveDependencies();
         BuildUi();
         Show();
+    }
+
+    /// <summary>
+    /// Unity UI requires an EventSystem to process clicks/touches. Create one if the scene lacks it.
+    /// </summary>
+    private static void EnsureEventSystem()
+    {
+        if (EventSystem.current != null) return;
+        if (Object.FindAnyObjectByType<EventSystem>() != null) return;
+        var go = new GameObject("EventSystem");
+        go.AddComponent<EventSystem>();
+        go.AddComponent<InputSystemUIInputModule>();
     }
 
     /// <summary>
@@ -69,6 +84,13 @@ public class TitleScreen : MonoBehaviour
 
     private void BuildUi()
     {
+        // Destroy scene-saved children to avoid duplicates (SceneBuilder creates them
+        // at edit time, but onClick listeners are not serialized so they'd be dead buttons).
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            Object.Destroy(transform.GetChild(i).gameObject);
+        }
+
         Canvas canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 850;
@@ -114,6 +136,7 @@ public class TitleScreen : MonoBehaviour
         label.fontSize = size;
         label.alignment = TextAlignmentOptions.Center;
         label.color = color;
+        label.raycastTarget = false;
     }
 
     private static void CreateButton(Transform parent, string text, Vector2 anchoredPosition, UnityEngine.Events.UnityAction action)
@@ -137,5 +160,6 @@ public class TitleScreen : MonoBehaviour
         label.alignment = TextAlignmentOptions.Center;
         label.fontSize = 28f;
         label.color = Color.black;
+        label.raycastTarget = false;
     }
 }

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -11,11 +12,13 @@ public class PauseManager : MonoBehaviour
 {
     [SerializeField] private SettingsPanel _settingsPanel = null;
     private CanvasGroup _group;
+    private Canvas _pauseButtonCanvas;
 
     private void Awake()
     {
         ResolveDependencies();
         BuildUi();
+        BuildPauseButton();
         Hide();
     }
 
@@ -29,7 +32,8 @@ public class PauseManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        bool escapePressed = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
+        if (escapePressed)
         {
             if (_group.alpha > 0.01f)
             {
@@ -48,6 +52,7 @@ public class PauseManager : MonoBehaviour
         _group.alpha = 1f;
         _group.blocksRaycasts = true;
         gameObject.SetActive(true);
+        if (_pauseButtonCanvas != null) _pauseButtonCanvas.gameObject.SetActive(false);
     }
 
     private void OpenSettings()
@@ -77,10 +82,78 @@ public class PauseManager : MonoBehaviour
         _group.alpha = 0f;
         _group.blocksRaycasts = false;
         gameObject.SetActive(false);
+        if (_pauseButtonCanvas != null) _pauseButtonCanvas.gameObject.SetActive(true);
+    }
+
+    private void BuildPauseButton()
+    {
+        // Destroy any stale pause-button canvas saved by the scene builder.
+        if (_pauseButtonCanvas != null)
+        {
+            Object.Destroy(_pauseButtonCanvas.gameObject);
+        }
+        else
+        {
+            Transform stale = transform.parent != null
+                ? transform.parent.Find("PauseButtonCanvas")
+                : null;
+            if (stale != null) Object.Destroy(stale.gameObject);
+        }
+
+        // Separate canvas so the button stays visible when the pause overlay is hidden.
+        GameObject btnCanvas = new("PauseButtonCanvas");
+        btnCanvas.transform.SetParent(transform.parent, false);
+        _pauseButtonCanvas = btnCanvas.AddComponent<Canvas>();
+        _pauseButtonCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        _pauseButtonCanvas.sortingOrder = 750; // below pause overlay (760)
+        CanvasScaler scaler = btnCanvas.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
+        scaler.matchWidthOrHeight = 0.5f;
+        btnCanvas.AddComponent<GraphicRaycaster>();
+
+        // Safe-area root so the button respects notch / status-bar insets.
+        GameObject safeRoot = new("SafeArea");
+        safeRoot.transform.SetParent(btnCanvas.transform, false);
+        RectTransform safeRect = safeRoot.AddComponent<RectTransform>();
+        safeRoot.AddComponent<SafeAreaHandler>();
+
+        // Pause button anchored to top-right corner.
+        GameObject btnGo = new("PauseButton");
+        btnGo.transform.SetParent(safeRect, false);
+        RectTransform rect = btnGo.AddComponent<RectTransform>();
+        rect.anchorMin = new Vector2(1f, 1f);
+        rect.anchorMax = new Vector2(1f, 1f);
+        rect.pivot = new Vector2(1f, 1f);
+        rect.anchoredPosition = new Vector2(-GameConstants.HUD_SIDE_MARGIN, -GameConstants.HUD_TOP_MARGIN);
+        rect.sizeDelta = new Vector2(56f, 56f);
+
+        Image bg = btnGo.AddComponent<Image>();
+        bg.color = UIColors.PanelBackground;
+
+        Button button = btnGo.AddComponent<Button>();
+        button.onClick.AddListener(Show);
+
+        TextMeshProUGUI label = new GameObject("Label").AddComponent<TextMeshProUGUI>();
+        label.transform.SetParent(btnGo.transform, false);
+        label.rectTransform.anchorMin = Vector2.zero;
+        label.rectTransform.anchorMax = Vector2.one;
+        label.rectTransform.offsetMin = Vector2.zero;
+        label.rectTransform.offsetMax = Vector2.zero;
+        label.text = "||";
+        label.alignment = TextAlignmentOptions.Center;
+        label.fontSize = 28f;
+        label.color = UIColors.ScoreWhite;
+        label.raycastTarget = false;
     }
 
     private void BuildUi()
     {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            Object.Destroy(transform.GetChild(i).gameObject);
+        }
+
         Canvas canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 760;
@@ -129,5 +202,6 @@ public class PauseManager : MonoBehaviour
         label.alignment = TextAlignmentOptions.Center;
         label.fontSize = 24f;
         label.color = Color.black;
+        label.raycastTarget = false;
     }
 }

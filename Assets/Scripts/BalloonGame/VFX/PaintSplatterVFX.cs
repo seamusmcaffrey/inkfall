@@ -25,7 +25,6 @@ public class PaintSplatterVFX : MonoBehaviour
     {
         _system = VFXFactory.EnsurePaintSplatterSystem(transform, _system, config, color);
         _system.transform.localPosition = Vector3.zero;
-        _system.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         _system.Play(true);
 
         EnsureDrips();

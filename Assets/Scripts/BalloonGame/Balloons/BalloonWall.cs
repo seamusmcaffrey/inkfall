@@ -187,13 +187,27 @@ public class BalloonWall : MonoBehaviour
             return;
         }
 
-        Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+        Shader shader = Shader.Find("Inkshot/BalloonLit")
+            ?? Shader.Find("Universal Render Pipeline/Lit")
+            ?? Shader.Find("Standard");
+
+        if (shader == null)
+        {
+            Debug.LogError("[BalloonWall] No valid shader found. Balloons will render pink.");
+        }
+
         foreach (BalloonColor color in _colors)
         {
-            var material = new Material(shader)
+            var material = new Material(shader);
+            Color unityColor = color.ToUnityColor();
+
+            // Set color via all common property names so it works regardless of shader
+            material.color = unityColor;
+
+            if (material.HasProperty("_BaseColor"))
             {
-                color = color.ToUnityColor()
-            };
+                material.SetColor("_BaseColor", unityColor);
+            }
 
             if (material.HasProperty("_Glossiness"))
             {
@@ -209,6 +223,9 @@ public class BalloonWall : MonoBehaviour
             {
                 material.SetFloat("_Metallic", 0f);
             }
+
+            // Enable GPU instancing for the custom balloon shader
+            material.enableInstancing = true;
 
             _materials[color] = material;
         }

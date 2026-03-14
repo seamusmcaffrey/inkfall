@@ -39,6 +39,14 @@ public class RunEndScreen : MonoBehaviour
 
     private void EnsureUi()
     {
+        if (_summary == null)
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Object.Destroy(transform.GetChild(i).gameObject);
+            }
+        }
+
         Canvas canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 500;
@@ -69,6 +77,7 @@ public class RunEndScreen : MonoBehaviour
             _summary = summaryGo.AddComponent<TextMeshProUGUI>();
             _summary.alignment = TextAlignmentOptions.Center;
             _summary.fontSize = 28f;
+            _summary.raycastTarget = false;
 
             GameObject buttonGo = new("RestartButton");
             buttonGo.transform.SetParent(panel.transform, false);
@@ -97,6 +106,7 @@ public class RunEndScreen : MonoBehaviour
         label.text = text;
         label.alignment = TextAlignmentOptions.Center;
         label.fontSize = 28f;
+        label.raycastTarget = false;
         return label;
     }
 }

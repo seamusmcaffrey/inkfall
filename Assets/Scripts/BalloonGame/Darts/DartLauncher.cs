@@ -112,6 +112,11 @@ public class DartLauncher : MonoBehaviour
             color = new Color(0.7f, 0.72f, 0.75f)
         };
 
+        if (_bodyMaterial.HasProperty("_BaseColor"))
+        {
+            _bodyMaterial.SetColor("_BaseColor", new Color(0.7f, 0.72f, 0.75f));
+        }
+
         if (_bodyMaterial.HasProperty("_Glossiness"))
         {
             _bodyMaterial.SetFloat("_Glossiness", 0.8f);
@@ -142,6 +147,11 @@ public class DartLauncher : MonoBehaviour
         {
             color = new Color(0.85f, 0.85f, 0.85f)
         };
+
+        if (_tipMaterial.HasProperty("_BaseColor"))
+        {
+            _tipMaterial.SetColor("_BaseColor", new Color(0.85f, 0.85f, 0.85f));
+        }
 
         if (_tipMaterial.HasProperty("_Glossiness"))
         {

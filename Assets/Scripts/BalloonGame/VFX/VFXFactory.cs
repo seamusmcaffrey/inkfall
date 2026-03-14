@@ -50,6 +50,13 @@ public static class VFXFactory
 
     private static void ConfigureBurst(ParticleSystem system, Color color, int count, float lifetime, float speed, float gravity)
     {
+        // Stop the system before modifying properties to avoid
+        // "Setting the duration while system is still playing" warnings.
+        if (system.isPlaying || system.particleCount > 0)
+        {
+            system.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
+
         var main = system.main;
         main.duration = lifetime;
         main.startLifetime = lifetime;

@@ -16,6 +16,7 @@ public class RoomIntroScreen : MonoBehaviour
     {
         EnsureUi();
         _group.alpha = 0f;
+        _group.blocksRaycasts = false;
     }
 
     public void Show(RoomConfig config)
@@ -41,6 +42,14 @@ public class RoomIntroScreen : MonoBehaviour
 
     private void EnsureUi()
     {
+        if (_label == null)
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Object.Destroy(transform.GetChild(i).gameObject);
+            }
+        }
+
         Canvas canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 430;
@@ -62,6 +71,7 @@ public class RoomIntroScreen : MonoBehaviour
             _label = go.AddComponent<TextMeshProUGUI>();
             _label.alignment = TextAlignmentOptions.Center;
             _label.fontSize = 56f;
+            _label.raycastTarget = false;
         }
     }
 }

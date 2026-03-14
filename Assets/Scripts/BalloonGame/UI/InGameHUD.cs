@@ -111,6 +111,11 @@ public class InGameHUD : MonoBehaviour
 
     private void BuildUi()
     {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            Object.Destroy(transform.GetChild(i).gameObject);
+        }
+
         _canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         _canvas.sortingOrder = 200;

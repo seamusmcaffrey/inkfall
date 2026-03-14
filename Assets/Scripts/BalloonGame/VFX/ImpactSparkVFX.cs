@@ -19,7 +19,6 @@ public class ImpactSparkVFX : MonoBehaviour
     {
         _system = VFXFactory.EnsureImpactSparkSystem(transform, _system, config);
         _system.transform.localPosition = Vector3.zero;
-        _system.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         _system.Play(true);
         BeginReturn(config.sparkParticleLifetime + 0.1f);
     }
