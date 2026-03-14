@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f293ad1e5244f36b92bbf7227b6be97, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: Assembly-CSharp::GameConfigSO
+  pullSpeedExponent: 1.45
+  minLaunchSpeed: 10
+  maxLaunchSpeed: 40
+  minPreviewVelocity: 1
+  aimAssistStrength: 0.55
+  aimAssistEnabled: 1
+  dartLifetimeSeconds: 5
+  defaultLaunchCooldown: 0.25
+  defaultMaxRicochets: 1
+  defaultMaxPierce: 1
+  baseScorePerBalloon: 100
+  comboWindowSeconds: 1.5
+  comboMultiplierPerStep: 0.5
+  comboMaxStack: 20
+  scoreMultiplier: 1
+  totalRooms: 13
+  bonusRoomInterval: 4
+  targetScoreScaling: 0.15
+  inkPerRoom: 10
+  inkPer1000Score: 5
+  fullRunInkMultiplier: 2
+  perkChoicesPerDraft: 3
+  defaultPaintRadius: 1.5
+  goldBalloonBonus: 250
+  hazardBalloonPenalty: 150
+  balloonTypes:
+  - {fileID: 11400000, guid: 90ec001c350fa49dd91e6fabb88078d4, type: 2}
+  - {fileID: 11400000, guid: 4340d226fe5484b9c91baccdbd11cdc7, type: 2}
+  - {fileID: 11400000, guid: 8c14677719cfe4402afaea758e3467bd, type: 2}
+  - {fileID: 11400000, guid: dbcc49cda02164a85bf02298648bf435, type: 2}
+  - {fileID: 11400000, guid: e07c4a72ddb9f402eb42134315be2804, type: 2}
+  - {fileID: 11400000, guid: 8bfff52f9f8be4d00acf90de067b48c8, type: 2}
+  - {fileID: 11400000, guid: 6649ceda1785942a5980a41945e116d2, type: 2}
+  - {fileID: 11400000, guid: 7f7984444228d4ad4b815aae7b35a60c, type: 2}
+  roomTemplates:
+  - {fileID: 11400000, guid: 74b667a9d06a948d08c52362a556b6b9, type: 2}
+  - {fileID: 11400000, guid: 762732bd313ef4ef4863a5452c5d50fe, type: 2}
+  - {fileID: 11400000, guid: 3a3dbe763178c407492393280ac995c6, type: 2}
+  perkPool:
+  - {fileID: 11400000, guid: ccd7b6aa95aa74c888302295f747dc1d, type: 2}
+  - {fileID: 11400000, guid: 7aa8f140644f54e8db14706933fb2ab7, type: 2}
+  - {fileID: 11400000, guid: 0ef6eb4ee392746719b1abdedde57ccd, type: 2}
+  - {fileID: 11400000, guid: deeb5a24609c840faa6d4db047074a0f, type: 2}
+  - {fileID: 11400000, guid: 87cf1e1fa1b5a44a986ff3c77a7107e0, type: 2}
+  metaUpgrades: []

@@ -18,7 +18,7 @@ public class TargetChooser
     {
         _planes = GeometryUtility.CalculateFrustumPlanes(_camera);
 
-        IEnumerable<ITargetable> targetables = Object.FindObjectsOfType<MonoBehaviour>().OfType<ITargetable>();
+        IEnumerable<ITargetable> targetables = Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<ITargetable>();
         List<ITargetable> targetablesInCameraView = new();
         foreach(ITargetable targetable in targetables)
         {

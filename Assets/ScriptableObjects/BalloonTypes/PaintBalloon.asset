@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73403b66195a485c8c4886e74961b0c1, type: 3}
+  m_Name: PaintBalloon
+  m_EditorClassIdentifier: Assembly-CSharp::BalloonTypeSO
+  typeId: paint
+  displayName: Paint Balloon
+  balloonColor: 1
+  specialType: 1
+  icon: {fileID: 0}
+  basePoints: 125
+  scoreMultiplier: 1
+  currencyReward: 0
+  hazardPenalty: 0
+  canSpawn: 1
+  spawnWeight: 1
+  effectRadius: 1.5
+  durability: 1
+  endsComboOnPop: 0
+  materialOverride: {fileID: 0}
+  tintOverride: {r: 0, g: 0, b: 0, a: 0}

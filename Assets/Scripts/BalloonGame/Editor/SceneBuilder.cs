@@ -160,18 +160,48 @@ public static class BalloonSceneBuilder
 
     private static void CreateGameplayRoots()
     {
-        var balloonWall = new GameObject("BalloonWall");
-        balloonWall.AddComponent<BalloonWall>();
+        var balloonWallObject = new GameObject("BalloonWall");
+        var balloonWall = balloonWallObject.AddComponent<BalloonWall>();
+        balloonWallObject.AddComponent<EnvironmentBuilder>().BuildEnvironment();
+        balloonWallObject.AddComponent<AtmosphereController>();
+        balloonWallObject.AddComponent<NeonLightRig>().BuildRig();
+        balloonWallObject.AddComponent<StuckDartManager>();
 
-        var slingshotController = new GameObject("SlingshotController");
-        slingshotController.transform.position = GameConstants.LAUNCH_POSITION;
-        slingshotController.AddComponent<SlingshotInput>();
-        slingshotController.AddComponent<SlingshotVisuals>();
+        var slingshotControllerObject = new GameObject("SlingshotController");
+        slingshotControllerObject.transform.position = GameConstants.LAUNCH_POSITION;
+        var slingshotInput = slingshotControllerObject.AddComponent<SlingshotInput>();
+        var aimAssist = slingshotControllerObject.AddComponent<AimAssist>();
+        slingshotControllerObject.AddComponent<SlingshotVisuals>();
+        slingshotControllerObject.AddComponent<LaunchLaneVisuals>();
+        slingshotControllerObject.AddComponent<LaunchFeel>();
+        aimAssist.SetBalloonWall(balloonWall);
 
-        var gameManager = new GameObject("GameManager");
-        gameManager.AddComponent<BalloonGameManager>();
-        gameManager.AddComponent<ScoreManager>();
-        gameManager.AddComponent<GameHUD>();
+        var gameManagerObject = new GameObject("GameManager");
+        var balloonGameManager = gameManagerObject.AddComponent<BalloonGameManager>();
+        ComponentUtility.EnsureComponent<ScoreManager>(gameManagerObject);
+        ComponentUtility.EnsureComponent<ComboTracker>(gameManagerObject);
+        var perkManager = gameManagerObject.AddComponent<PerkManager>();
+        gameManagerObject.AddComponent<RoomGenerator>();
+        var runManager = gameManagerObject.AddComponent<RunManager>();
+        gameManagerObject.AddComponent<JuiceManager>();
+        gameManagerObject.AddComponent<PerformanceConfig>();
+        var dartLauncher = gameManagerObject.AddComponent<DartLauncher>();
+
+        var inGameHud = new GameObject("InGameHUD").AddComponent<InGameHUD>();
+        var runHud = new GameObject("RunHUD").AddComponent<RunHUD>();
+        var perkSelectionScreen = new GameObject("PerkSelectionScreen").AddComponent<PerkSelectionScreen>();
+        var roomIntroScreen = new GameObject("RoomIntroScreen").AddComponent<RoomIntroScreen>();
+        var runEndScreen = new GameObject("RunEndScreen").AddComponent<RunEndScreen>();
+        var fadeOverlay = new GameObject("FadeOverlay").AddComponent<FadeOverlay>();
+        var settingsPanel = new GameObject("SettingsPanel").AddComponent<SettingsPanel>();
+        var titleScreen = new GameObject("TitleScreen").AddComponent<TitleScreen>();
+        new GameObject("TutorialOverlay").AddComponent<TutorialOverlay>();
+        var pauseManager = new GameObject("PauseManager").AddComponent<PauseManager>();
+
+        balloonGameManager.SetDependencies(balloonWall, slingshotInput, dartLauncher);
+        runManager.SetDependencies(balloonGameManager, perkSelectionScreen, roomIntroScreen, runEndScreen, runHud, fadeOverlay);
+        titleScreen.SetDependencies(runManager, settingsPanel);
+        pauseManager.SetDependencies(settingsPanel);
     }
 
     private static void CreateBalloonMaterials()
@@ -233,7 +263,7 @@ public static class BalloonSceneBuilder
 
     private static Shader GetSurfaceShader()
     {
-        return Shader.Find("Standard") ?? Shader.Find("Universal Render Pipeline/Lit");
+        return Shader.Find("Inkshot/BalloonLit") ?? Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
     }
 
     private static void EnsureFolder(string path)

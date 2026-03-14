@@ -1,0 +1,12 @@
+INKSHOT physics notes
+
+Layers
+- Environment: 3
+- Balloons: 7
+- Projectiles: 8
+- Ricochet: 9
+
+Collision intent
+- Projectiles collide with Environment and Balloons.
+- Ricochet trigger remains active only on stopped darts.
+- Balloons use SphereCollider and disable collisions immediately on pop.

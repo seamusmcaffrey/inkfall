@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 32
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b11a2cb5fe341f09d07089f41b21bf8, type: 3}
+  m_Name: UIConfig
+  m_EditorClassIdentifier: Assembly-CSharp::UIConfigSO
+  scoreCountSpeed: 2000
+  scoreCountMinDuration: 0.15
+  progressBarLerpSpeed: 4
+  progressBarGlowThreshold: 0.75
+  progressBarGlowPulseSpeed: 2
+  comboPunchDuration: 0.25
+  comboPunchScale: 1.4
+  comboFadeDuration: 0.5
+  floatingTextRisePx: 1.5
+  floatingTextDuration: 0.8
+  floatingTextFontSize: 8
+  floatingTextPoolSize: 10
+  transitionFadeInDuration: 0.3
+  transitionFadeOutDuration: 0.2
+  cardSlideInDuration: 0.35
+  cardSlideOvershoot: 1.15
+  messageFontSize: 72
+  messagePunchScale: 1.2
+  messageAppearDuration: 0.3
