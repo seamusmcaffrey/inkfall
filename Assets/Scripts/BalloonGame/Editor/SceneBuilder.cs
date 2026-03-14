@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public static class BalloonSceneBuilder
 {
@@ -21,9 +22,17 @@ public static class BalloonSceneBuilder
     private const string BalloonGreenMaterialPath = MaterialsFolder + "/BalloonGreen.mat";
     private const string BalloonPurpleMaterialPath = MaterialsFolder + "/BalloonPurple.mat";
 
+    [MenuItem("BalloonGame/Setup Render Pipeline")]
+    public static void SetupRenderPipeline()
+    {
+        EnsureRenderPipeline();
+        Debug.Log("URP render pipeline configured.");
+    }
+
     [MenuItem("BalloonGame/Build Scene")]
     public static void BuildScene()
     {
+        EnsureRenderPipeline();
         EnsureFolder("Assets/Scenes");
         EnsureFolder(MaterialsFolder);
 
@@ -279,6 +288,57 @@ public static class BalloonSceneBuilder
     private static Shader GetSurfaceShader()
     {
         return Shader.Find("Inkshot/BalloonLit") ?? Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+    }
+
+    private static void EnsureRenderPipeline()
+    {
+        if (GraphicsSettings.defaultRenderPipeline != null)
+        {
+            return;
+        }
+
+        const string folder = "Assets/Settings/Rendering";
+        EnsureFolder("Assets/Settings");
+        EnsureFolder(folder);
+
+        string rendererPath = folder + "/InkshotRenderer.asset";
+        string pipelinePath = folder + "/InkshotPipeline.asset";
+
+        var rendererData = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(rendererPath);
+        if (rendererData == null)
+        {
+            rendererData = ScriptableObject.CreateInstance<UniversalRendererData>();
+            AssetDatabase.CreateAsset(rendererData, rendererPath);
+        }
+
+        var pipeline = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(pipelinePath);
+        if (pipeline == null)
+        {
+            pipeline = ScriptableObject.CreateInstance<UniversalRenderPipelineAsset>();
+            AssetDatabase.CreateAsset(pipeline, pipelinePath);
+
+            var so = new SerializedObject(pipeline);
+            var rendererList = so.FindProperty("m_RendererDataList");
+            if (rendererList != null)
+            {
+                rendererList.arraySize = 1;
+                rendererList.GetArrayElementAtIndex(0).objectReferenceValue = rendererData;
+            }
+
+            var defaultIndex = so.FindProperty("m_DefaultRendererIndex");
+            if (defaultIndex != null)
+            {
+                defaultIndex.intValue = 0;
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(pipeline);
+        }
+
+        GraphicsSettings.defaultRenderPipeline = pipeline;
+        QualitySettings.renderPipeline = pipeline;
+        AssetDatabase.SaveAssets();
+        Debug.Log($"URP pipeline created and assigned: {pipelinePath}");
     }
 
     private static void EnsureFolder(string path)

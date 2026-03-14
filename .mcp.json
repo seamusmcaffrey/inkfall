@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "unityMCP": {
+      "url": "http://localhost:8080/mcp"
+    },
+    "uLoopMCP": {
+      "command": "node",
+      "args": [
+        "Library/uLoopMCP/server.bundle.js"
+      ],
+      "env": {
+        "UNITY_TCP_PORT": "8700"
+      }
+    }
+  }
+}
