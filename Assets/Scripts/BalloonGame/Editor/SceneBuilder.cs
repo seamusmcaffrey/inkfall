@@ -99,7 +99,7 @@ public static partial class BalloonSceneBuilder
         lightObject.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
 
         RenderSettings.ambientMode = AmbientMode.Flat;
-        RenderSettings.ambientLight = new Color(0.3f, 0.28f, 0.26f);
+        RenderSettings.ambientLight = new Color(0.06f, 0.05f, 0.05f);
     }
 
     private static void CreateGameplayRoots()
@@ -109,6 +109,7 @@ public static partial class BalloonSceneBuilder
         balloonWallObject.AddComponent<EnvironmentBuilder>().BuildEnvironment();
         balloonWallObject.AddComponent<AtmosphereController>();
         balloonWallObject.AddComponent<NeonLightRig>().BuildRig();
+        balloonWallObject.AddComponent<PostProcessingSetup>();
         balloonWallObject.AddComponent<StuckDartManager>();
 
         var slingshotControllerObject = new GameObject("SlingshotController");

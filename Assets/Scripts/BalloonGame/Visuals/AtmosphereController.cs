@@ -2,24 +2,37 @@ using UnityEngine;
 
 /// <summary>
 /// Ambient fog and mist particles for the noir carnival atmosphere.
+/// Two layers: foreground wisps and background haze.
 /// </summary>
 [DisallowMultipleComponent]
 public class AtmosphereController : MonoBehaviour
 {
-    private const int MaxMistParticles = 20;
-    private const float MistLifetime = 12f;
-    private const float MistSpeed = 0.1f;
-    private const float MistSize = 2.5f;
-    private const float MistRate = 2.0f;
+    private const int MaxMistParticles = 50;
+    private const float MistLifetime = 14f;
+    private const float MistSpeed = 0.15f;
+    private const float MistSize = 5.0f;
+    private const float MistRate = 5.0f;
     private const float ColorOscillationSpeed = 0.22f;
 
-    private static readonly Color BaseMistColor = new(0.05f, 0.05f, 0.08f, 0.03f);
-    private static readonly Color MagentaMistColor = new(0.06f, 0.04f, 0.06f, 0.02f);
-    private static readonly Color CyanMistColor = new(0.04f, 0.06f, 0.08f, 0.02f);
+    private const int MaxHazeParticles = 30;
+    private const float HazeLifetime = 20f;
+    private const float HazeSpeed = 0.05f;
+    private const float HazeSize = 8.0f;
+    private const float HazeRate = 2.5f;
+
+    private static readonly Color BaseMistColor = new(0.08f, 0.06f, 0.10f, 0.30f);
+    private static readonly Color MagentaMistColor = new(0.16f, 0.05f, 0.12f, 0.25f);
+    private static readonly Color CyanMistColor = new(0.05f, 0.10f, 0.16f, 0.25f);
+    private static readonly Color BaseHazeColor = new(0.05f, 0.04f, 0.08f, 0.20f);
 
     private ParticleSystem _mist;
+    private ParticleSystem _haze;
 
-    private void Awake() { EnsureMist(); }
+    private void Awake()
+    {
+        EnsureMist();
+        EnsureHaze();
+    }
 
     private void Update()
     {
@@ -29,34 +42,52 @@ public class AtmosphereController : MonoBehaviour
         float tMagenta = 0.5f + Mathf.Sin(cycle) * 0.5f;
         float tCyan = 0.5f + Mathf.Sin(cycle + Mathf.PI * 0.67f) * 0.5f;
         Color blended = Color.Lerp(BaseMistColor, MagentaMistColor, tMagenta);
-        main.startColor = Color.Lerp(blended, CyanMistColor, tCyan * 0.4f);
+        main.startColor = Color.Lerp(blended, CyanMistColor, tCyan * 0.5f);
     }
 
     private void EnsureMist()
     {
         if (_mist != null) return;
-        GameObject go = new("AmbientMist");
+        _mist = BuildParticleLayer("AmbientMist", new Vector3(0f, 0f, 0.3f),
+            MistLifetime, MistSpeed, MistSize, MaxMistParticles, MistRate,
+            new Vector3(9f, 12f, 0.3f), BaseMistColor);
+    }
+
+    private void EnsureHaze()
+    {
+        if (_haze != null) return;
+        _haze = BuildParticleLayer("BackgroundHaze", new Vector3(0f, 2f, 0.4f),
+            HazeLifetime, HazeSpeed, HazeSize, MaxHazeParticles, HazeRate,
+            new Vector3(10f, 14f, 0.2f), BaseHazeColor);
+    }
+
+    private ParticleSystem BuildParticleLayer(
+        string layerName, Vector3 localPos,
+        float lifetime, float speed, float size, int maxParticles,
+        float rate, Vector3 shapeScale, Color color)
+    {
+        GameObject go = new(layerName);
         go.transform.SetParent(transform, false);
-        go.transform.localPosition = new Vector3(0f, 0f, 0.3f);
-        _mist = go.AddComponent<ParticleSystem>();
+        go.transform.localPosition = localPos;
+        ParticleSystem ps = go.AddComponent<ParticleSystem>();
 
-        var main = _mist.main;
+        var main = ps.main;
         main.loop = true;
-        main.startLifetime = MistLifetime;
-        main.startSpeed = MistSpeed;
-        main.startSize = MistSize;
-        main.maxParticles = MaxMistParticles;
+        main.startLifetime = lifetime;
+        main.startSpeed = speed;
+        main.startSize = size;
+        main.maxParticles = maxParticles;
         main.simulationSpace = ParticleSystemSimulationSpace.World;
-        main.startColor = BaseMistColor;
+        main.startColor = color;
 
-        var emission = _mist.emission;
-        emission.rateOverTime = MistRate;
+        var emission = ps.emission;
+        emission.rateOverTime = rate;
 
-        var shape = _mist.shape;
+        var shape = ps.shape;
         shape.shapeType = ParticleSystemShapeType.Box;
-        shape.scale = new Vector3(9f, 12f, 0.3f);
+        shape.scale = shapeScale;
 
-        var renderer = _mist.GetComponent<ParticleSystemRenderer>();
+        var renderer = ps.GetComponent<ParticleSystemRenderer>();
         Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
                         ?? Shader.Find("Particles/Standard Unlit")
                         ?? Shader.Find("Sprites/Default");
@@ -67,9 +98,11 @@ public class AtmosphereController : MonoBehaviour
             mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
             mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
             mat.SetInt("_ZWrite", 0);
-            mat.renderQueue = 3000;
+            mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
             mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
             renderer.sharedMaterial = mat;
         }
+
+        return ps;
     }
 }

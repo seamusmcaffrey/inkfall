@@ -29,7 +29,7 @@ public partial class EnvironmentBuilder
         }
         // Reduce ambient light to minimize illumination on any remaining Lit surfaces
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-        RenderSettings.ambientLight = new Color(0.05f, 0.04f, 0.04f);
+        RenderSettings.ambientLight = new Color(0.04f, 0.03f, 0.03f);
 #if UNITY_EDITOR
         if (overridden > 0) Debug.Log($"[EnvironmentBuilder] Overrode {overridden} stale renderer materials");
 #endif

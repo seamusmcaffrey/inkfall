@@ -28,10 +28,10 @@ public static class GameConstants
     public const float BALLOON_SLOT_RATIO_X = 0.92f;
     public const float BALLOON_SLOT_RATIO_Y = 0.92f;
 
-    public const float PERSPECTIVE_MIN_SCALE = 0.88f;
-    public const float PERSPECTIVE_SCALE_RANGE = 0.12f;
-    public const float PERSPECTIVE_HORIZONTAL_PINCH = 0.06f;
-    public const float PERSPECTIVE_VERTICAL_COMPRESSION = 0.08f;
+    public const float PERSPECTIVE_MIN_SCALE = 0.72f;
+    public const float PERSPECTIVE_SCALE_RANGE = 0.28f;
+    public const float PERSPECTIVE_HORIZONTAL_PINCH = 0.10f;
+    public const float PERSPECTIVE_VERTICAL_COMPRESSION = 0.12f;
 
     public const float MAX_PULL_DISTANCE = 1.8f;
     public const float AIM_ACTIVATION_RADIUS = 2.5f;

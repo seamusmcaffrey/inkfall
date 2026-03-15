@@ -4,13 +4,13 @@ Shader "Inkshot/BalloonLit"
     {
         _BaseColor ("Base Color", Color) = (0.9, 0.2, 0.27, 1)
         _Glossiness ("Glossiness", Range(0, 1)) = 0.85
-        _RimPower ("Rim Power", Range(0.5, 8)) = 2.5
+        _RimPower ("Rim Power", Range(0.5, 8)) = 2.0
         _RimColor ("Rim Color", Color) = (1, 1, 1, 1)
-        _RimIntensity ("Rim Intensity", Range(0, 2)) = 0.25
-        _GradientStrength ("Gradient Strength", Range(0, 0.5)) = 0.12
-        _SpecularIntensity ("Specular Intensity", Range(0, 2)) = 1.4
-        _SpecularSize ("Specular Size", Range(1, 256)) = 80
-        _AmbientBoost ("Ambient Boost", Range(0, 1)) = 0.2
+        _RimIntensity ("Rim Intensity", Range(0, 3)) = 1.2
+        _GradientStrength ("Gradient Strength", Range(0, 0.5)) = 0.30
+        _SpecularIntensity ("Specular Intensity", Range(0, 8)) = 2.5
+        _SpecularSize ("Specular Size", Range(1, 256)) = 160
+        _AmbientBoost ("Ambient Boost", Range(0, 1)) = 0.02
     }
 
     SubShader
@@ -99,32 +99,33 @@ Shader "Inkshot/BalloonLit"
                 Light mainLight = GetMainLight();
                 half3 lightDir = normalize(mainLight.direction);
 
-                // Wrap lighting for soft balloon shading
-                half NdotL = saturate(dot(normalWS, lightDir) * 0.5 + 0.5);
+                // Hard wrap lighting for dramatic shadow contrast
+                half NdotL = saturate(dot(normalWS, lightDir) * 0.8 + 0.2);
                 half NdotL_hard = saturate(dot(normalWS, lightDir));
 
                 // Dual specular: sharp highlight + broad sheen
                 half3 halfDir = normalize(lightDir + viewDir);
                 half NdotH = saturate(dot(normalWS, halfDir));
                 half specSharp = pow(NdotH, _SpecularSize) * _SpecularIntensity;
-                half specBroad = pow(NdotH, 8.0) * 0.35 * _Glossiness;
+                half specBroad = pow(NdotH, 24.0) * 0.20 * _Glossiness;
 
                 // Fresnel rim with color tint
                 half fresnel = 1.0 - saturate(dot(normalWS, viewDir));
                 half rim = pow(fresnel, _RimPower) * _RimIntensity;
 
                 // Subsurface scattering approximation for latex translucency
-                half sss = saturate(dot(viewDir, -lightDir)) * fresnel * 0.15;
+                half sss = saturate(dot(viewDir, -lightDir)) * fresnel * 0.40;
 
                 // Vertical gradient for depth curvature
                 half gradient = lerp(1.0, 1.0 + _GradientStrength, input.uv.y);
 
-                // Darken underside subtly
-                half topLight = lerp(0.85, 1.0, saturate(input.uv.y));
+                // Darken underside for depth
+                half topLight = lerp(0.45, 1.0, saturate(input.uv.y));
 
                 half3 color = baseColor.rgb * (NdotL + _AmbientBoost) * gradient * topLight;
-                color += (specSharp + specBroad) * mainLight.color;
-                color += rim * _RimColor.rgb;
+                half3 specTint = lerp(mainLight.color, baseColor.rgb * mainLight.color, 0.4);
+                color += (specSharp + specBroad) * specTint;
+                color += rim * lerp(_RimColor.rgb, baseColor.rgb, 0.3);
                 color += sss * baseColor.rgb * mainLight.color;
 
                 // Additional lights (neon point lights)
@@ -137,14 +138,19 @@ Shader "Inkshot/BalloonLit"
                     half3 addHalf = normalize(normalize(addLight.direction) + viewDir);
                     half addSpec = pow(saturate(dot(normalWS, addHalf)), _SpecularSize * 0.5) * 0.4;
                     half atten = addLight.distanceAttenuation * addLight.shadowAttenuation;
-                    color += baseColor.rgb * addNdotL * addLight.color * atten * 0.45;
-                    color += addSpec * addLight.color * atten * 0.6;
+                    color += baseColor.rgb * addNdotL * addLight.color * atten * 0.35;
+                    color += addSpec * addLight.color * atten * 0.65;
+                    color += fresnel * addLight.color * atten * 0.40;
                 }
                 #endif
 
-                // Slight saturation boost for vibrancy
+                // Soft tone curve to preserve color in highlights
+                color = color / (color + 1.5);
+                color *= 2.3;
+
+                // Saturation boost for vibrancy
                 half luma = dot(color, half3(0.299, 0.587, 0.114));
-                color = lerp(half3(luma, luma, luma), color, 1.15);
+                color = lerp(half3(luma, luma, luma), color, 1.30);
 
                 return half4(color, 1);
             }

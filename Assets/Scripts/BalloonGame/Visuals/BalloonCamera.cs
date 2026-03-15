@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// Width-locked, height-flexible orthographic camera.
@@ -17,6 +18,7 @@ public class BalloonCamera : MonoBehaviour
     {
         _camera = GetComponent<Camera>();
         ConfigureCamera();
+        EnablePostProcessing();
         ApplyAdaptiveSize();
         _basePosition = transform.position;
     }
@@ -35,13 +37,22 @@ public class BalloonCamera : MonoBehaviour
         }
     }
 
+    private void EnablePostProcessing()
+    {
+        var urpData = _camera.GetUniversalAdditionalCameraData();
+        if (urpData != null)
+        {
+            urpData.renderPostProcessing = true;
+        }
+    }
+
     private void ConfigureCamera()
     {
         _camera.orthographic = true;
         _camera.nearClipPlane = 0.1f;
         _camera.farClipPlane = 50f;
         _camera.clearFlags = CameraClearFlags.SolidColor;
-        _camera.backgroundColor = new Color(0.02f, 0.02f, 0.03f);
+        _camera.backgroundColor = new Color(0.008f, 0.008f, 0.012f);
         _camera.rect = new Rect(0f, 0f, 1f, 1f);
         transform.position = new Vector3(0f, GameConstants.CAMERA_Y_CENTER, transform.position.z);
     }
