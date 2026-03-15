@@ -1,11 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Persistent paint splatter quads on the cork board surface.
-/// Listens for BalloonPoppedEvent, spawns neon-boosted splatter marks,
-/// and fades oldest when the configurable cap is reached.
-/// </summary>
+/// <summary>Persistent neon splatter quads on the cork board. Fades oldest when cap reached.</summary>
 [DisallowMultipleComponent]
 public class PersistentSplatterVFX : MonoBehaviour
 {
@@ -161,12 +157,19 @@ public class PersistentSplatterVFX : MonoBehaviour
     {
         if (_splatterMaterial != null) return _splatterMaterial;
 
-        Shader shader = Shader.Find("Sprites/Default");
+        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
+                        ?? Shader.Find("Sprites/Default");
         if (shader != null)
         {
             _splatterMaterial = new Material(shader);
             _splatterMaterial.mainTexture = SplatterTextureGenerator.GetSplatterTexture();
-            _splatterMaterial.renderQueue = 2999;
+            // Additive blend for neon glow effect on dark cork board
+            _splatterMaterial.SetFloat("_Surface", 1f);
+            _splatterMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _splatterMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            _splatterMaterial.SetInt("_ZWrite", 0);
+            _splatterMaterial.renderQueue = 3001;
+            _splatterMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
         }
         return _splatterMaterial;
     }

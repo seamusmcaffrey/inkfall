@@ -62,8 +62,18 @@ public class PaintDripEffect : MonoBehaviour
             return _lineMaterial;
         }
 
-        Shader shader = Shader.Find("Sprites/Default");
-        _lineMaterial = shader != null ? new Material(shader) : null;
+        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
+                        ?? Shader.Find("Sprites/Default");
+        if (shader != null)
+        {
+            _lineMaterial = new Material(shader);
+            _lineMaterial.SetFloat("_Surface", 1f);
+            _lineMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _lineMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            _lineMaterial.SetInt("_ZWrite", 0);
+            _lineMaterial.renderQueue = 3050;
+            _lineMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        }
         return _lineMaterial;
     }
 }

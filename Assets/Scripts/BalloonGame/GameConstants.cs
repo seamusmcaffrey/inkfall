@@ -102,31 +102,36 @@ public static class GameConstants
     public const float CHROMATIC_COMBO_SCALE_PER_HIT = 0.2f;
     public const float CHROMATIC_COMBO_SCALE_MAX = 2f;
 
+    // Dart arc physics
+    public const float DART_PEAK_VELOCITY_THRESHOLD = 0.5f;
+    public const float DART_ARC_SCALE_MIN = 1.0f;
+    public const float DART_ARC_SCALE_MAX = 1.3f;
+
     // Decals / VFX
     public const float DECAL_Z_OFFSET = -0.05f;
     public const float DEFAULT_SCREEN_FADE_DURATION = 0.3f;
     public const int MAX_PAINT_DRIPS = 6;
 
     // Persistent splatters
-    public const int MAX_PERSISTENT_SPLATTERS = 30;
-    public const int SPLATTER_POOL_SIZE = 34;
+    public const int MAX_PERSISTENT_SPLATTERS = 50;
+    public const int SPLATTER_POOL_SIZE = 55;
     public const float SPLATTER_Z_OFFSET = -0.03f;
-    public const float SPLATTER_MIN_SCALE = 0.25f;
-    public const float SPLATTER_MAX_SCALE = 0.55f;
-    public const float SPLATTER_NEON_BOOST = 0.35f;
-    public const float SPLATTER_BASE_ALPHA = 0.85f;
-    public const float SPLATTER_FADE_DURATION = 0.6f;
+    public const float SPLATTER_MIN_SCALE = 0.35f;
+    public const float SPLATTER_MAX_SCALE = 0.75f;
+    public const float SPLATTER_NEON_BOOST = 0.55f;
+    public const float SPLATTER_BASE_ALPHA = 0.92f;
+    public const float SPLATTER_FADE_DURATION = 1.2f;
 
     // Combo Flash VFX
-    public const float COMBO_FLASH_EDGE_THICKNESS = 0.12f;
-    public const float COMBO_FLASH_ALPHA_PER_COMBO = 0.03f;
-    public const float COMBO_FLASH_ALPHA_CAP = 0.4f;
+    public const float COMBO_FLASH_EDGE_THICKNESS = 0.18f;
+    public const float COMBO_FLASH_ALPHA_PER_COMBO = 0.06f;
+    public const float COMBO_FLASH_ALPHA_CAP = 0.55f;
     public const int COMBO_FLASH_EDGE_COUNT = 4;
 
     // Impact Spark VFX
-    public const float SPARK_SIZE_MIN = 0.02f;
-    public const float SPARK_SIZE_MAX = 0.06f;
-    public const float SPARK_VELOCITY_STRETCH = 0.15f;
+    public const float SPARK_SIZE_MIN = 0.03f;
+    public const float SPARK_SIZE_MAX = 0.08f;
+    public const float SPARK_VELOCITY_STRETCH = 0.25f;
     public const float SPARK_GRAVITY = 1.5f;
 
     // VFX particle sizes

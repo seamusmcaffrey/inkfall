@@ -179,7 +179,7 @@ public partial class BalloonWall : MonoBehaviour
 
         float rowRatio = (float)row / (totalRows - 1);
         float topBias = 1f - rowRatio;
-        float fadeFactor = 1f - topBias * 0.08f;
+        float fadeFactor = 1f - topBias * 0.15f;
 
         Color baseColor = ResolveDisplayColor(type);
         Color finalColor = baseColor * fadeFactor;

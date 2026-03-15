@@ -27,6 +27,8 @@ public class DartController : MonoBehaviour
     private int _ricochetCount;
     private int _pierceRemaining;
     private int _maxRicochets;
+    private bool _hasPassedPeak;
+    private float _launchSpeed;
 
     private void Awake()
     {
@@ -37,10 +39,7 @@ public class DartController : MonoBehaviour
         _rigidbody.isKinematic = true;
         _rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         gameObject.layer = GameConstants.LAYER_PROJECTILES;
-        if (_ricochetCollider != null)
-        {
-            _ricochetCollider.enabled = false;
-        }
+        if (_ricochetCollider != null) _ricochetCollider.enabled = false;
     }
 
     private void OnEnable()
@@ -53,9 +52,6 @@ public class DartController : MonoBehaviour
         ActiveDarts.Remove(this);
     }
 
-    /// <summary>
-    /// Returns a snapshot of every dart currently active in the scene.
-    /// </summary>
     public static DartController[] GetActiveDarts()
     {
         var result = new DartController[ActiveDarts.Count];
@@ -75,25 +71,17 @@ public class DartController : MonoBehaviour
         State = DartState.Flying;
         _balloonsHitThisFlight = 0;
         _ricochetCount = 0;
+        _launchSpeed = velocity.magnitude;
+        _hasPassedPeak = velocity.y <= GameConstants.DART_PEAK_VELOCITY_THRESHOLD;
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
         _rigidbody.linearVelocity = velocity;
         _lifetime = 0f;
-        if (_capsuleCollider != null)
-        {
-            _capsuleCollider.enabled = true;
-        }
+        if (_capsuleCollider != null) _capsuleCollider.enabled = _hasPassedPeak;
+        if (_ricochetCollider != null) _ricochetCollider.enabled = false;
 
-        if (_ricochetCollider != null)
-        {
-            _ricochetCollider.enabled = false;
-        }
-
-        DartTrailVFX trail = GetComponent<DartTrailVFX>();
-        if (trail != null)
-        {
-            trail.OnLaunch();
-        }
+        var trail = GetComponent<DartTrailVFX>();
+        if (trail != null) trail.OnLaunch();
     }
 
     private void FixedUpdate()
@@ -106,6 +94,20 @@ public class DartController : MonoBehaviour
         _lifetime += Time.fixedDeltaTime;
 
         _rigidbody.AddForce(new Vector3(0f, GameConstants.DART_GRAVITY, 0f), ForceMode.Acceleration);
+
+        if (!_hasPassedPeak && _rigidbody.linearVelocity.y <= GameConstants.DART_PEAK_VELOCITY_THRESHOLD)
+        {
+            _hasPassedPeak = true;
+            if (_capsuleCollider != null) _capsuleCollider.enabled = true;
+            CheckPeakOverlap();
+        }
+
+        if (_launchSpeed > 0.1f)
+        {
+            float nearPeak = 1f - Mathf.Clamp01(Mathf.Abs(_rigidbody.linearVelocity.y) / _launchSpeed);
+            float arcScale = Mathf.Lerp(GameConstants.DART_ARC_SCALE_MIN, GameConstants.DART_ARC_SCALE_MAX, nearPeak);
+            transform.localScale = Vector3.one * arcScale;
+        }
 
         if (_rigidbody.linearVelocity.sqrMagnitude > 0.5f)
         {
@@ -184,7 +186,7 @@ public class DartController : MonoBehaviour
         }
 
         State = DartState.Stopped;
-        Vector3 velocityBeforeStop = _rigidbody.linearVelocity;
+        transform.localScale = Vector3.one;
         _rigidbody.linearVelocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
         _rigidbody.useGravity = false;
@@ -208,7 +210,7 @@ public class DartController : MonoBehaviour
             BalloonsHitThisFlight = _balloonsHitThisFlight,
         });
 
-        if (reason == "timeout" || reason == "out_of_bounds" || reason == "top_wall")
+        if (reason == "timeout" || reason == "out_of_bounds")
         {
             Deactivate();
         }
@@ -225,12 +227,10 @@ public class DartController : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    /// <summary>
-    /// Forces the dart back into its pool immediately.
-    /// </summary>
     public void ForceRecycle()
     {
         StopAllCoroutines();
+        transform.localScale = Vector3.one;
         _rigidbody.linearVelocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
         _rigidbody.useGravity = false;
@@ -250,6 +250,27 @@ public class DartController : MonoBehaviour
         Deactivate();
     }
 
+    private void CheckPeakOverlap()
+    {
+        if (State != DartState.Flying) return;
+        var overlaps = Physics.OverlapSphere(
+            transform.position, 0.5f, 1 << GameConstants.LAYER_BALLOONS);
+        float closestDist = float.MaxValue;
+        BalloonNode closestBalloon = null;
+        foreach (var col in overlaps)
+        {
+            var balloon = col.GetComponent<BalloonNode>();
+            if (balloon == null || balloon.IsPopped) continue;
+            float dist = (balloon.transform.position - transform.position).sqrMagnitude;
+            if (dist < closestDist) { closestDist = dist; closestBalloon = balloon; }
+        }
+        if (closestBalloon != null)
+        {
+            closestBalloon.Pop(this);
+            OnHitBalloon();
+        }
+    }
+
     private void HandleCollision(Collision collision)
     {
         string hitName = collision.collider != null ? collision.collider.name : collision.gameObject.name;
@@ -267,7 +288,9 @@ public class DartController : MonoBehaviour
 
         if (hitName == "TopWall")
         {
-            StopDart("top_wall");
+            if (_capsuleCollider != null && collision.collider != null)
+                Physics.IgnoreCollision(_capsuleCollider, collision.collider);
+            return;
         }
     }
 }

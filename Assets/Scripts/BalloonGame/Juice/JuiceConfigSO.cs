@@ -31,19 +31,19 @@ public class JuiceConfigSO : ScriptableObject
     public float paintParticleSpeed = 7f;
     public float paintParticleGravity = 3f;
     [Range(1, 6)] public int paintDripCount = 4;
-    public float paintDripSpeed = 0.6f;
-    public float paintDripLifetime = 2.5f;
+    public float paintDripSpeed = 0.8f;
+    public float paintDripLifetime = 3.5f;
     [Range(1f, 2f)] public float paintNeonBoost = 1.45f;
-    public float paintDripStartWidth = 0.1f;
-    public float paintDripEndWidth = 0.03f;
+    public float paintDripStartWidth = 0.14f;
+    public float paintDripEndWidth = 0.04f;
 
     [Header("Particles - Impact")]
     public bool impactSparkEnabled = true;
-    [Range(4, 30)] public int sparkParticleCount = 18;
-    public float sparkParticleLifetime = 0.1f;
-    public float sparkParticleSpeed = 16f;
-    public Color sparkColorStart = new(1f, 1f, 1f, 1f);
-    public Color sparkColorEnd = new(0.6f, 0.75f, 0.95f, 0f);
+    [Range(4, 30)] public int sparkParticleCount = 24;
+    public float sparkParticleLifetime = 0.12f;
+    public float sparkParticleSpeed = 20f;
+    public Color sparkColorStart = new(1.1f, 1.1f, 1f, 1f);
+    public Color sparkColorEnd = new(0.5f, 0.85f, 1f, 0f);
     public float sparkGravity = GameConstants.SPARK_GRAVITY;
 
     [Header("Particles - Wall Hit")]
@@ -54,11 +54,11 @@ public class JuiceConfigSO : ScriptableObject
 
     [Header("Dart Trail")]
     public bool dartTrailEnabled = true;
-    public float trailStartWidth = 0.06f;
-    public float trailEndWidth = 0f;
-    public float trailLifetime = 0.45f;
-    public Color trailStartColor = new(1f, 1f, 1f, 0.8f);
-    public Color trailEndColor = new(1f, 1f, 1f, 0f);
+    public float trailStartWidth = 0.12f;
+    public float trailEndWidth = 0.01f;
+    public float trailLifetime = 0.5f;
+    public Color trailStartColor = new(0.7f, 0.85f, 1f, 0.6f);
+    public Color trailEndColor = new(0.5f, 0.7f, 1f, 0f);
 
     [Header("Screen Shake")]
     public bool screenShakeEnabled = true;
@@ -113,7 +113,7 @@ public class JuiceConfigSO : ScriptableObject
 
     [Header("Persistent Splatters")]
     public bool persistentSplattersEnabled = true;
-    [Range(10, 50)] public int maxPersistentSplatters = GameConstants.MAX_PERSISTENT_SPLATTERS;
+    [Range(10, 80)] public int maxPersistentSplatters = GameConstants.MAX_PERSISTENT_SPLATTERS;
     public float splatterMinScale = GameConstants.SPLATTER_MIN_SCALE;
     public float splatterMaxScale = GameConstants.SPLATTER_MAX_SCALE;
     public float splatterNeonBoost = GameConstants.SPLATTER_NEON_BOOST;

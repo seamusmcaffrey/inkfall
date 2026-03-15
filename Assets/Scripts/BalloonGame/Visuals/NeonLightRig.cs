@@ -6,11 +6,11 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class NeonLightRig : MonoBehaviour
 {
-    private const float NeonRange = 12f;
-    private const float RimRange = 8f;
+    private const float NeonRange = 7f;
+    private const float RimRange = 6f;
 
-    private const float MidRange = 10f;
-    private const float AmberRange = 9f;
+    private const float MidRange = 6f;
+    private const float AmberRange = 5f;
 
     private void Awake() { BuildRig(); }
 

@@ -25,7 +25,17 @@ public class DartTrailVFX : MonoBehaviour
         _trail.time = config.trailLifetime;
         _trail.startWidth = config.trailStartWidth;
         _trail.endWidth = config.trailEndWidth;
-        _trail.material = new Material(Shader.Find("Sprites/Default"));
+        Shader trailShader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
+                             ?? Shader.Find("Particles/Standard Unlit")
+                             ?? Shader.Find("Sprites/Default");
+        Material trailMat = new Material(trailShader);
+        trailMat.SetFloat("_Surface", 1f);
+        trailMat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        trailMat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        trailMat.SetInt("_ZWrite", 0);
+        trailMat.renderQueue = 3100;
+        trailMat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        _trail.material = trailMat;
         _trail.startColor = config.trailStartColor;
         _trail.endColor = config.trailEndColor;
         _trail.numCornerVertices = 4;

@@ -68,11 +68,18 @@ public class PaintDecalManager : MonoBehaviour
             return _decalMaterial;
         }
 
-        Shader shader = Shader.Find("Sprites/Default");
+        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
+                        ?? Shader.Find("Sprites/Default");
         if (shader != null)
         {
             _decalMaterial = new Material(shader);
             _decalMaterial.mainTexture = SplatterTextureGenerator.GetSplatterTexture();
+            _decalMaterial.SetFloat("_Surface", 1f);
+            _decalMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _decalMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            _decalMaterial.SetInt("_ZWrite", 0);
+            _decalMaterial.renderQueue = 3002;
+            _decalMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
         }
         return _decalMaterial;
     }

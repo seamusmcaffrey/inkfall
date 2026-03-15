@@ -11,7 +11,7 @@ using UnityEngine;
 public class DartPhysicsTestRunner : MonoBehaviour
 {
     private const float DelayBeforeFire = 0.3f;
-    private const float FlightDuration = 2.0f;
+    private const float FlightDuration = 3.0f;
     private const string OutputDir = "Logs/agent-feedback/screenshots";
     private const int CaptureWidth = 1080;
     private const int CaptureHeight = 1920;
@@ -20,7 +20,7 @@ public class DartPhysicsTestRunner : MonoBehaviour
 
     private static readonly float[] PullLevels = { 0.3f, 0.6f, 1.0f };
     private static readonly string[] PullLabels = { "pull_30", "pull_60", "pull_100" };
-    private static readonly float[] ColumnOffsets = { -2.0f, 0.0f, 2.0f };
+    private static readonly float[] ColumnOffsets = { -1.5f, 0.5f, 2.5f };
 
     public IEnumerator FireSequenceWithScreenshots()
     {
@@ -116,7 +116,8 @@ public class DartPhysicsTestRunner : MonoBehaviour
             var controller = launcher.SpawnAndLaunch(velocity);
             if (controller != null)
             {
-                controller.transform.position += new Vector3(xOffset, 0f, 0f);
+                var rb = controller.GetComponent<Rigidbody>();
+                rb.position = GameConstants.LAUNCH_POSITION + new Vector3(xOffset, 0f, 0f);
                 return controller.gameObject;
             }
             return null;

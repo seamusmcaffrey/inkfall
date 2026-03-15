@@ -1,11 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Factory for runtime-created particle systems.
-/// Provides specialized configurations for balloon pops (dramatic neon burst),
-/// paint splatters (large dripping paint with gravity-heavy particles),
-/// and impact sparks (fast, bright chrome-metallic streaks).
-/// </summary>
+/// <summary>Factory for runtime-created particle systems (pop, paint, sparks).</summary>
 public static class VFXFactory
 {
     private static Material _particleMaterial;
@@ -47,9 +42,7 @@ public static class VFXFactory
         return system;
     }
 
-    /// <summary>
-    /// Boost color channels for HDR-like neon vibrancy.
-    /// </summary>
+    /// <summary>Boost color channels for HDR-like neon vibrancy.</summary>
     public static Color BoostNeon(Color baseColor, float boostFactor)
     {
         return new Color(
@@ -96,9 +89,7 @@ public static class VFXFactory
         emission.SetBursts(new[] { new ParticleSystem.Burst(0f, count) });
     }
 
-    /// <summary>
-    /// Balloon pop: wide size variation with alpha fade for organic, vibrant burst.
-    /// </summary>
+    /// <summary>Balloon pop: wide size variation with alpha fade.</summary>
     private static void ConfigurePopParticles(ParticleSystem system, Color neonColor)
     {
         var main = system.main;
@@ -117,9 +108,7 @@ public static class VFXFactory
             new Keyframe(0f, 0.6f), new Keyframe(0.15f, 1f), new Keyframe(1f, 0f)));
     }
 
-    /// <summary>
-    /// Impact sparks: fast chrome-metallic streaks with velocity stretching.
-    /// </summary>
+    /// <summary>Impact sparks: chrome-metallic streaks with velocity stretching.</summary>
     private static void ConfigureSparkParticles(ParticleSystem system, JuiceConfigSO config)
     {
         var main = system.main;
@@ -142,10 +131,7 @@ public static class VFXFactory
         renderer.lengthScale = 1f;
     }
 
-    /// <summary>
-    /// Paint splatter: large elongated drops with heavy gravity and shrink-over-lifetime
-    /// for a neon dripping paint look.
-    /// </summary>
+    /// <summary>Paint splatter: elongated drops with gravity and shrink-over-lifetime.</summary>
     private static void ConfigurePaintParticles(ParticleSystem system, float baseGravity)
     {
         var main = system.main;
@@ -188,8 +174,19 @@ public static class VFXFactory
             return _particleMaterial;
         }
 
-        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Particles/Standard Unlit") ?? Shader.Find("Sprites/Default");
-        _particleMaterial = shader != null ? new Material(shader) : null;
+        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
+                        ?? Shader.Find("Particles/Standard Unlit")
+                        ?? Shader.Find("Sprites/Default");
+        if (shader != null)
+        {
+            _particleMaterial = new Material(shader);
+            _particleMaterial.SetFloat("_Surface", 1f);
+            _particleMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _particleMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            _particleMaterial.SetInt("_ZWrite", 0);
+            _particleMaterial.renderQueue = 3100;
+            _particleMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        }
         return _particleMaterial;
     }
 }

@@ -57,10 +57,19 @@ public class AtmosphereController : MonoBehaviour
         shape.scale = new Vector3(9f, 12f, 0.3f);
 
         var renderer = _mist.GetComponent<ParticleSystemRenderer>();
-        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Particles/Standard Unlit") ?? Shader.Find("Sprites/Default");
+        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
+                        ?? Shader.Find("Particles/Standard Unlit")
+                        ?? Shader.Find("Sprites/Default");
         if (shader != null)
         {
-            renderer.sharedMaterial = new Material(shader);
+            Material mat = new Material(shader);
+            mat.SetFloat("_Surface", 1f);
+            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            mat.SetInt("_ZWrite", 0);
+            mat.renderQueue = 3000;
+            mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            renderer.sharedMaterial = mat;
         }
     }
 }

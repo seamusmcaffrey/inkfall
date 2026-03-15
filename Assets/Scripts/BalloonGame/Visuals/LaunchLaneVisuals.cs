@@ -13,7 +13,6 @@ public class LaunchLaneVisuals : MonoBehaviour
     private const float CENTER_DASH_LENGTH = 0.35f;
     private const float CENTER_GAP_LENGTH = 0.25f;
     private const float CENTER_LINE_WIDTH = 0.025f;
-    private const float FLOOR_Z = 1.15f;
     private const float LINE_Z = -0.5f;
 
     private readonly List<SpriteRenderer> _dartPips = new();
@@ -31,7 +30,6 @@ public class LaunchLaneVisuals : MonoBehaviour
     private void Awake()
     {
         BuildDartPips();
-        BuildFloorPanel();
         BuildGuideLine("GuideLineLeft", -LANE_HALF_WIDTH);
         BuildGuideLine("GuideLineRight", LANE_HALF_WIDTH);
         BuildDashedCenterLine();
@@ -57,33 +55,6 @@ public class LaunchLaneVisuals : MonoBehaviour
         for (int index = 0; index < _dartPips.Count; index++)
         {
             _dartPips[index].color = index < evt.DartsRemaining ? UIColors.DartBlue : new Color(1f, 1f, 1f, 0.12f);
-        }
-    }
-
-    // ── Floor panel ─────────────────────────────────────────────────────
-
-    private void BuildFloorPanel()
-    {
-        float laneTop = GameConstants.LANE_TOP;
-        float laneBottom = GameConstants.LANE_BOTTOM;
-        float laneCenterY = (laneTop + laneBottom) * 0.5f;
-        float laneHeight = laneTop - laneBottom;
-
-        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        floor.name = "LaneFloorPanel";
-        floor.transform.SetParent(transform, false);
-        floor.transform.localPosition = new Vector3(0f, laneCenterY, FLOOR_Z);
-        floor.transform.localScale = new Vector3(LANE_HALF_WIDTH * 2f, laneHeight, 1f);
-        floor.layer = GameConstants.LAYER_ENVIRONMENT;
-
-        // Remove collider - purely decorative
-        Object.Destroy(floor.GetComponent<Collider>());
-
-        Renderer renderer = floor.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            Color floorColor = new(0.03f, 0.03f, 0.05f, 0.75f);
-            renderer.material = CreateUnlitMaterial(floorColor);
         }
     }
 
@@ -147,37 +118,4 @@ public class LaunchLaneVisuals : MonoBehaviour
         }
     }
 
-    // ── Material helpers ────────────────────────────────────────────────
-
-    private static Material CreateUnlitMaterial(Color color)
-    {
-        Shader shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color") ?? Shader.Find("Sprites/Default");
-        Material material = new(shader);
-
-        if (color.a < 1f)
-        {
-            material.SetFloat("_Surface", 1f); // Transparent
-            material.SetFloat("_Blend", 0f);   // Alpha blend
-            material.SetOverrideTag("RenderType", "Transparent");
-            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            material.SetInt("_ZWrite", 0);
-            material.DisableKeyword("_ALPHATEST_ON");
-            material.EnableKeyword("_ALPHABLEND_ON");
-            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-        }
-
-        if (material.HasProperty("_BaseColor"))
-        {
-            material.SetColor("_BaseColor", color);
-        }
-
-        if (material.HasProperty("_Color"))
-        {
-            material.color = color;
-        }
-
-        return material;
-    }
 }

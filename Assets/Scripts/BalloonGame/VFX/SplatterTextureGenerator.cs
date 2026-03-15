@@ -7,16 +7,16 @@ using UnityEngine;
 /// </summary>
 public static class SplatterTextureGenerator
 {
-    private const int TextureSize = 64;
-    private const float PrimaryNoiseScale = 4.5f;
-    private const float SecondaryNoiseScale = 9.0f;
-    private const float TertiaryNoiseScale = 18.0f;
-    private const float PrimaryWeight = 0.6f;
-    private const float SecondaryWeight = 0.25f;
+    private const int TextureSize = 128;
+    private const float PrimaryNoiseScale = 3.5f;
+    private const float SecondaryNoiseScale = 7.0f;
+    private const float TertiaryNoiseScale = 14.0f;
+    private const float PrimaryWeight = 0.55f;
+    private const float SecondaryWeight = 0.3f;
     private const float TertiaryWeight = 0.15f;
-    private const float AlphaThreshold = 0.42f;
-    private const float EdgeSoftness = 0.08f;
-    private const float RadialFalloffPower = 2.2f;
+    private const float AlphaThreshold = 0.35f;
+    private const float EdgeSoftness = 0.12f;
+    private const float RadialFalloffPower = 1.8f;
 
     private static Texture2D _cachedTexture;
 

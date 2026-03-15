@@ -102,54 +102,48 @@ public class DartLauncher : MonoBehaviour
     private static Material GetBodyMaterial()
     {
         if (_bodyMaterial != null)
-        {
             return _bodyMaterial;
-        }
 
-        Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-        Color chromeBody = new(0.78f, 0.80f, 0.84f);
-        _bodyMaterial = new Material(shader) { color = chromeBody };
-
+        Shader shader = Shader.Find("Inkshot/ChromeDart")
+                        ?? Shader.Find("Universal Render Pipeline/Lit")
+                        ?? Shader.Find("Standard");
+        _bodyMaterial = new Material(shader);
         if (_bodyMaterial.HasProperty("_BaseColor"))
-            _bodyMaterial.SetColor("_BaseColor", chromeBody);
-        if (_bodyMaterial.HasProperty("_Glossiness"))
-            _bodyMaterial.SetFloat("_Glossiness", 0.96f);
+            _bodyMaterial.SetColor("_BaseColor", new Color(0.78f, 0.80f, 0.84f));
+        if (_bodyMaterial.HasProperty("_Color"))
+            _bodyMaterial.color = new Color(0.78f, 0.80f, 0.84f);
         if (_bodyMaterial.HasProperty("_Smoothness"))
             _bodyMaterial.SetFloat("_Smoothness", 0.96f);
         if (_bodyMaterial.HasProperty("_Metallic"))
             _bodyMaterial.SetFloat("_Metallic", 0.95f);
-
+        if (_bodyMaterial.HasProperty("_FresnelTint"))
+            _bodyMaterial.SetColor("_FresnelTint", new Color(0.6f, 0.9f, 1f));
+        if (_bodyMaterial.HasProperty("_FresnelPower"))
+            _bodyMaterial.SetFloat("_FresnelPower", 3f);
         return _bodyMaterial;
     }
 
     private static Material GetTipMaterial()
     {
         if (_tipMaterial != null)
-        {
             return _tipMaterial;
-        }
 
-        Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-        Color chromeTip = new(0.92f, 0.93f, 0.95f);
-        _tipMaterial = new Material(shader) { color = chromeTip };
-
+        Shader shader = Shader.Find("Inkshot/ChromeDart")
+                        ?? Shader.Find("Universal Render Pipeline/Lit")
+                        ?? Shader.Find("Standard");
+        _tipMaterial = new Material(shader);
         if (_tipMaterial.HasProperty("_BaseColor"))
-            _tipMaterial.SetColor("_BaseColor", chromeTip);
-        if (_tipMaterial.HasProperty("_Glossiness"))
-            _tipMaterial.SetFloat("_Glossiness", 0.98f);
+            _tipMaterial.SetColor("_BaseColor", new Color(0.92f, 0.93f, 0.95f));
+        if (_tipMaterial.HasProperty("_Color"))
+            _tipMaterial.color = new Color(0.92f, 0.93f, 0.95f);
         if (_tipMaterial.HasProperty("_Smoothness"))
             _tipMaterial.SetFloat("_Smoothness", 0.98f);
         if (_tipMaterial.HasProperty("_Metallic"))
             _tipMaterial.SetFloat("_Metallic", 0.95f);
-
-        Color tipGlow = new(0.6f, 0.75f, 1f);
-        if (_tipMaterial.HasProperty("_EmissionColor"))
-        {
-            _tipMaterial.EnableKeyword("_EMISSION");
-            _tipMaterial.SetColor("_EmissionColor", tipGlow * 0.15f);
-            _tipMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
-        }
-
+        if (_tipMaterial.HasProperty("_FresnelTint"))
+            _tipMaterial.SetColor("_FresnelTint", new Color(0.8f, 0.9f, 1f));
+        if (_tipMaterial.HasProperty("_FresnelPower"))
+            _tipMaterial.SetFloat("_FresnelPower", 2.5f);
         return _tipMaterial;
     }
 }

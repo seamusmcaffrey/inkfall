@@ -5,7 +5,7 @@ using UnityEngine;
 /// Cleans up stale root-level scene objects from SceneBuilder on Awake.
 /// </summary>
 [DisallowMultipleComponent]
-public class EnvironmentBuilder : MonoBehaviour
+public partial class EnvironmentBuilder : MonoBehaviour
 {
     private const float FrameThickness = 0.45f;
     private const float FrameDepth = 0.18f;
@@ -18,16 +18,14 @@ public class EnvironmentBuilder : MonoBehaviour
     private static readonly Color FogColor = new(0.03f, 0.03f, 0.05f, 0.55f);
     private static readonly Color AccentCyan = new(0.06f, 0.35f, 0.38f);
     private static readonly Color WallDarkColor = new(0.05f, 0.04f, 0.04f);
-    private static readonly string[] StaleVisualRoots = { "BackWall", "LaneFloor" };
+    private static readonly string[] StaleVisualRoots = { "BackWall", "LaneFloor", "Directional Light" };
     private static readonly string[] WallNames = { "LeftWall", "RightWall", "TopWall" };
 
     private void Awake()
     {
         foreach (string objName in StaleVisualRoots)
-        {
-            GameObject stale = GameObject.Find(objName);
-            if (stale != null && stale.transform.parent == null) Destroy(stale);
-        }
+            DestroyAllRootObjects(objName);
+        OverrideStaleRenderers();
         Material dark = CreateMaterial(WallDarkColor, unlit: true);
         foreach (string wallName in WallNames)
         {
@@ -54,7 +52,7 @@ public class EnvironmentBuilder : MonoBehaviour
         float cx = (GameConstants.BOARD_LEFT + GameConstants.BOARD_RIGHT) * 0.5f;
         float cy = (GameConstants.BOARD_TOP + GameConstants.BOARD_BOTTOM) * 0.5f;
         SetPanel("CorkBoard", PrimitiveType.Quad, new Vector3(cx, cy, BoardZ), new Vector3(w, h, 1f),
-            CreateMaterial(CorkColor, 0.15f, 0.05f));
+            CreateMaterial(CorkColor, unlit: true));
     }
 
     private void BuildMetalFrame()
@@ -65,8 +63,8 @@ public class EnvironmentBuilder : MonoBehaviour
         float cy = (GameConstants.BOARD_TOP + GameConstants.BOARD_BOTTOM) * 0.5f;
         float halfW = bw * 0.5f;
         float halfH = bh * 0.5f;
-        Material frameMat = CreateMaterial(FrameColor, 0.45f, 0.5f);
-        Material boltMat = CreateMaterial(BoltColor, 0.6f, 0.7f);
+        Material frameMat = CreateMaterial(FrameColor, unlit: true);
+        Material boltMat = CreateMaterial(BoltColor, unlit: true);
 
         SetPanel("FrameTop", PrimitiveType.Cube,
             new Vector3(cx, cy + halfH + FrameThickness * 0.5f, BoardZ - FrameDepth),
@@ -155,6 +153,19 @@ public class EnvironmentBuilder : MonoBehaviour
             ? Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color") ?? Shader.Find("Sprites/Default")
             : Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard") ?? Shader.Find("Sprites/Default");
         Material mat = new(shader);
+        bool isTransparent = color.a < 0.99f;
+        if (mat.HasProperty("_Surface"))
+        {
+            mat.SetFloat("_Surface", isTransparent ? 1f : 0f);
+            if (isTransparent)
+            {
+                mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                mat.SetInt("_ZWrite", 0);
+                mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            }
+        }
         if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
         if (mat.HasProperty("_Color")) mat.color = color;
         if (!unlit)
