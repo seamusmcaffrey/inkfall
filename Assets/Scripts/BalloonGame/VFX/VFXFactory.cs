@@ -2,8 +2,9 @@ using UnityEngine;
 
 /// <summary>
 /// Factory for runtime-created particle systems.
-/// Provides specialized configurations for balloon pops (small burst) and
-/// paint splatters (neon dripping paint with elongated, gravity-heavy particles).
+/// Provides specialized configurations for balloon pops (dramatic neon burst),
+/// paint splatters (large dripping paint with gravity-heavy particles),
+/// and impact sparks (fast, bright chrome-metallic streaks).
 /// </summary>
 public static class VFXFactory
 {
@@ -13,8 +14,9 @@ public static class VFXFactory
     {
         system ??= CreateBurst(parent, "BalloonPopVFX");
         int count = QualityTier.ScaleParticleCount(config.popParticleCount);
-        ConfigureBurst(system, color, count, config.popParticleLifetime, config.popParticleSpeed, config.popParticleGravity);
-        ConfigurePopParticles(system);
+        Color neonColor = BoostNeon(color, config.popNeonBoost);
+        ConfigureBurst(system, neonColor, count, config.popParticleLifetime, config.popParticleSpeed, config.popParticleGravity);
+        ConfigurePopParticles(system, neonColor);
         return system;
     }
 
@@ -22,7 +24,8 @@ public static class VFXFactory
     {
         system ??= CreateBurst(parent, "PaintSplatterVFX");
         int count = QualityTier.ScaleParticleCount(config.paintParticleCount);
-        ConfigureBurst(system, color, count, config.paintParticleLifetime, config.paintParticleSpeed, config.paintParticleGravity);
+        Color neonColor = BoostNeon(color, config.paintNeonBoost);
+        ConfigureBurst(system, neonColor, count, config.paintParticleLifetime, config.paintParticleSpeed, config.paintParticleGravity);
         ConfigurePaintParticles(system, config.paintParticleGravity);
         return system;
     }
@@ -42,6 +45,18 @@ public static class VFXFactory
         int count = QualityTier.ScaleParticleCount(config.wallHitParticleCount);
         ConfigureBurst(system, color: new Color(0.85f, 0.85f, 0.92f, 1f), count, config.wallHitParticleLifetime, config.wallHitParticleSpeed, gravity: 0f);
         return system;
+    }
+
+    /// <summary>
+    /// Boost color channels for HDR-like neon vibrancy.
+    /// </summary>
+    public static Color BoostNeon(Color baseColor, float boostFactor)
+    {
+        return new Color(
+            Mathf.Clamp01(baseColor.r * boostFactor),
+            Mathf.Clamp01(baseColor.g * boostFactor),
+            Mathf.Clamp01(baseColor.b * boostFactor),
+            baseColor.a);
     }
 
     private static ParticleSystem CreateBurst(Transform parent, string name)
@@ -82,62 +97,53 @@ public static class VFXFactory
     }
 
     /// <summary>
-    /// Balloon pop: small particles with slight size variation for an organic burst.
+    /// Balloon pop: wide size variation with alpha fade for organic, vibrant burst.
     /// </summary>
-    private static void ConfigurePopParticles(ParticleSystem system)
+    private static void ConfigurePopParticles(ParticleSystem system, Color neonColor)
     {
         var main = system.main;
-        main.startSize = new ParticleSystem.MinMaxCurve(
-            GameConstants.POP_PARTICLE_BASE_SIZE - GameConstants.POP_PARTICLE_SIZE_VARIATION,
-            GameConstants.POP_PARTICLE_BASE_SIZE + GameConstants.POP_PARTICLE_SIZE_VARIATION);
+        float baseSize = GameConstants.POP_PARTICLE_BASE_SIZE;
+        float variation = GameConstants.POP_PARTICLE_SIZE_VARIATION;
+        main.startSize = new ParticleSystem.MinMaxCurve(baseSize - variation, baseSize + variation * 2f);
+
+        var col = system.colorOverLifetime;
+        col.enabled = true;
+        col.color = BuildFadeGradient(neonColor);
+
+        var sol = system.sizeOverLifetime;
+        sol.enabled = true;
+        sol.separateAxes = false;
+        sol.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(
+            new Keyframe(0f, 0.6f), new Keyframe(0.15f, 1f), new Keyframe(1f, 0f)));
     }
 
     /// <summary>
-    /// Impact sparks: small, fast, chrome-metallic particles with velocity stretching,
-    /// color fade from bright white to cool silver-blue, and slight gravity pull.
+    /// Impact sparks: fast chrome-metallic streaks with velocity stretching.
     /// </summary>
     private static void ConfigureSparkParticles(ParticleSystem system, JuiceConfigSO config)
     {
         var main = system.main;
-        main.startSize = new ParticleSystem.MinMaxCurve(
-            GameConstants.SPARK_SIZE_MIN, GameConstants.SPARK_SIZE_MAX);
+        main.startSize = new ParticleSystem.MinMaxCurve(GameConstants.SPARK_SIZE_MIN, GameConstants.SPARK_SIZE_MAX);
 
-        var colorOverLifetime = system.colorOverLifetime;
-        colorOverLifetime.enabled = true;
-        Gradient gradient = new();
-        gradient.SetKeys(
-            new[]
-            {
-                new GradientColorKey(config.sparkColorStart, 0f),
-                new GradientColorKey(config.sparkColorEnd, 1f)
-            },
-            new[]
-            {
-                new GradientAlphaKey(1f, 0f),
-                new GradientAlphaKey(0.8f, 0.3f),
-                new GradientAlphaKey(0f, 1f)
-            });
-        colorOverLifetime.color = gradient;
+        var col = system.colorOverLifetime;
+        col.enabled = true;
+        col.color = BuildTwoColorGradient(config.sparkColorStart, config.sparkColorEnd);
 
-        var sizeOverLifetime = system.sizeOverLifetime;
-        sizeOverLifetime.enabled = true;
-        sizeOverLifetime.separateAxes = false;
-        sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(
-            new Keyframe(0f, 1f),
-            new Keyframe(0.4f, 0.6f),
-            new Keyframe(1f, 0f)));
+        var sol = system.sizeOverLifetime;
+        sol.enabled = true;
+        sol.separateAxes = false;
+        sol.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(
+            new Keyframe(0f, 1f), new Keyframe(0.4f, 0.6f), new Keyframe(1f, 0f)));
 
         ParticleSystemRenderer renderer = system.GetComponent<ParticleSystemRenderer>();
-        if (renderer != null)
-        {
-            renderer.renderMode = ParticleSystemRenderMode.Stretch;
-            renderer.velocityScale = GameConstants.SPARK_VELOCITY_STRETCH;
-            renderer.lengthScale = 1f;
-        }
+        if (renderer == null) return;
+        renderer.renderMode = ParticleSystemRenderMode.Stretch;
+        renderer.velocityScale = GameConstants.SPARK_VELOCITY_STRETCH;
+        renderer.lengthScale = 1f;
     }
 
     /// <summary>
-    /// Paint splatter: large elongated drops with gravity pull and shrink-over-lifetime
+    /// Paint splatter: large elongated drops with heavy gravity and shrink-over-lifetime
     /// for a neon dripping paint look.
     /// </summary>
     private static void ConfigurePaintParticles(ParticleSystem system, float baseGravity)
@@ -155,6 +161,24 @@ public static class VFXFactory
         sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(
             new Keyframe(0f, 1f),
             new Keyframe(1f, GameConstants.PAINT_SIZE_OVER_LIFETIME_END)));
+    }
+
+    private static Gradient BuildFadeGradient(Color color)
+    {
+        Gradient g = new();
+        g.SetKeys(
+            new[] { new GradientColorKey(color, 0f), new GradientColorKey(color, 1f) },
+            new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.9f, 0.3f), new GradientAlphaKey(0f, 1f) });
+        return g;
+    }
+
+    private static Gradient BuildTwoColorGradient(Color start, Color end)
+    {
+        Gradient g = new();
+        g.SetKeys(
+            new[] { new GradientColorKey(start, 0f), new GradientColorKey(end, 1f) },
+            new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.8f, 0.3f), new GradientAlphaKey(0f, 1f) });
+        return g;
     }
 
     private static Material GetParticleMaterial()

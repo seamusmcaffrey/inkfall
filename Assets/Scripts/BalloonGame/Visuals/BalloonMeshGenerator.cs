@@ -21,10 +21,10 @@ public static class BalloonMeshGenerator
 
     private static Mesh Generate()
     {
-        const int segments = 20;
-        const int rings = 12;
-        const float bodyHeight = 1.2f;
-        const float bodyWidth = 0.62f;
+        const int segments = 32;
+        const int rings = 18;
+        const float bodyHeight = 1.25f;
+        const float bodyWidth = 0.68f;
         const float tieRadius = 0.12f;
         const float tieLength = 0.25f;
 
@@ -38,13 +38,13 @@ public static class BalloonMeshGenerator
         for (int ring = 1; ring <= rings; ring++)
         {
             float v = ring / (float)(rings + 1);
-            float polar = Mathf.Lerp(0.08f, Mathf.PI - 0.18f, v);
+            float polar = Mathf.Lerp(0.06f, Mathf.PI - 0.15f, v);
             float radius = Mathf.Sin(polar) * bodyWidth;
             float y = Mathf.Cos(polar) * bodyHeight * 0.55f + 0.04f;
-            radius *= Mathf.Lerp(0.86f, 1.08f, Mathf.SmoothStep(0f, 1f, 1f - Mathf.Abs(v - 0.5f) * 2f));
-            if (v > 0.72f)
+            radius *= Mathf.Lerp(0.88f, 1.14f, Mathf.SmoothStep(0f, 1f, 1f - Mathf.Abs(v - 0.45f) * 2f));
+            if (v > 0.7f)
             {
-                radius *= Mathf.Lerp(1f, 0.55f, Mathf.InverseLerp(0.72f, 1f, v));
+                radius *= Mathf.Lerp(1f, 0.5f, Mathf.InverseLerp(0.7f, 1f, v));
             }
 
             for (int segment = 0; segment < segments; segment++)

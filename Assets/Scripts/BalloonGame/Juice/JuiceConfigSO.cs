@@ -18,26 +18,30 @@ public class JuiceConfigSO : ScriptableObject
 
     [Header("Particles - Balloon Pop")]
     public bool balloonPopEnabled = true;
-    [Range(10, 40)] public int popParticleCount = 15;
-    public float popParticleLifetime = 0.45f;
-    public float popParticleSpeed = 4f;
+    [Range(10, 60)] public int popParticleCount = 25;
+    public float popParticleLifetime = 0.55f;
+    public float popParticleSpeed = 5f;
     public float popParticleGravity = 2f;
+    [Range(1f, 2f)] public float popNeonBoost = 1.4f;
 
     [Header("Particles - Paint Splatter")]
     public bool paintSplatterEnabled = true;
-    [Range(20, 60)] public int paintParticleCount = 30;
-    public float paintParticleLifetime = 0.9f;
-    public float paintParticleSpeed = 6f;
+    [Range(20, 80)] public int paintParticleCount = 45;
+    public float paintParticleLifetime = 1.1f;
+    public float paintParticleSpeed = 7f;
     public float paintParticleGravity = 3f;
-    [Range(1, 6)] public int paintDripCount = 3;
-    public float paintDripSpeed = 0.8f;
-    public float paintDripLifetime = 2f;
+    [Range(1, 6)] public int paintDripCount = 4;
+    public float paintDripSpeed = 0.6f;
+    public float paintDripLifetime = 2.5f;
+    [Range(1f, 2f)] public float paintNeonBoost = 1.45f;
+    public float paintDripStartWidth = 0.1f;
+    public float paintDripEndWidth = 0.03f;
 
     [Header("Particles - Impact")]
     public bool impactSparkEnabled = true;
-    [Range(4, 20)] public int sparkParticleCount = 12;
-    public float sparkParticleLifetime = 0.12f;
-    public float sparkParticleSpeed = 12f;
+    [Range(4, 30)] public int sparkParticleCount = 18;
+    public float sparkParticleLifetime = 0.1f;
+    public float sparkParticleSpeed = 16f;
     public Color sparkColorStart = new(1f, 1f, 1f, 1f);
     public Color sparkColorEnd = new(0.6f, 0.75f, 0.95f, 0f);
     public float sparkGravity = GameConstants.SPARK_GRAVITY;
@@ -50,9 +54,11 @@ public class JuiceConfigSO : ScriptableObject
 
     [Header("Dart Trail")]
     public bool dartTrailEnabled = true;
-    public float trailWidth = 0.02f;
-    public float trailLifetime = 0.3f;
-    public Color trailColor = new(0.8f, 0.9f, 1f, 0.6f);
+    public float trailStartWidth = 0.06f;
+    public float trailEndWidth = 0f;
+    public float trailLifetime = 0.45f;
+    public Color trailStartColor = new(1f, 1f, 1f, 0.8f);
+    public Color trailEndColor = new(1f, 1f, 1f, 0f);
 
     [Header("Screen Shake")]
     public bool screenShakeEnabled = true;

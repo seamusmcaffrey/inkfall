@@ -1,7 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Simple trail renderer attached to darts.
+/// Speed-streak trail renderer attached to darts.
+/// Uses a wide white-to-transparent gradient for high visibility.
 /// </summary>
 [DisallowMultipleComponent]
 public class DartTrailVFX : MonoBehaviour
@@ -22,11 +23,13 @@ public class DartTrailVFX : MonoBehaviour
         }
 
         _trail.time = config.trailLifetime;
-        _trail.startWidth = config.trailWidth;
-        _trail.endWidth = 0f;
+        _trail.startWidth = config.trailStartWidth;
+        _trail.endWidth = config.trailEndWidth;
         _trail.material = new Material(Shader.Find("Sprites/Default"));
-        _trail.startColor = config.trailColor;
-        _trail.endColor = new Color(config.trailColor.r, config.trailColor.g, config.trailColor.b, 0f);
+        _trail.startColor = config.trailStartColor;
+        _trail.endColor = config.trailEndColor;
+        _trail.numCornerVertices = 4;
+        _trail.numCapVertices = 4;
         _trail.emitting = config.dartTrailEnabled;
     }
 

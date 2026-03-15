@@ -24,4 +24,4 @@ MonoBehaviour:
   maxSpecials: 3
   minHazards: 1
   maxHazards: 1
-  roomAccent: {r: 1, g: 0.23, b: 0.62, a: 1}
+  roomAccent: {r: 1, g: 0.18, b: 0.58, a: 1}

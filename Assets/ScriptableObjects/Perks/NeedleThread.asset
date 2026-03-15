@@ -24,4 +24,4 @@ MonoBehaviour:
   effectIntValue: 1
   requiresUnlock: 0
   unlockCost: 0
-  accentColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  accentColor: {r: 1, g: 0.82, b: 0.12, a: 1}

@@ -6,14 +6,16 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class AtmosphereController : MonoBehaviour
 {
-    private const int MaxMistParticles = 40;
-    private const float MistLifetime = 10f;
-    private const float MistSpeed = 0.12f;
-    private const float MistSize = 3.2f;
-    private const float MistRate = 4f;
+    private const int MaxMistParticles = 60;
+    private const float MistLifetime = 12f;
+    private const float MistSpeed = 0.1f;
+    private const float MistSize = 3.8f;
+    private const float MistRate = 5.5f;
+    private const float ColorOscillationSpeed = 0.22f;
 
-    private static readonly Color BaseMistColor = new(0.15f, 0.18f, 0.25f, 0.08f);
-    private static readonly Color NeonMistColor = new(0.4f, 0.08f, 0.35f, 0.06f);
+    private static readonly Color BaseMistColor = new(0.18f, 0.2f, 0.3f, 0.12f);
+    private static readonly Color MagentaMistColor = new(0.45f, 0.08f, 0.38f, 0.1f);
+    private static readonly Color CyanMistColor = new(0.08f, 0.35f, 0.42f, 0.1f);
 
     private ParticleSystem _mist;
 
@@ -23,8 +25,11 @@ public class AtmosphereController : MonoBehaviour
     {
         if (_mist == null) return;
         var main = _mist.main;
-        float t = 0.5f + Mathf.Sin(Time.time * 0.3f) * 0.5f;
-        main.startColor = Color.Lerp(BaseMistColor, NeonMistColor, t);
+        float cycle = Time.time * ColorOscillationSpeed;
+        float tMagenta = 0.5f + Mathf.Sin(cycle) * 0.5f;
+        float tCyan = 0.5f + Mathf.Sin(cycle + Mathf.PI * 0.67f) * 0.5f;
+        Color blended = Color.Lerp(BaseMistColor, MagentaMistColor, tMagenta);
+        main.startColor = Color.Lerp(blended, CyanMistColor, tCyan * 0.4f);
     }
 
     private void EnsureMist()

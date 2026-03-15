@@ -6,7 +6,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class BalloonEmblem : MonoBehaviour
 {
-    private const float EmblemScale = 0.55f;
+    private const float EmblemScale = 0.62f;
     private const float EmblemZOffset = -0.52f;
 
     private static Material _emblemMaterial;
@@ -105,10 +105,10 @@ public class BalloonEmblem : MonoBehaviour
     {
         return type switch
         {
-            BalloonSpecialType.Gold => new Color(1f, 0.85f, 0.15f, 0.9f),
-            BalloonSpecialType.Paint => new Color(0.2f, 0.95f, 0.5f, 0.85f),
-            BalloonSpecialType.Hazard => new Color(0.95f, 0.2f, 0.15f, 0.9f),
-            BalloonSpecialType.Shield => new Color(0.6f, 0.7f, 0.85f, 0.85f),
+            BalloonSpecialType.Gold => new Color(1f, 0.95f, 0.4f, 0.95f),
+            BalloonSpecialType.Paint => new Color(1f, 1f, 1f, 0.9f),
+            BalloonSpecialType.Hazard => new Color(1f, 0.3f, 0.0f, 0.95f),
+            BalloonSpecialType.Shield => new Color(0.9f, 0.95f, 1f, 0.92f),
             _ => new Color(1f, 1f, 1f, 0.7f),
         };
     }
@@ -129,8 +129,10 @@ public class BalloonEmblem : MonoBehaviour
     {
         return type switch
         {
-            BalloonSpecialType.Gold => 0.6f,
-            BalloonSpecialType.Hazard => 0.8f,
+            BalloonSpecialType.Gold => 0.8f,
+            BalloonSpecialType.Hazard => 1.0f,
+            BalloonSpecialType.Paint => 0.5f,
+            BalloonSpecialType.Shield => 0.45f,
             _ => 0.3f,
         };
     }

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f293ad1e5244f36b92bbf7227b6be97, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: Assembly-CSharp::GameConfigSO
-  pullSpeedExponent: 1.45
-  minLaunchSpeed: 9
-  maxLaunchSpeed: 14
+  pullSpeedExponent: 1.5
+  minLaunchSpeed: 13
+  maxLaunchSpeed: 20
   minPreviewVelocity: 1
   aimAssistStrength: 0.55
   aimAssistEnabled: 1

@@ -17,6 +17,7 @@ namespace Inkshot.Editor.AgentBridge
         private const string ActiveKey = "Inkshot.PlayCapture.Active";
         private const string PhaseKey = "Inkshot.PlayCapture.Phase";
         private const string FinishingKey = "Inkshot.PlayCapture.Finishing";
+        private const string AutoExitKey = "Inkshot.PlayCapture.AutoExit";
         private const double BootstrapWaitSeconds = 1.0;
         private const double PostClickWaitSeconds = 0.5;
         private const double GameBoardWaitSeconds = 4.0;
@@ -45,6 +46,7 @@ namespace Inkshot.Editor.AgentBridge
         {
             SessionState.SetBool(ActiveKey, true);
             SessionState.SetBool(FinishingKey, false);
+            SessionState.SetBool(AutoExitKey, Application.isBatchMode || IsExecuteMethodLaunch());
             _isFinishing = false;
             Advance(CapturePhase.EnterPlayMode);
             EnsureOutputDirectory();
@@ -99,16 +101,42 @@ namespace Inkshot.Editor.AgentBridge
             _phaseStartedAt = EditorApplication.timeSinceStartup;
         }
 
+        private const int CaptureWidth = 1080;
+        private const int CaptureHeight = 1920;
+
         private static void CaptureGameView()
         {
             string gameFile = $"gameplay_{DateTime.UtcNow:yyyyMMdd_HHmmss}.png";
             string gamePath = Path.Combine(OutputDirectory, gameFile);
-            UnityEngine.ScreenCapture.CaptureScreenshot(gamePath);
-            string scenePath = ScreenshotCapture.CaptureScene("sceneview");
+            RenderPortraitScreenshot(gamePath);
             if (!Application.isBatchMode) return;
             Console.WriteLine($"[PlayModeCapture] Game View: {gamePath}");
-            if (scenePath != null)
-                Console.WriteLine($"[PlayModeCapture] Scene View: {scenePath}");
+        }
+
+        private static void RenderPortraitScreenshot(string path)
+        {
+            Camera cam = Camera.main;
+            if (cam == null) cam = UnityEngine.Object.FindAnyObjectByType<Camera>();
+            if (cam == null) return;
+
+            var rt = new RenderTexture(CaptureWidth, CaptureHeight, 24);
+            var tex = new Texture2D(CaptureWidth, CaptureHeight, TextureFormat.RGB24, false);
+
+            RenderTexture prevTarget = cam.targetTexture;
+            RenderTexture prevActive = RenderTexture.active;
+
+            cam.targetTexture = rt;
+            cam.Render();
+            RenderTexture.active = rt;
+            tex.ReadPixels(new UnityEngine.Rect(0, 0, CaptureWidth, CaptureHeight), 0, 0);
+            tex.Apply();
+
+            cam.targetTexture = prevTarget;
+            RenderTexture.active = prevActive;
+
+            File.WriteAllBytes(path, tex.EncodeToPNG());
+            UnityEngine.Object.Destroy(tex);
+            UnityEngine.Object.Destroy(rt);
         }
 
         private static void ClickButton(string rootName, string buttonName)
@@ -152,10 +180,12 @@ namespace Inkshot.Editor.AgentBridge
         private static void FinishAndExit()
         {
             DetachCallbacks();
+            bool shouldExit = SessionState.GetBool(AutoExitKey, false);
             SessionState.EraseBool(ActiveKey);
             SessionState.EraseBool(FinishingKey);
             SessionState.EraseInt(PhaseKey);
-            if (Application.isBatchMode)
+            SessionState.EraseBool(AutoExitKey);
+            if (shouldExit)
                 EditorApplication.delayCall += () => EditorApplication.Exit(0);
         }
 
@@ -168,6 +198,9 @@ namespace Inkshot.Editor.AgentBridge
             AttachCallbacks();
             if (_isFinishing && !EditorApplication.isPlaying) FinishAndExit();
         }
+
+        private static bool IsExecuteMethodLaunch() =>
+            Array.Exists(Environment.GetCommandLineArgs(), a => a == "-executeMethod");
 
         private static void AttachCallbacks()
         {

@@ -15,22 +15,26 @@ MonoBehaviour:
   juiceEnabled: 1
   globalIntensity: 1
   balloonPopEnabled: 1
-  popParticleCount: 15
-  popParticleLifetime: 0.45
-  popParticleSpeed: 4
+  popParticleCount: 25
+  popParticleLifetime: 0.55
+  popParticleSpeed: 5
   popParticleGravity: 2
+  popNeonBoost: 1.4
   paintSplatterEnabled: 1
-  paintParticleCount: 30
-  paintParticleLifetime: 0.9
-  paintParticleSpeed: 6
+  paintParticleCount: 45
+  paintParticleLifetime: 1.1
+  paintParticleSpeed: 7
   paintParticleGravity: 3
-  paintDripCount: 3
-  paintDripSpeed: 0.8
-  paintDripLifetime: 2
+  paintDripCount: 4
+  paintDripSpeed: 0.6
+  paintDripLifetime: 2.5
+  paintNeonBoost: 1.45
+  paintDripStartWidth: 0.1
+  paintDripEndWidth: 0.03
   impactSparkEnabled: 1
-  sparkParticleCount: 10
-  sparkParticleLifetime: 0.15
-  sparkParticleSpeed: 8
+  sparkParticleCount: 18
+  sparkParticleLifetime: 0.1
+  sparkParticleSpeed: 16
   sparkColorStart: {r: 1, g: 1, b: 1, a: 1}
   sparkColorEnd: {r: 0.6, g: 0.75, b: 0.95, a: 0}
   sparkGravity: 1.5
@@ -39,9 +43,11 @@ MonoBehaviour:
   wallHitParticleLifetime: 0.28
   wallHitParticleSpeed: 2
   dartTrailEnabled: 1
-  trailWidth: 0.02
-  trailLifetime: 0.3
-  trailColor: {r: 0.8, g: 0.9, b: 1, a: 0.6}
+  trailStartWidth: 0.06
+  trailEndWidth: 0
+  trailLifetime: 0.45
+  trailStartColor: {r: 1, g: 1, b: 1, a: 0.8}
+  trailEndColor: {r: 1, g: 1, b: 1, a: 0}
   screenShakeEnabled: 1
   shakeIntensityPop: 0.1
   shakeIntensityCombo: 0.25

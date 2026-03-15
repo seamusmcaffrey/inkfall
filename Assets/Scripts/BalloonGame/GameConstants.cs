@@ -44,7 +44,7 @@ public static class GameConstants
     public const int COMBO_MAX_STACK = 20;
 
     // Physics
-    public const float DART_GRAVITY = -5.4f;
+    public const float DART_GRAVITY = -12f;
     public const float SIDE_WALL_WIDTH = 0.3f;
     public const float WALL_BOUNCINESS = 0.8f;
     public const float WALL_FRICTION = 0.1f;

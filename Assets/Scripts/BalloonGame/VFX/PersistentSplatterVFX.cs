@@ -16,6 +16,9 @@ public class PersistentSplatterVFX : MonoBehaviour
     private MaterialPropertyBlock _propertyBlock;
     private JuiceConfigSO _config;
 
+    private const float AsymmetryMin = 0.7f;
+    private const float AsymmetryMax = 1.3f;
+
     private static readonly int ColorProperty = Shader.PropertyToID("_Color");
 
     public void SetConfig(JuiceConfigSO config) => _config = config;
@@ -43,8 +46,9 @@ public class PersistentSplatterVFX : MonoBehaviour
         t.SetParent(transform, false);
         t.position = new Vector3(worldPosition.x, worldPosition.y, GameConstants.SPLATTER_Z_OFFSET);
 
-        float scale = Random.Range(config.splatterMinScale, config.splatterMaxScale);
-        t.localScale = new Vector3(scale, scale, 1f);
+        float baseScale = Random.Range(config.splatterMinScale, config.splatterMaxScale);
+        float asymmetry = Random.Range(AsymmetryMin, AsymmetryMax);
+        t.localScale = new Vector3(baseScale * asymmetry, baseScale / asymmetry, 1f);
         t.localRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
 
         Color neon = BoostToNeon(UIColors.GetBalloonTextColor(balloonColor), config.splatterNeonBoost);
@@ -161,6 +165,7 @@ public class PersistentSplatterVFX : MonoBehaviour
         if (shader != null)
         {
             _splatterMaterial = new Material(shader);
+            _splatterMaterial.mainTexture = SplatterTextureGenerator.GetSplatterTexture();
             _splatterMaterial.renderQueue = 2999;
         }
         return _splatterMaterial;

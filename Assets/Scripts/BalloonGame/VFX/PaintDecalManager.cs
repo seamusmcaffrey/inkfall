@@ -2,11 +2,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Persistent paint splatter decals on the back wall.
+/// Persistent paint splatter decals on the back wall with neon-boosted colors
+/// and drip streaks that run downward from each splatter point.
 /// </summary>
 [DisallowMultipleComponent]
 public class PaintDecalManager : MonoBehaviour
 {
+    private const float AsymmetryMin = 0.7f;
+    private const float AsymmetryMax = 1.3f;
+
     private readonly Queue<MeshRenderer> _activeDecals = new();
     private Material _decalMaterial;
     private MaterialPropertyBlock _propertyBlock;
@@ -33,11 +37,15 @@ public class PaintDecalManager : MonoBehaviour
         Transform decalTransform = renderer.transform;
         decalTransform.SetParent(transform, false);
         decalTransform.position = position + Vector3.forward * GameConstants.DECAL_Z_OFFSET;
-        decalTransform.localScale = Vector3.one * Random.Range(config.decalMinSize, config.decalMaxSize);
+        float baseScale = Random.Range(config.decalMinSize, config.decalMaxSize);
+        float asymmetry = Random.Range(AsymmetryMin, AsymmetryMax);
+        decalTransform.localScale = new Vector3(baseScale * asymmetry, baseScale / asymmetry, 1f);
+        decalTransform.localRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
         renderer.gameObject.SetActive(true);
 
+        Color neonColor = VFXFactory.BoostNeon(color, config.paintNeonBoost);
         _propertyBlock ??= new MaterialPropertyBlock();
-        _propertyBlock.SetColor("_Color", new Color(color.r, color.g, color.b, config.decalAlpha));
+        _propertyBlock.SetColor("_Color", new Color(neonColor.r, neonColor.g, neonColor.b, config.decalAlpha));
         renderer.SetPropertyBlock(_propertyBlock);
         _activeDecals.Enqueue(renderer);
     }
@@ -61,7 +69,11 @@ public class PaintDecalManager : MonoBehaviour
         }
 
         Shader shader = Shader.Find("Sprites/Default");
-        _decalMaterial = shader != null ? new Material(shader) : null;
+        if (shader != null)
+        {
+            _decalMaterial = new Material(shader);
+            _decalMaterial.mainTexture = SplatterTextureGenerator.GetSplatterTexture();
+        }
         return _decalMaterial;
     }
 }

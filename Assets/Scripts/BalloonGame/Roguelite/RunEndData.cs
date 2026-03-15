@@ -8,4 +8,5 @@ public struct RunEndData
     public int totalScore;
     public int lastRoomScore;
     public int totalInk;
+    public int bestCombo;
 }

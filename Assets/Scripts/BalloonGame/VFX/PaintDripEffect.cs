@@ -3,6 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Downward drip streak created after a paint explosion.
+/// Thin, elongated line that slowly extends downward with neon-boosted color.
 /// </summary>
 [DisallowMultipleComponent]
 public class PaintDripEffect : MonoBehaviour
@@ -23,11 +24,11 @@ public class PaintDripEffect : MonoBehaviour
     public void Play(Color color, JuiceConfigSO config, Vector3 localOffset)
     {
         transform.localPosition = localOffset;
-        Color vivid = new(Mathf.Min(color.r * 1.3f, 1f), Mathf.Min(color.g * 1.3f, 1f), Mathf.Min(color.b * 1.3f, 1f), 1f);
+        Color vivid = VFXFactory.BoostNeon(color, config.paintNeonBoost);
         _line.startColor = vivid;
         _line.endColor = new Color(vivid.r, vivid.g, vivid.b, 0f);
-        _line.startWidth = 0.08f;
-        _line.endWidth = 0.02f;
+        _line.startWidth = config.paintDripStartWidth;
+        _line.endWidth = config.paintDripEndWidth;
         _line.enabled = true;
 
         if (_routine != null)

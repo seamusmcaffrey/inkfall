@@ -20,6 +20,7 @@ public class DartPhysicsTestRunner : MonoBehaviour
 
     private static readonly float[] PullLevels = { 0.3f, 0.6f, 1.0f };
     private static readonly string[] PullLabels = { "pull_30", "pull_60", "pull_100" };
+    private static readonly float[] ColumnOffsets = { -2.0f, 0.0f, 2.0f };
 
     public IEnumerator FireSequenceWithScreenshots()
     {
@@ -42,9 +43,29 @@ public class DartPhysicsTestRunner : MonoBehaviour
             float speed = minSpeed + pullStrength * (maxSpeed - minSpeed);
             Vector3 velocity = Vector3.up * speed;
 
+            float theoreticalPeak = GameConstants.LAUNCH_POSITION.y + (speed * speed) / (2f * Mathf.Abs(GameConstants.DART_GRAVITY));
+#if UNITY_EDITOR
+            Debug.Log($"[DartTest] {PullLabels[i]}: pull={pull}, pullStrength={pullStrength:F3}, speed={speed:F1}, velocity={velocity}");
+            Debug.Log($"[DartTest]   Config: minSpeed={minSpeed}, maxSpeed={maxSpeed}, exponent={exponent}, gravity={GameConstants.DART_GRAVITY}");
+            Debug.Log($"[DartTest]   Launch Y={GameConstants.LAUNCH_POSITION.y}, Board Y={GameConstants.BOARD_BOTTOM} to {GameConstants.BOARD_TOP}");
+            Debug.Log($"[DartTest]   Theoretical peak Y={theoreticalPeak:F1} (board bottom={GameConstants.BOARD_BOTTOM}, top={GameConstants.BOARD_TOP})");
+#endif
+
             yield return new WaitForSeconds(DelayBeforeFire);
-            FireDart(velocity);
-            yield return new WaitForSeconds(FlightDuration);
+            var dart = FireDartTracked(velocity, ColumnOffsets[i]);
+            float peakY = GameConstants.LAUNCH_POSITION.y;
+            float elapsed = 0f;
+            while (elapsed < FlightDuration && dart != null)
+            {
+                yield return new WaitForFixedUpdate();
+                elapsed += Time.fixedDeltaTime;
+                if (dart != null && dart.transform.position.y > peakY)
+                    peakY = dart.transform.position.y;
+            }
+#if UNITY_EDITOR
+            Debug.Log($"[DartTest]   ACTUAL peak Y={peakY:F2}, final Y={(dart != null ? dart.transform.position.y : float.NaN):F2}");
+#endif
+
             yield return new WaitForEndOfFrame();
             RenderScreenshot($"dart_test_{PullLabels[i]}");
         }
@@ -87,23 +108,28 @@ public class DartPhysicsTestRunner : MonoBehaviour
         Destroy(rt);
     }
 
-    private static void FireDart(Vector3 velocity)
+    private static GameObject FireDartTracked(Vector3 velocity, float xOffset)
     {
         var launcher = FindAnyObjectByType<DartLauncher>();
         if (launcher != null)
         {
-            launcher.SpawnAndLaunch(velocity);
-            return;
+            var controller = launcher.SpawnAndLaunch(velocity);
+            if (controller != null)
+            {
+                controller.transform.position += new Vector3(xOffset, 0f, 0f);
+                return controller.gameObject;
+            }
+            return null;
         }
 
-        CreateSimpleDart(velocity);
+        return CreateSimpleDart(velocity, xOffset);
     }
 
-    private static void CreateSimpleDart(Vector3 velocity)
+    private static GameObject CreateSimpleDart(Vector3 velocity, float xOffset)
     {
         var dart = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         dart.name = "TestDart";
-        dart.transform.position = GameConstants.LAUNCH_POSITION;
+        dart.transform.position = GameConstants.LAUNCH_POSITION + new Vector3(xOffset, 0f, 0f);
         dart.transform.localScale = Vector3.one * 0.3f;
 
         var rb = dart.GetComponent<Rigidbody>();
@@ -118,6 +144,7 @@ public class DartPhysicsTestRunner : MonoBehaviour
         gravity.SetGravity(GameConstants.DART_GRAVITY);
 
         Destroy(dart, GameConstants.DEFAULT_DART_LIFETIME);
+        return dart;
     }
 }
 

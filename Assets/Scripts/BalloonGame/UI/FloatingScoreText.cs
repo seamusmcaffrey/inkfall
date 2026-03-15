@@ -5,11 +5,17 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Pooled floating score popups that rise from popped balloon positions.
-/// Features punch-scale on spawn and combo-aware sizing for higher impact.
+/// Features punch-scale on spawn, point-value-based color and sizing,
+/// and combo-aware scaling for dramatic high-value hits.
 /// </summary>
 [DisallowMultipleComponent]
 public class FloatingScoreText : MonoBehaviour
 {
+    private const float PointScaleBase = 1f;
+    private const float PointScalePerHundred = 0.08f;
+    private const float PointScaleMax = 2.2f;
+    private const int HighValueThreshold = 300;
+
     private sealed class ActiveText
     {
         public RectTransform Rect;
@@ -45,9 +51,7 @@ public class FloatingScoreText : MonoBehaviour
     private void Update()
     {
         if (_camera == null)
-        {
             _camera = Camera.main;
-        }
 
         UIConfigSO ui = UIConfigSO.Instance;
         float duration = ui.floatingTextDuration;
@@ -74,7 +78,7 @@ public class FloatingScoreText : MonoBehaviour
                 : 1f - Mathf.Clamp01((normalized - alphaStart) / (1f - alphaStart));
             item.Group.alpha = alpha;
 
-            // Scale: punch on spawn, settle to base, then slight grow
+            // Scale: dramatic punch on spawn, settle to base
             float scale;
             if (item.Elapsed < punchDuration)
             {
@@ -84,7 +88,9 @@ public class FloatingScoreText : MonoBehaviour
             }
             else
             {
-                scale = item.BaseScale;
+                // Subtle grow over lifetime for drama
+                float lifeT = (item.Elapsed - punchDuration) / Mathf.Max(duration - punchDuration, 0.01f);
+                scale = item.BaseScale * (1f + lifeT * 0.05f);
             }
 
             item.Rect.localScale = Vector3.one * scale;
@@ -109,26 +115,36 @@ public class FloatingScoreText : MonoBehaviour
     private void HandleBalloonScored(BalloonScoredEvent evt)
     {
         if (_pool.Count == 0)
-        {
             WarmPool();
-        }
 
         if (_pool.Count == 0)
-        {
             return;
-        }
 
         UIConfigSO ui = UIConfigSO.Instance;
         int comboClamped = Mathf.Min(evt.ComboCount, ui.floatingTextComboSizeCap);
         float comboBoost = comboClamped * ui.floatingTextComboSizeBoost;
 
+        // Point-value-based scaling: bigger numbers = bigger text
+        int absPoints = Mathf.Abs(evt.FinalPoints);
+        float pointScale = Mathf.Min(
+            PointScaleBase + (absPoints / 100f) * PointScalePerHundred,
+            PointScaleMax);
+
         ActiveText item = _pool.Dequeue();
         item.WorldPosition = evt.WorldPosition + Vector3.forward * GameConstants.FLOATING_SCORE_Z_OFFSET;
         item.Elapsed = 0f;
-        item.BaseScale = 1f + comboBoost;
+        item.BaseScale = pointScale + comboBoost;
         item.Group.alpha = 1f;
         item.Label.text = evt.FinalPoints >= 0 ? $"+{evt.FinalPoints}" : evt.FinalPoints.ToString();
-        item.Label.color = UIColors.GetBalloonTextColor(evt.BalloonColor);
+
+        // High-value pops get gold/premium color; standard pops use balloon color
+        item.Label.color = absPoints >= HighValueThreshold
+            ? UIColors.GetFloatingScoreColor(absPoints)
+            : UIColors.GetBalloonTextColor(evt.BalloonColor);
+
+        // Bold for high-value hits
+        item.Label.fontStyle = absPoints >= HighValueThreshold ? FontStyles.Bold : FontStyles.Normal;
+
         _active.Add(item);
     }
 

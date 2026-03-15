@@ -10,7 +10,7 @@ public static class DartMeshGenerator
     private static Mesh _tipMesh;
 
     private const int Segments = 18;
-    private const int FinCount = 3;
+    private const int FinCount = 4;
     private const float BodyLength = 0.54f;
     private const float BodyRadiusFront = 0.045f;
     private const float BodyRadiusBack = 0.065f;

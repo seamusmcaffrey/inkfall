@@ -113,11 +113,11 @@ public class DartLauncher : MonoBehaviour
         if (_bodyMaterial.HasProperty("_BaseColor"))
             _bodyMaterial.SetColor("_BaseColor", chromeBody);
         if (_bodyMaterial.HasProperty("_Glossiness"))
-            _bodyMaterial.SetFloat("_Glossiness", 0.92f);
+            _bodyMaterial.SetFloat("_Glossiness", 0.96f);
         if (_bodyMaterial.HasProperty("_Smoothness"))
-            _bodyMaterial.SetFloat("_Smoothness", 0.92f);
+            _bodyMaterial.SetFloat("_Smoothness", 0.96f);
         if (_bodyMaterial.HasProperty("_Metallic"))
-            _bodyMaterial.SetFloat("_Metallic", 0.85f);
+            _bodyMaterial.SetFloat("_Metallic", 0.95f);
 
         return _bodyMaterial;
     }
@@ -136,11 +136,19 @@ public class DartLauncher : MonoBehaviour
         if (_tipMaterial.HasProperty("_BaseColor"))
             _tipMaterial.SetColor("_BaseColor", chromeTip);
         if (_tipMaterial.HasProperty("_Glossiness"))
-            _tipMaterial.SetFloat("_Glossiness", 0.95f);
+            _tipMaterial.SetFloat("_Glossiness", 0.98f);
         if (_tipMaterial.HasProperty("_Smoothness"))
-            _tipMaterial.SetFloat("_Smoothness", 0.95f);
+            _tipMaterial.SetFloat("_Smoothness", 0.98f);
         if (_tipMaterial.HasProperty("_Metallic"))
-            _tipMaterial.SetFloat("_Metallic", 0.9f);
+            _tipMaterial.SetFloat("_Metallic", 0.95f);
+
+        Color tipGlow = new(0.6f, 0.75f, 1f);
+        if (_tipMaterial.HasProperty("_EmissionColor"))
+        {
+            _tipMaterial.EnableKeyword("_EMISSION");
+            _tipMaterial.SetColor("_EmissionColor", tipGlow * 0.15f);
+            _tipMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+        }
 
         return _tipMaterial;
     }
