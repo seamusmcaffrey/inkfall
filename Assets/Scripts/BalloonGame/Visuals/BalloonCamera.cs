@@ -37,7 +37,7 @@ public class BalloonCamera : MonoBehaviour
         _camera.nearClipPlane = 0.1f;
         _camera.farClipPlane = 50f;
         _camera.clearFlags = CameraClearFlags.SolidColor;
-        _camera.backgroundColor = new Color(0.08f, 0.07f, 0.06f);
+        _camera.backgroundColor = new Color(0.02f, 0.02f, 0.03f);
     }
 
     private void EnforceAspect()

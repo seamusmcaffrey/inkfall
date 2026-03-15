@@ -151,7 +151,7 @@ public class LaunchLaneVisuals : MonoBehaviour
 
     private static Material CreateUnlitMaterial(Color color)
     {
-        Shader shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
+        Shader shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color") ?? Shader.Find("Sprites/Default");
         Material material = new(shader);
 
         if (color.a < 1f)

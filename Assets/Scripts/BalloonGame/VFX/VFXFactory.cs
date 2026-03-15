@@ -188,7 +188,7 @@ public static class VFXFactory
             return _particleMaterial;
         }
 
-        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Particles/Standard Unlit");
+        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Particles/Standard Unlit") ?? Shader.Find("Sprites/Default");
         _particleMaterial = shader != null ? new Material(shader) : null;
         return _particleMaterial;
     }

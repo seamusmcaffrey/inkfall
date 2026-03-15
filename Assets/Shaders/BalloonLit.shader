@@ -6,11 +6,11 @@ Shader "Inkshot/BalloonLit"
         _Glossiness ("Glossiness", Range(0, 1)) = 0.85
         _RimPower ("Rim Power", Range(0.5, 8)) = 2.5
         _RimColor ("Rim Color", Color) = (1, 1, 1, 1)
-        _RimIntensity ("Rim Intensity", Range(0, 2)) = 0.18
+        _RimIntensity ("Rim Intensity", Range(0, 2)) = 0.25
         _GradientStrength ("Gradient Strength", Range(0, 0.5)) = 0.12
         _SpecularIntensity ("Specular Intensity", Range(0, 2)) = 1.4
         _SpecularSize ("Specular Size", Range(1, 256)) = 80
-        _AmbientBoost ("Ambient Boost", Range(0, 1)) = 0.3
+        _AmbientBoost ("Ambient Boost", Range(0, 1)) = 0.2
     }
 
     SubShader
@@ -137,8 +137,8 @@ Shader "Inkshot/BalloonLit"
                     half3 addHalf = normalize(normalize(addLight.direction) + viewDir);
                     half addSpec = pow(saturate(dot(normalWS, addHalf)), _SpecularSize * 0.5) * 0.4;
                     half atten = addLight.distanceAttenuation * addLight.shadowAttenuation;
-                    color += baseColor.rgb * addNdotL * addLight.color * atten * 0.35;
-                    color += addSpec * addLight.color * atten * 0.5;
+                    color += baseColor.rgb * addNdotL * addLight.color * atten * 0.45;
+                    color += addSpec * addLight.color * atten * 0.6;
                 }
                 #endif
 

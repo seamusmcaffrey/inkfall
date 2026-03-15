@@ -17,15 +17,15 @@ public class NeonLightRig : MonoBehaviour
     [ContextMenu("Build Neon Rig")]
     public void BuildRig()
     {
-        EnsureLight("KeyLight", LightType.Directional, Vector3.zero, Quaternion.Euler(42f, -30f, 0f), new Color(0.92f, 0.90f, 0.85f), 0.85f, 0f);
-        EnsureLight("FillLight", LightType.Directional, Vector3.zero, Quaternion.Euler(20f, 160f, 0f), new Color(0.35f, 0.40f, 0.55f), 0.35f, 0f);
-        EnsureLight("MagentaNeon", LightType.Point, new Vector3(-4.2f, 5f, -1.5f), Quaternion.identity, new Color(1f, 0.12f, 0.58f), 1.4f, NeonRange);
-        EnsureLight("CyanNeon", LightType.Point, new Vector3(4.2f, 4.5f, -1.5f), Quaternion.identity, new Color(0.08f, 0.92f, 0.95f), 1.4f, NeonRange);
+        EnsureLight("KeyLight", LightType.Directional, Vector3.zero, Quaternion.Euler(42f, -30f, 0f), new Color(0.92f, 0.90f, 0.85f), 0.72f, 0f);
+        EnsureLight("FillLight", LightType.Directional, Vector3.zero, Quaternion.Euler(20f, 160f, 0f), new Color(0.35f, 0.40f, 0.55f), 0.30f, 0f);
+        EnsureLight("MagentaNeon", LightType.Point, new Vector3(-4.2f, 5f, -1.5f), Quaternion.identity, new Color(1f, 0.12f, 0.58f), 1.8f, NeonRange);
+        EnsureLight("CyanNeon", LightType.Point, new Vector3(4.2f, 4.5f, -1.5f), Quaternion.identity, new Color(0.08f, 0.92f, 0.95f), 1.8f, NeonRange);
         EnsureLight("GoldTop", LightType.Point, new Vector3(0f, 9f, -1f), Quaternion.identity, new Color(1f, 0.82f, 0.2f), 1.6f, RimRange);
-        EnsureLight("GreenRim", LightType.Point, new Vector3(0f, -2f, -2f), Quaternion.identity, new Color(0.15f, 1f, 0.4f), 0.8f, RimRange);
-        EnsureLight("AmberBottom", LightType.Point, new Vector3(0f, -7.5f, -1.5f), Quaternion.identity, new Color(1f, 0.72f, 0.28f), 1.0f, AmberRange);
-        EnsureLight("MagentaMid", LightType.Point, new Vector3(-3.5f, 1f, -1.2f), Quaternion.identity, new Color(0.85f, 0.15f, 0.5f), 0.9f, MidRange);
-        EnsureLight("CyanMid", LightType.Point, new Vector3(3.5f, 0.5f, -1.2f), Quaternion.identity, new Color(0.1f, 0.8f, 0.85f), 0.9f, MidRange);
+        EnsureLight("GreenRim", LightType.Point, new Vector3(0f, -2f, -2f), Quaternion.identity, new Color(0.15f, 1f, 0.4f), 0.9f, RimRange);
+        EnsureLight("AmberBottom", LightType.Point, new Vector3(0f, -7.5f, -1.5f), Quaternion.identity, new Color(1f, 0.72f, 0.28f), 1.1f, AmberRange);
+        EnsureLight("MagentaMid", LightType.Point, new Vector3(-3.5f, 1f, -1.2f), Quaternion.identity, new Color(0.85f, 0.15f, 0.5f), 1.1f, MidRange);
+        EnsureLight("CyanMid", LightType.Point, new Vector3(3.5f, 0.5f, -1.2f), Quaternion.identity, new Color(0.1f, 0.8f, 0.85f), 1.1f, MidRange);
     }
 
     private void EnsureLight(string name, LightType type, Vector3 pos, Quaternion rot, Color color, float intensity, float range)

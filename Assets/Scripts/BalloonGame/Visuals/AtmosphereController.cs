@@ -57,7 +57,7 @@ public class AtmosphereController : MonoBehaviour
         shape.scale = new Vector3(9f, 12f, 0.3f);
 
         var renderer = _mist.GetComponent<ParticleSystemRenderer>();
-        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Particles/Standard Unlit");
+        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit") ?? Shader.Find("Particles/Standard Unlit") ?? Shader.Find("Sprites/Default");
         if (shader != null)
         {
             renderer.sharedMaterial = new Material(shader);

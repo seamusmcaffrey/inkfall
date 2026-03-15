@@ -116,23 +116,25 @@ namespace Inkshot.Editor.AgentBridge
         private static void RenderPortraitScreenshot(string path)
         {
             Camera cam = Camera.main;
-            if (cam == null) cam = UnityEngine.Object.FindAnyObjectByType<Camera>();
             if (cam == null) return;
 
-            var rt = new RenderTexture(CaptureWidth, CaptureHeight, 24);
-            var tex = new Texture2D(CaptureWidth, CaptureHeight, TextureFormat.RGB24, false);
+            Rect savedRect = cam.rect;
+            cam.rect = new Rect(0f, 0f, 1f, 1f);
 
-            RenderTexture prevTarget = cam.targetTexture;
-            RenderTexture prevActive = RenderTexture.active;
-
+            RenderTexture rt = new(CaptureWidth, CaptureHeight, 24);
+            RenderTexture savedTarget = cam.targetTexture;
             cam.targetTexture = rt;
             cam.Render();
+
             RenderTexture.active = rt;
-            tex.ReadPixels(new UnityEngine.Rect(0, 0, CaptureWidth, CaptureHeight), 0, 0);
+            Texture2D tex = new(CaptureWidth, CaptureHeight, TextureFormat.RGB24, false);
+            tex.ReadPixels(new Rect(0, 0, CaptureWidth, CaptureHeight), 0, 0);
             tex.Apply();
 
-            cam.targetTexture = prevTarget;
-            RenderTexture.active = prevActive;
+            cam.targetTexture = savedTarget;
+            cam.rect = savedRect;
+            RenderTexture.active = null;
+            rt.Release();
 
             File.WriteAllBytes(path, tex.EncodeToPNG());
             UnityEngine.Object.Destroy(tex);

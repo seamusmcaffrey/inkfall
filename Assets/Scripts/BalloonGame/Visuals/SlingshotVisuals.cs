@@ -124,6 +124,7 @@ public partial class SlingshotVisuals : MonoBehaviour
 
         var lineRenderer = lineObject.AddComponent<LineRenderer>();
         Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
+                        ?? Shader.Find("Universal Render Pipeline/Unlit")
                         ?? Shader.Find("Sprites/Default");
         Material mat = new Material(shader);
         mat.SetFloat("_Surface", 1f);

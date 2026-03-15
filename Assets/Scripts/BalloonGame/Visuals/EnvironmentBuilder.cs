@@ -93,7 +93,7 @@ public class EnvironmentBuilder : MonoBehaviour
     private void BuildFloorArea()
     {
         Material unlitFloor = CreateMaterial(FloorColor, unlit: true);
-        SetPanel("BackWall", PrimitiveType.Quad, new Vector3(0f, 0f, 1.5f), new Vector3(12f, 22f, 1f),
+        SetPanel("BackWall", PrimitiveType.Quad, new Vector3(0f, 0f, 1.5f), new Vector3(24f, 40f, 1f),
             CreateMaterial(new Color(0.015f, 0.015f, 0.02f), unlit: true));
 
         float floorY = (GameConstants.LANE_TOP + GameConstants.LANE_BOTTOM) * 0.5f;
@@ -152,8 +152,8 @@ public class EnvironmentBuilder : MonoBehaviour
     private static Material CreateMaterial(Color color, float smoothness = 0f, float metallic = 0f, bool unlit = false)
     {
         Shader shader = unlit
-            ? Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color")
-            : Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+            ? Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color") ?? Shader.Find("Sprites/Default")
+            : Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard") ?? Shader.Find("Sprites/Default");
         Material mat = new(shader);
         if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
         if (mat.HasProperty("_Color")) mat.color = color;

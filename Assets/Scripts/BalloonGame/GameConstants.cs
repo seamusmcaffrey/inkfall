@@ -20,10 +20,10 @@ public static class GameConstants
 
     public static readonly Vector3 LAUNCH_POSITION = new(0f, -7.5f, 0f);
 
-    public const float BALLOON_MAX_WIDTH = 0.78f;
-    public const float BALLOON_MAX_HEIGHT = 0.94f;
-    public const float BALLOON_SLOT_RATIO_X = 0.9f;
-    public const float BALLOON_SLOT_RATIO_Y = 0.95f;
+    public const float BALLOON_MAX_WIDTH = 0.62f;
+    public const float BALLOON_MAX_HEIGHT = 0.74f;
+    public const float BALLOON_SLOT_RATIO_X = 0.92f;
+    public const float BALLOON_SLOT_RATIO_Y = 0.92f;
 
     public const float PERSPECTIVE_MIN_SCALE = 0.88f;
     public const float PERSPECTIVE_SCALE_RANGE = 0.12f;

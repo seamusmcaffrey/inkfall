@@ -24,7 +24,7 @@ public partial class SlingshotVisuals
 
         // URP-compatible unlit transparent material shared by all dots
         Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
-                        ?? Shader.Find("Particles/Standard Unlit")
+                        ?? Shader.Find("Universal Render Pipeline/Unlit")
                         ?? Shader.Find("Sprites/Default");
         _dotMaterial = new Material(shader);
         _dotMaterial.SetFloat("_Surface", 1f); // Transparent
