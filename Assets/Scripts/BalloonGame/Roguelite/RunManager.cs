@@ -42,7 +42,7 @@ public class RunManager : MonoBehaviour
 
     private void Start()
     {
-        if (_autoStart)
+        if (_autoStart || GameConstants.DEV_SKIP_INTRO)
         {
             StartNewRun();
         }
@@ -112,7 +112,7 @@ public class RunManager : MonoBehaviour
         EventBus.Publish(new RunStateChangedEvent { State = CurrentState, RoomNumber = roomNumber });
         RoomConfig room = _roomGenerator.Generate(roomNumber);
         room.startingDarts += _perkManager.AdditionalDarts;
-        if (_roomIntroScreen != null)
+        if (_roomIntroScreen != null && !GameConstants.DEV_SKIP_INTRO)
         {
             _roomIntroScreen.Show(room);
         }
@@ -122,12 +122,16 @@ public class RunManager : MonoBehaviour
 
     private IEnumerator BeginRoomAfterIntro(RoomConfig room)
     {
-        if (_fadeOverlay != null)
+        if (!GameConstants.DEV_SKIP_INTRO)
         {
-            yield return _fadeOverlay.FadeTo(0f, 0.2f);
+            if (_fadeOverlay != null)
+            {
+                yield return _fadeOverlay.FadeTo(0f, 0.2f);
+            }
+
+            yield return new WaitForSecondsRealtime(0.8f);
         }
 
-        yield return new WaitForSecondsRealtime(0.8f);
         CurrentState = RunState.InRoom;
         EventBus.Publish(new RunStateChangedEvent { State = CurrentState, RoomNumber = room.roomNumber });
         _balloonGameManager.StartRoom(room);

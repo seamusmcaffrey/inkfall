@@ -27,7 +27,6 @@ public class DartController : MonoBehaviour
     private int _ricochetCount;
     private int _pierceRemaining;
     private int _maxRicochets;
-    private bool _hasPassedPeak;
     private float _launchSpeed;
 
     private void Awake()
@@ -72,12 +71,11 @@ public class DartController : MonoBehaviour
         _balloonsHitThisFlight = 0;
         _ricochetCount = 0;
         _launchSpeed = new Vector2(velocity.x, velocity.y).magnitude;
-        _hasPassedPeak = velocity.y <= GameConstants.DART_PEAK_VELOCITY_THRESHOLD;
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
         _rigidbody.linearVelocity = velocity;
         _lifetime = 0f;
-        if (_capsuleCollider != null) _capsuleCollider.enabled = _hasPassedPeak;
+        if (_capsuleCollider != null) _capsuleCollider.enabled = true;
         if (_ricochetCollider != null) _ricochetCollider.enabled = false;
 
         var trail = GetComponent<DartTrailVFX>();
@@ -94,13 +92,6 @@ public class DartController : MonoBehaviour
         _lifetime += Time.fixedDeltaTime;
 
         _rigidbody.AddForce(new Vector3(0f, GameConstants.DART_GRAVITY, 0f), ForceMode.Acceleration);
-
-        if (!_hasPassedPeak && _rigidbody.linearVelocity.y <= GameConstants.DART_PEAK_VELOCITY_THRESHOLD)
-        {
-            _hasPassedPeak = true;
-            if (_capsuleCollider != null) _capsuleCollider.enabled = true;
-            CheckPeakOverlap();
-        }
 
         if (_launchSpeed > 0.1f)
         {
@@ -251,27 +242,6 @@ public class DartController : MonoBehaviour
         }
 
         Deactivate();
-    }
-
-    private void CheckPeakOverlap()
-    {
-        if (State != DartState.Flying) return;
-        var overlaps = Physics.OverlapSphere(
-            transform.position, 0.5f, 1 << GameConstants.LAYER_BALLOONS);
-        float closestDist = float.MaxValue;
-        BalloonNode closestBalloon = null;
-        foreach (var col in overlaps)
-        {
-            var balloon = col.GetComponent<BalloonNode>();
-            if (balloon == null || balloon.IsPopped) continue;
-            float dist = (balloon.transform.position - transform.position).sqrMagnitude;
-            if (dist < closestDist) { closestDist = dist; closestBalloon = balloon; }
-        }
-        if (closestBalloon != null)
-        {
-            closestBalloon.Pop(this);
-            OnHitBalloon();
-        }
     }
 
     private void HandleCollision(Collision collision)

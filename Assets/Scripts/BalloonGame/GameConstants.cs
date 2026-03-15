@@ -2,6 +2,8 @@ using UnityEngine;
 
 public static class GameConstants
 {
+    public const bool DEV_SKIP_INTRO = true;
+
     public const float CAMERA_FOV = 60f;
     public const float CAMERA_Y_CENTER = 2.5f;
     public const float CAMERA_DISTANCE = -18f;

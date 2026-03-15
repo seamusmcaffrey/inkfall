@@ -20,6 +20,7 @@ public class TitleScreen : MonoBehaviour
         ResolveDependencies();
         BuildUi();
         Show();
+        if (GameConstants.DEV_SKIP_INTRO) Hide();
     }
 
     /// <summary>

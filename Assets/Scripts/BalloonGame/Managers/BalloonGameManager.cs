@@ -142,7 +142,7 @@ public partial class BalloonGameManager : MonoBehaviour
         ResolveDependencies();
         CurrentRoomConfig = roomConfig;
         CurrentState = GameState.RoomIntro;
-        _introTimer = IntroDuration;
+        _introTimer = GameConstants.DEV_SKIP_INTRO ? 0f : IntroDuration;
         DartsRemaining = roomConfig != null ? roomConfig.startingDarts : GameConstants.STARTING_DARTS;
         _activeDart = null;
 
