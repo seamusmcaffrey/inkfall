@@ -101,12 +101,22 @@ public class RoomIntroScreen : MonoBehaviour
         CanvasScaler scaler = ComponentUtility.EnsureComponent<CanvasScaler>(gameObject);
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 0f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
 
-        // Full-screen dark backdrop
+        // Full-screen dark backdrop covers entire screen including pillarbox bars.
         GameObject bg = new("Backdrop");
         bg.transform.SetParent(transform, false);
+
+        // Viewport constraint keeps interactive content within 9:16 game area.
+        GameObject vpRoot = new("ViewportRoot");
+        vpRoot.transform.SetParent(transform, false);
+        RectTransform vpRect = vpRoot.AddComponent<RectTransform>();
+        vpRect.anchorMin = Vector2.zero;
+        vpRect.anchorMax = Vector2.one;
+        vpRect.offsetMin = Vector2.zero;
+        vpRect.offsetMax = Vector2.zero;
+        vpRoot.AddComponent<ViewportConstraint>();
         RectTransform bgRect = bg.AddComponent<RectTransform>();
         bgRect.anchorMin = Vector2.zero;
         bgRect.anchorMax = Vector2.one;
@@ -116,7 +126,7 @@ public class RoomIntroScreen : MonoBehaviour
 
         // Content root for slide animation
         GameObject content = new("Content");
-        content.transform.SetParent(transform, false);
+        content.transform.SetParent(vpRoot.transform, false);
         _contentRoot = content.AddComponent<RectTransform>();
         _contentRoot.anchorMin = _contentRoot.anchorMax = new Vector2(0.5f, 0.5f);
         _contentRoot.sizeDelta = new Vector2(900f, 400f);

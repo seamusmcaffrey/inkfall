@@ -19,11 +19,20 @@ public partial class InGameHUD
         CanvasScaler scaler = ComponentUtility.EnsureComponent<CanvasScaler>(gameObject);
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 0f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
 
+        GameObject vpRoot = new("ViewportRoot");
+        vpRoot.transform.SetParent(transform, false);
+        RectTransform vpRect = vpRoot.AddComponent<RectTransform>();
+        vpRect.anchorMin = Vector2.zero;
+        vpRect.anchorMax = Vector2.one;
+        vpRect.offsetMin = Vector2.zero;
+        vpRect.offsetMax = Vector2.zero;
+        vpRoot.AddComponent<ViewportConstraint>();
+
         GameObject safeRoot = new("SafeArea");
-        safeRoot.transform.SetParent(transform, false);
+        safeRoot.transform.SetParent(vpRoot.transform, false);
         _safeRoot = safeRoot.AddComponent<RectTransform>();
         safeRoot.AddComponent<SafeAreaHandler>();
 

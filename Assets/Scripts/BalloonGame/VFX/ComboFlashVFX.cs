@@ -88,7 +88,7 @@ public class ComboFlashVFX : MonoBehaviour
         CanvasScaler scaler = ComponentUtility.EnsureComponent<CanvasScaler>(gameObject);
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 0f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
         _group = ComponentUtility.EnsureComponent<CanvasGroup>(gameObject);
         _group.blocksRaycasts = false;

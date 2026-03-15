@@ -109,12 +109,22 @@ public class PauseManager : MonoBehaviour
         CanvasScaler scaler = btnCanvas.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 0f;
         btnCanvas.AddComponent<GraphicRaycaster>();
+
+        // Viewport constraint so button stays within 9:16 game area.
+        GameObject vpRoot = new("ViewportRoot");
+        vpRoot.transform.SetParent(btnCanvas.transform, false);
+        RectTransform vpRect = vpRoot.AddComponent<RectTransform>();
+        vpRect.anchorMin = Vector2.zero;
+        vpRect.anchorMax = Vector2.one;
+        vpRect.offsetMin = Vector2.zero;
+        vpRect.offsetMax = Vector2.zero;
+        vpRoot.AddComponent<ViewportConstraint>();
 
         // Safe-area root so the button respects notch / status-bar insets.
         GameObject safeRoot = new("SafeArea");
-        safeRoot.transform.SetParent(btnCanvas.transform, false);
+        safeRoot.transform.SetParent(vpRoot.transform, false);
         RectTransform safeRect = safeRoot.AddComponent<RectTransform>();
         safeRoot.AddComponent<SafeAreaHandler>();
 
@@ -157,15 +167,24 @@ public class PauseManager : MonoBehaviour
         Canvas canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 760;
-        CanvasScaler scaler = ComponentUtility.EnsureComponent<CanvasScaler>(gameObject);
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0.5f;
+        CanvasScaler scaler2 = ComponentUtility.EnsureComponent<CanvasScaler>(gameObject);
+        scaler2.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler2.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
+        scaler2.matchWidthOrHeight = 0f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
         _group = ComponentUtility.EnsureComponent<CanvasGroup>(gameObject);
 
+        GameObject vpRoot2 = new("ViewportRoot");
+        vpRoot2.transform.SetParent(transform, false);
+        RectTransform vpRect2 = vpRoot2.AddComponent<RectTransform>();
+        vpRect2.anchorMin = Vector2.zero;
+        vpRect2.anchorMax = Vector2.one;
+        vpRect2.offsetMin = Vector2.zero;
+        vpRect2.offsetMax = Vector2.zero;
+        vpRoot2.AddComponent<ViewportConstraint>();
+
         GameObject panel = new("PausePanel");
-        panel.transform.SetParent(transform, false);
+        panel.transform.SetParent(vpRoot2.transform, false);
         RectTransform rect = panel.AddComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);

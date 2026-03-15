@@ -8,6 +8,7 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public class RunHUD : MonoBehaviour
 {
+    private RectTransform _safeRoot;
     private TextMeshProUGUI _roomText;
     private TextMeshProUGUI _inkText;
     private TextMeshProUGUI _perkText;
@@ -69,8 +70,25 @@ public class RunHUD : MonoBehaviour
         CanvasScaler scaler = ComponentUtility.EnsureComponent<CanvasScaler>(gameObject);
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 0f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
+
+        if (_safeRoot == null)
+        {
+            GameObject vp = new("ViewportRoot");
+            vp.transform.SetParent(transform, false);
+            RectTransform vpRect = vp.AddComponent<RectTransform>();
+            vpRect.anchorMin = Vector2.zero;
+            vpRect.anchorMax = Vector2.one;
+            vpRect.offsetMin = Vector2.zero;
+            vpRect.offsetMax = Vector2.zero;
+            vp.AddComponent<ViewportConstraint>();
+
+            GameObject safe = new("SafeArea");
+            safe.transform.SetParent(vp.transform, false);
+            _safeRoot = safe.AddComponent<RectTransform>();
+            safe.AddComponent<SafeAreaHandler>();
+        }
 
         if (_roomText == null)
         {
@@ -93,7 +111,7 @@ public class RunHUD : MonoBehaviour
     private TextMeshProUGUI CreateText(string name, Vector2 anchoredPosition, float fontSize)
     {
         GameObject go = new(name);
-        go.transform.SetParent(transform, false);
+        go.transform.SetParent(_safeRoot, false);
         RectTransform rect = go.AddComponent<RectTransform>();
         rect.anchorMin = new Vector2(0f, 1f);
         rect.anchorMax = new Vector2(0f, 1f);

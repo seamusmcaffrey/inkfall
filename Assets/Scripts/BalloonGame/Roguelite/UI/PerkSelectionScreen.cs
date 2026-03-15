@@ -71,7 +71,7 @@ public class PerkSelectionScreen : MonoBehaviour
         CanvasScaler scaler = ComponentUtility.EnsureComponent<CanvasScaler>(gameObject);
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 0f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
         _group = ComponentUtility.EnsureComponent<CanvasGroup>(gameObject);
 
@@ -84,8 +84,17 @@ public class PerkSelectionScreen : MonoBehaviour
         _backdrop = bg.AddComponent<Image>();
         _backdrop.color = new Color(0.02f, 0.02f, 0.04f, 0.88f);
 
+        GameObject vpRoot = new("ViewportRoot");
+        vpRoot.transform.SetParent(transform, false);
+        RectTransform vpRect = vpRoot.AddComponent<RectTransform>();
+        vpRect.anchorMin = Vector2.zero;
+        vpRect.anchorMax = Vector2.one;
+        vpRect.offsetMin = Vector2.zero;
+        vpRect.offsetMax = Vector2.zero;
+        vpRoot.AddComponent<ViewportConstraint>();
+
         GameObject panel = new("CardPanel");
-        panel.transform.SetParent(transform, false);
+        panel.transform.SetParent(vpRoot.transform, false);
         _contentRoot = panel.AddComponent<RectTransform>();
         _contentRoot.anchorMin = _contentRoot.anchorMax = new Vector2(0.5f, 0.5f);
         _contentRoot.sizeDelta = new Vector2(960f, 400f);

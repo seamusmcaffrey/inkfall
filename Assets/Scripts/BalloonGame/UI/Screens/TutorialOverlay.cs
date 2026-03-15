@@ -78,12 +78,21 @@ public class TutorialOverlay : MonoBehaviour
         CanvasScaler scaler = ComponentUtility.EnsureComponent<CanvasScaler>(gameObject);
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 0f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
         _group = ComponentUtility.EnsureComponent<CanvasGroup>(gameObject);
 
+        GameObject vpRoot = new("ViewportRoot");
+        vpRoot.transform.SetParent(transform, false);
+        RectTransform vpRect = vpRoot.AddComponent<RectTransform>();
+        vpRect.anchorMin = Vector2.zero;
+        vpRect.anchorMax = Vector2.one;
+        vpRect.offsetMin = Vector2.zero;
+        vpRect.offsetMax = Vector2.zero;
+        vpRoot.AddComponent<ViewportConstraint>();
+
         GameObject panel = new("TutorialPanel");
-        panel.transform.SetParent(transform, false);
+        panel.transform.SetParent(vpRoot.transform, false);
         RectTransform rect = panel.AddComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);

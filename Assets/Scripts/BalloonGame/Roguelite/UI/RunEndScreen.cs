@@ -22,6 +22,7 @@ public partial class RunEndScreen : MonoBehaviour
     private const float DividerHeight = 1.5f;
     private const int CanvasSortOrder = 500;
 
+    private GameObject _vpRoot;
     private CanvasGroup _group;
     private Image _backdrop;
     private TextMeshProUGUI _titleLabel;
@@ -104,11 +105,29 @@ public partial class RunEndScreen : MonoBehaviour
         CanvasScaler scaler = ComponentUtility.EnsureComponent<CanvasScaler>(gameObject);
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 0f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
         _group = ComponentUtility.EnsureComponent<CanvasGroup>(gameObject);
 
-        _backdrop = CreateFullScreenImage("Backdrop", UIColors.PanelBackground);
+        _vpRoot = new GameObject("ViewportRoot");
+        _vpRoot.transform.SetParent(transform, false);
+        RectTransform vpRect = _vpRoot.AddComponent<RectTransform>();
+        vpRect.anchorMin = Vector2.zero;
+        vpRect.anchorMax = Vector2.one;
+        vpRect.offsetMin = Vector2.zero;
+        vpRect.offsetMax = Vector2.zero;
+        _vpRoot.AddComponent<ViewportConstraint>();
+
+        // Backdrop covers full screen including pillarbox bars.
+        GameObject bgGo = new("Backdrop");
+        bgGo.transform.SetParent(transform, false);
+        RectTransform bgRect = bgGo.AddComponent<RectTransform>();
+        bgRect.anchorMin = Vector2.zero;
+        bgRect.anchorMax = Vector2.one;
+        bgRect.offsetMin = bgRect.offsetMax = Vector2.zero;
+        _backdrop = bgGo.AddComponent<Image>();
+        _backdrop.color = UIColors.PanelBackground;
+        _backdrop.raycastTarget = true;
 
         GameObject panel = CreatePanel();
 

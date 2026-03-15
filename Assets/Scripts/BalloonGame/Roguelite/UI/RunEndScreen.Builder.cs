@@ -7,7 +7,7 @@ public partial class RunEndScreen
     private Image CreateFullScreenImage(string name, Color color)
     {
         GameObject go = new(name);
-        go.transform.SetParent(transform, false);
+        go.transform.SetParent(_vpRoot.transform, false);
         RectTransform rect = go.AddComponent<RectTransform>();
         rect.anchorMin = Vector2.zero;
         rect.anchorMax = Vector2.one;
@@ -21,7 +21,7 @@ public partial class RunEndScreen
     private GameObject CreatePanel()
     {
         GameObject panel = new("Panel");
-        panel.transform.SetParent(transform, false);
+        panel.transform.SetParent(_vpRoot.transform, false);
         RectTransform rect = panel.AddComponent<RectTransform>();
         rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.sizeDelta = new Vector2(PanelWidth, PanelHeight);

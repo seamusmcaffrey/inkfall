@@ -99,7 +99,7 @@ public class TitleScreen : MonoBehaviour
         CanvasScaler scaler = ComponentUtility.EnsureComponent<CanvasScaler>(gameObject);
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 0f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
         _group = ComponentUtility.EnsureComponent<CanvasGroup>(gameObject);
 
@@ -112,10 +112,20 @@ public class TitleScreen : MonoBehaviour
         rect.offsetMax = Vector2.zero;
         backdrop.AddComponent<Image>().color = new Color(0.03f, 0.03f, 0.05f, 0.94f);
 
-        CreateText(backdrop.transform, "INKSHOT", new Vector2(0f, 220f), 84f, UIColors.RoomPink);
-        CreateText(backdrop.transform, "Chrome darts. Neon carnival. One more room.", new Vector2(0f, 150f), 26f, UIColors.InkCyan);
-        CreateButton(backdrop.transform, "START RUN", new Vector2(0f, -40f), StartRun);
-        CreateButton(backdrop.transform, "SETTINGS", new Vector2(0f, -120f), OpenSettings);
+        GameObject vpRoot = new("ViewportRoot");
+        vpRoot.transform.SetParent(transform, false);
+        RectTransform vpRect = vpRoot.AddComponent<RectTransform>();
+        vpRect.anchorMin = Vector2.zero;
+        vpRect.anchorMax = Vector2.one;
+        vpRect.offsetMin = Vector2.zero;
+        vpRect.offsetMax = Vector2.zero;
+        vpRoot.AddComponent<ViewportConstraint>();
+
+        CreateText(vpRoot.transform, "INKSHOT", new Vector2(0f, 220f), 84f, UIColors.RoomPink);
+        CreateText(vpRoot.transform, "Chrome darts. Neon carnival. One more room.",
+            new Vector2(0f, 150f), 26f, UIColors.InkCyan);
+        CreateButton(vpRoot.transform, "START RUN", new Vector2(0f, -40f), StartRun);
+        CreateButton(vpRoot.transform, "SETTINGS", new Vector2(0f, -120f), OpenSettings);
     }
 
     private void ResolveDependencies()

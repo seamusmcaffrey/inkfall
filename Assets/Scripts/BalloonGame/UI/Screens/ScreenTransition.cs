@@ -37,7 +37,7 @@ public class ScreenTransition : MonoBehaviour
         var scaler = go.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 0f;
 
         var imageGo = new GameObject("BlackOverlay");
         imageGo.transform.SetParent(go.transform, false);
