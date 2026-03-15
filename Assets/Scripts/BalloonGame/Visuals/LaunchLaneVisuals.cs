@@ -69,8 +69,8 @@ public class LaunchLaneVisuals : MonoBehaviour
         lineObj.transform.SetParent(transform, false);
 
         LineRenderer line = lineObj.AddComponent<LineRenderer>();
-        Color guideColor = new(UIColors.InkCyan.r, UIColors.InkCyan.g, UIColors.InkCyan.b, 0.35f);
-        Color guideFade = new(UIColors.InkCyan.r, UIColors.InkCyan.g, UIColors.InkCyan.b, 0.08f);
+        Color guideColor = new(UIColors.InkCyan.r, UIColors.InkCyan.g, UIColors.InkCyan.b, 0.15f);
+        Color guideFade = new(UIColors.InkCyan.r, UIColors.InkCyan.g, UIColors.InkCyan.b, 0.04f);
 
         line.material = new Material(Shader.Find("Sprites/Default"));
         line.startColor = guideFade;

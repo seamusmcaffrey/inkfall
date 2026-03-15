@@ -3,7 +3,8 @@ using UnityEngine;
 public static class GameConstants
 {
     // Layout
-    public const float CAMERA_ORTHO_SIZE = 10f;
+    public const float CAMERA_ORTHO_SIZE = 7.0f;
+    public const float CAMERA_Y_CENTER = 2.5f;
     public const int BOARD_COLUMNS = 8;
     public const int BOARD_ROWS = 9;
     public const int TOTAL_BALLOONS = BOARD_COLUMNS * BOARD_ROWS;
@@ -15,10 +16,10 @@ public static class GameConstants
     public const float BOARD_WIDTH = BOARD_RIGHT - BOARD_LEFT;
     public const float BOARD_HEIGHT = BOARD_TOP - BOARD_BOTTOM;
 
-    public const float LANE_TOP = -1.5f;
-    public const float LANE_BOTTOM = -9.5f;
+    public const float LANE_TOP = -0.8f;
+    public const float LANE_BOTTOM = -3.5f;
 
-    public static readonly Vector3 LAUNCH_POSITION = new(0f, -7.5f, 0f);
+    public static readonly Vector3 LAUNCH_POSITION = new(0f, -2.5f, 0f);
 
     public const float BALLOON_MAX_WIDTH = 0.62f;
     public const float BALLOON_MAX_HEIGHT = 0.74f;
@@ -30,8 +31,8 @@ public static class GameConstants
     public const float PERSPECTIVE_HORIZONTAL_PINCH = 0.06f;
     public const float PERSPECTIVE_VERTICAL_COMPRESSION = 0.08f;
 
-    public const float MAX_PULL_DISTANCE = 3.0f;
-    public const float AIM_ACTIVATION_RADIUS = 5f;
+    public const float MAX_PULL_DISTANCE = 1.8f;
+    public const float AIM_ACTIVATION_RADIUS = 2.5f;
     public const float MIN_PULL_DISTANCE = 0.5f;
     public const float PULL_CANCEL_RETURN_RADIUS = 0.3f;
     public const float PULL_DEAD_ZONE = 0.2f;
@@ -77,11 +78,11 @@ public static class GameConstants
     // UI
     public static readonly Vector2 UI_REFERENCE_RESOLUTION = new(1080f, 1920f);
     public const float SAFE_AREA_PADDING = 24f;
-    public const float HUD_TOP_MARGIN = 48f;
-    public const float HUD_SIDE_MARGIN = 36f;
+    public const float HUD_TOP_MARGIN = 8f;
+    public const float HUD_SIDE_MARGIN = 10f;
     public const float HUD_PROGRESS_HEIGHT = 18f;
     public const float FLOATING_SCORE_Z_OFFSET = -1.5f;
-    public const float MESSAGE_FONT_SIZE = 72f;
+    public const float MESSAGE_FONT_SIZE = 36f;
 
     // Touch / aim polish
     public const int TRAJECTORY_POINT_COUNT = 30;

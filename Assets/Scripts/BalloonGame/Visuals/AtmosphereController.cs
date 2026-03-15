@@ -6,16 +6,16 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class AtmosphereController : MonoBehaviour
 {
-    private const int MaxMistParticles = 60;
+    private const int MaxMistParticles = 20;
     private const float MistLifetime = 12f;
     private const float MistSpeed = 0.1f;
-    private const float MistSize = 3.8f;
-    private const float MistRate = 5.5f;
+    private const float MistSize = 2.5f;
+    private const float MistRate = 2.0f;
     private const float ColorOscillationSpeed = 0.22f;
 
-    private static readonly Color BaseMistColor = new(0.18f, 0.2f, 0.3f, 0.12f);
-    private static readonly Color MagentaMistColor = new(0.45f, 0.08f, 0.38f, 0.1f);
-    private static readonly Color CyanMistColor = new(0.08f, 0.35f, 0.42f, 0.1f);
+    private static readonly Color BaseMistColor = new(0.05f, 0.05f, 0.08f, 0.03f);
+    private static readonly Color MagentaMistColor = new(0.06f, 0.04f, 0.06f, 0.02f);
+    private static readonly Color CyanMistColor = new(0.04f, 0.06f, 0.08f, 0.02f);
 
     private ParticleSystem _mist;
 

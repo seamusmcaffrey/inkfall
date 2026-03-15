@@ -74,17 +74,17 @@ public class RunHUD : MonoBehaviour
 
         if (_roomText == null)
         {
-            _roomText = CreateText("Room", new Vector2(32f, -180f), 24f);
+            _roomText = CreateText("Room", new Vector2(32f, -180f), 16f);
         }
 
         if (_inkText == null)
         {
-            _inkText = CreateText("Ink", new Vector2(32f, -212f), 24f);
+            _inkText = CreateText("Ink", new Vector2(32f, -200f), 16f);
         }
 
         if (_perkText == null)
         {
-            _perkText = CreateText("Perks", new Vector2(32f, -244f), 18f);
+            _perkText = CreateText("Perks", new Vector2(32f, -220f), 14f);
         }
 
         _inkText.text = $"INK {SaveManager.Instance.Data.totalInk}";
@@ -102,7 +102,7 @@ public class RunHUD : MonoBehaviour
         rect.sizeDelta = new Vector2(700f, 40f);
         TextMeshProUGUI label = go.AddComponent<TextMeshProUGUI>();
         label.fontSize = fontSize;
-        label.color = UIColors.InkCyan;
+        label.color = new Color(0f, 0.55f, 0.55f, 0.7f);
         label.alignment = TextAlignmentOptions.Left;
         label.raycastTarget = false;
         return label;

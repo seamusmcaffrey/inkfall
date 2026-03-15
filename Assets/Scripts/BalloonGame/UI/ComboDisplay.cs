@@ -10,9 +10,9 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public class ComboDisplay : MonoBehaviour
 {
-    private const float BaseFontSize = 48f;
-    private const float FontSizePerCombo = 4f;
-    private const float MaxFontSize = 96f;
+    private const float BaseFontSize = 32f;
+    private const float FontSizePerCombo = 3f;
+    private const float MaxFontSize = 64f;
     private const float PunchScaleMax = 1.5f;
     private const float GlowDilateAmount = 0.3f;
 
@@ -125,7 +125,7 @@ public class ComboDisplay : MonoBehaviour
             glowGo.transform.SetParent(transform, false);
             RectTransform glowRect = glowGo.AddComponent<RectTransform>();
             glowRect.anchorMin = glowRect.anchorMax = new Vector2(0.5f, 0.5f);
-            glowRect.sizeDelta = new Vector2(280f, 120f);
+            glowRect.sizeDelta = new Vector2(200f, 80f);
             _glowBackground = glowGo.AddComponent<Image>();
             _glowBackground.color = Color.clear;
             _glowBackground.raycastTarget = false;

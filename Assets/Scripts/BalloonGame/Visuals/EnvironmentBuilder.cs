@@ -15,10 +15,10 @@ public partial class EnvironmentBuilder : MonoBehaviour
     private static readonly Color FrameColor = new(0.30f, 0.27f, 0.24f);
     private static readonly Color FloorColor = new(0.04f, 0.03f, 0.03f);
     private static readonly Color BoltColor = new(0.45f, 0.40f, 0.34f);
-    private static readonly Color FogColor = new(0.03f, 0.03f, 0.05f, 0.55f);
-    private static readonly Color AccentCyan = new(0.06f, 0.35f, 0.38f);
+    private static readonly Color FogColor = new(0.02f, 0.02f, 0.03f, 0.15f);
+    private static readonly Color AccentCyan = new(0.04f, 0.20f, 0.22f);
     private static readonly Color WallDarkColor = new(0.05f, 0.04f, 0.04f);
-    private static readonly string[] StaleVisualRoots = { "BackWall", "LaneFloor", "Directional Light" };
+    private static readonly string[] StaleVisualRoots = { "BackWall", "LaneFloor", "Directional Light", "LaunchOrigin" };
     private static readonly string[] WallNames = { "LeftWall", "RightWall", "TopWall" };
 
     private void Awake()
@@ -30,7 +30,9 @@ public partial class EnvironmentBuilder : MonoBehaviour
         foreach (string wallName in WallNames)
         {
             GameObject wall = GameObject.Find(wallName);
-            if (wall != null) { Renderer r = wall.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = dark; }
+            if (wall == null) continue;
+            Renderer r = wall.GetComponent<Renderer>();
+            if (r != null) { r.sharedMaterial = dark; r.enabled = false; }
         }
         BuildEnvironment();
     }
@@ -103,14 +105,14 @@ public partial class EnvironmentBuilder : MonoBehaviour
         {
             new(0.45f, 0.06f, 0.10f), new(0.06f, 0.38f, 0.15f),
             new(0.12f, 0.10f, 0.45f), new(0.45f, 0.30f, 0.04f),
-            new(0.35f, 0.05f, 0.25f), new(0.04f, 0.30f, 0.38f),
         };
+        float stripeSpacing = floorH / (stripeColors.Length + 1);
         float startY = floorY + floorH * 0.35f;
         for (int i = 0; i < stripeColors.Length; i++)
         {
             SetPanel($"FloorStripe{i}", PrimitiveType.Quad,
-                new Vector3(0f, startY - i * 1.2f, BoardZ + 0.08f),
-                new Vector3(7f, 0.12f, 1f), CreateMaterial(stripeColors[i], unlit: true));
+                new Vector3(0f, startY - i * stripeSpacing, BoardZ + 0.08f),
+                new Vector3(7f, 0.10f, 1f), CreateMaterial(stripeColors[i], unlit: true));
         }
     }
 
@@ -118,9 +120,19 @@ public partial class EnvironmentBuilder : MonoBehaviour
     {
         Material fog = CreateMaterial(FogColor, unlit: true);
         SetPanel("FogLayerTop", PrimitiveType.Quad,
-            new Vector3(0f, GameConstants.BOARD_TOP + 1.5f, BoardZ - 0.3f), new Vector3(10f, 3f, 1f), fog);
+            new Vector3(0f, GameConstants.BOARD_TOP + 1.5f, BoardZ - 0.3f), new Vector3(10f, 1.5f, 1f), fog);
         SetPanel("FogLayerBottom", PrimitiveType.Quad,
-            new Vector3(0f, GameConstants.BOARD_BOTTOM - 1f, BoardZ - 0.3f), new Vector3(10f, 2.5f, 1f), fog);
+            new Vector3(0f, GameConstants.BOARD_BOTTOM - 1f, BoardZ - 0.3f), new Vector3(10f, 1f, 1f), fog);
+
+        // Subtle side vignette for noir depth
+        Color edgeFog = new(0.01f, 0.01f, 0.02f, 0.12f);
+        Material edgeMat = CreateMaterial(edgeFog, unlit: true);
+        float centerY = (GameConstants.BOARD_TOP + GameConstants.LANE_BOTTOM) * 0.5f;
+        float totalH = GameConstants.BOARD_TOP - GameConstants.LANE_BOTTOM + 2f;
+        SetPanel("VignetteLeft", PrimitiveType.Quad,
+            new Vector3(-5.5f, centerY, BoardZ - 0.25f), new Vector3(3f, totalH, 1f), edgeMat);
+        SetPanel("VignetteRight", PrimitiveType.Quad,
+            new Vector3(5.5f, centerY, BoardZ - 0.25f), new Vector3(3f, totalH, 1f), edgeMat);
     }
 
     private void BuildLaneGuides()
