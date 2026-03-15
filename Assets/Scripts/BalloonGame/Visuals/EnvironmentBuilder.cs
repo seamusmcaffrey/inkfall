@@ -93,21 +93,26 @@ public partial class EnvironmentBuilder : MonoBehaviour
     private void BuildFloorArea()
     {
         Material unlitFloor = CreateMaterial(FloorColor, unlit: true);
-        SetPanel("BackWall", PrimitiveType.Quad, new Vector3(0f, 0f, 1.5f), new Vector3(24f, 40f, 1f),
+        float bwH = GameConstants.MAX_ORTHO_SIZE * 2f + 4f;
+        SetPanel("BackWall", PrimitiveType.Quad,
+            new Vector3(0f, GameConstants.CAMERA_Y_CENTER, 1.5f),
+            new Vector3(GameConstants.TARGET_WORLD_WIDTH + 16f, bwH, 1f),
             CreateMaterial(new Color(0.015f, 0.015f, 0.02f), unlit: true));
 
-        float floorY = (GameConstants.LANE_TOP + GameConstants.LANE_BOTTOM) * 0.5f;
-        float floorH = GameConstants.LANE_TOP - GameConstants.LANE_BOTTOM;
+        float floorBottom = GameConstants.CAMERA_Y_CENTER - GameConstants.MAX_ORTHO_SIZE - 1f;
+        float floorY = (GameConstants.LANE_TOP + floorBottom) * 0.5f;
+        float floorH = GameConstants.LANE_TOP - floorBottom;
         SetPanel("LaneFloor", PrimitiveType.Quad,
-            new Vector3(0f, floorY, BoardZ + 0.1f), new Vector3(9f, floorH, 1f), unlitFloor);
+            new Vector3(0f, floorY, BoardZ + 0.1f),
+            new Vector3(GameConstants.TARGET_WORLD_WIDTH + 1f, floorH, 1f), unlitFloor);
 
         Color[] stripeColors =
         {
             new(0.45f, 0.06f, 0.10f), new(0.06f, 0.38f, 0.15f),
             new(0.12f, 0.10f, 0.45f), new(0.45f, 0.30f, 0.04f),
         };
-        float stripeSpacing = floorH / (stripeColors.Length + 1);
-        float startY = floorY + floorH * 0.35f;
+        float stripeSpacing = (GameConstants.LANE_TOP - GameConstants.LANE_BOTTOM) / (stripeColors.Length + 1);
+        float startY = (GameConstants.LANE_TOP + GameConstants.LANE_BOTTOM) * 0.5f + (GameConstants.LANE_TOP - GameConstants.LANE_BOTTOM) * 0.35f;
         for (int i = 0; i < stripeColors.Length; i++)
         {
             SetPanel($"FloorStripe{i}", PrimitiveType.Quad,
@@ -118,21 +123,26 @@ public partial class EnvironmentBuilder : MonoBehaviour
 
     private void BuildAtmosphere()
     {
+        float viewportH = GameConstants.MAX_ORTHO_SIZE * 2f + 2f;
+        float fogWidth = GameConstants.TARGET_WORLD_WIDTH + 2f;
+
         Material fog = CreateMaterial(FogColor, unlit: true);
         SetPanel("FogLayerTop", PrimitiveType.Quad,
-            new Vector3(0f, GameConstants.BOARD_TOP + 1.5f, BoardZ - 0.3f), new Vector3(10f, 1.5f, 1f), fog);
+            new Vector3(0f, GameConstants.BOARD_TOP + 1.5f, BoardZ - 0.3f),
+            new Vector3(fogWidth, 2.5f, 1f), fog);
         SetPanel("FogLayerBottom", PrimitiveType.Quad,
-            new Vector3(0f, GameConstants.BOARD_BOTTOM - 1f, BoardZ - 0.3f), new Vector3(10f, 1f, 1f), fog);
+            new Vector3(0f, GameConstants.BOARD_BOTTOM - 1.5f, BoardZ - 0.3f),
+            new Vector3(fogWidth, 2f, 1f), fog);
 
-        // Subtle side vignette for noir depth
+        // Side vignettes scaled to cover full viewport height
         Color edgeFog = new(0.01f, 0.01f, 0.02f, 0.12f);
         Material edgeMat = CreateMaterial(edgeFog, unlit: true);
-        float centerY = (GameConstants.BOARD_TOP + GameConstants.LANE_BOTTOM) * 0.5f;
-        float totalH = GameConstants.BOARD_TOP - GameConstants.LANE_BOTTOM + 2f;
         SetPanel("VignetteLeft", PrimitiveType.Quad,
-            new Vector3(-5.5f, centerY, BoardZ - 0.25f), new Vector3(3f, totalH, 1f), edgeMat);
+            new Vector3(-5.5f, GameConstants.CAMERA_Y_CENTER, BoardZ - 0.25f),
+            new Vector3(3f, viewportH, 1f), edgeMat);
         SetPanel("VignetteRight", PrimitiveType.Quad,
-            new Vector3(5.5f, centerY, BoardZ - 0.25f), new Vector3(3f, totalH, 1f), edgeMat);
+            new Vector3(5.5f, GameConstants.CAMERA_Y_CENTER, BoardZ - 0.25f),
+            new Vector3(3f, viewportH, 1f), edgeMat);
     }
 
     private void BuildLaneGuides()

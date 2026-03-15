@@ -104,11 +104,11 @@ public class RoomIntroScreen : MonoBehaviour
         scaler.matchWidthOrHeight = 0f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
 
-        // Full-screen dark backdrop covers entire screen including pillarbox bars.
+        // Full-screen dark backdrop covers entire screen.
         GameObject bg = new("Backdrop");
         bg.transform.SetParent(transform, false);
 
-        // Viewport constraint keeps interactive content within 9:16 game area.
+        // ViewportRoot stretches to fill screen; SafeArea handles notch insets.
         GameObject vpRoot = new("ViewportRoot");
         vpRoot.transform.SetParent(transform, false);
         RectTransform vpRect = vpRoot.AddComponent<RectTransform>();

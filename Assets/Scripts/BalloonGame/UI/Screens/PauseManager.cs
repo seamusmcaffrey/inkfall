@@ -112,7 +112,7 @@ public class PauseManager : MonoBehaviour
         scaler.matchWidthOrHeight = 0f;
         btnCanvas.AddComponent<GraphicRaycaster>();
 
-        // Viewport constraint so button stays within 9:16 game area.
+        // ViewportRoot stretches to fill screen.
         GameObject vpRoot = new("ViewportRoot");
         vpRoot.transform.SetParent(btnCanvas.transform, false);
         RectTransform vpRect = vpRoot.AddComponent<RectTransform>();

@@ -1,18 +1,23 @@
 using UnityEngine;
 
+/// <summary>
+/// Width-locked, height-flexible orthographic camera.
+/// Guarantees TARGET_WORLD_WIDTH always fills the screen width.
+/// On taller devices, extra vertical space reveals more environment.
+/// On wider devices (iPad), clamps to MIN_ORTHO_SIZE so the board stays visible.
+/// </summary>
 [RequireComponent(typeof(Camera))]
 public class BalloonCamera : MonoBehaviour
 {
-    private const float TargetAspect = 9f / 16f;
-
     private Camera _camera;
     private Vector3 _basePosition;
+    private float _lastAspect;
 
     private void Awake()
     {
         _camera = GetComponent<Camera>();
         ConfigureCamera();
-        EnforceAspect();
+        ApplyAdaptiveSize();
         _basePosition = transform.position;
     }
 
@@ -26,44 +31,51 @@ public class BalloonCamera : MonoBehaviour
         if (_camera != null)
         {
             ConfigureCamera();
-            EnforceAspect();
+            ApplyAdaptiveSize();
         }
     }
 
     private void ConfigureCamera()
     {
         _camera.orthographic = true;
-        _camera.orthographicSize = GameConstants.CAMERA_ORTHO_SIZE;
         _camera.nearClipPlane = 0.1f;
         _camera.farClipPlane = 50f;
         _camera.clearFlags = CameraClearFlags.SolidColor;
         _camera.backgroundColor = new Color(0.02f, 0.02f, 0.03f);
+        _camera.rect = new Rect(0f, 0f, 1f, 1f);
         transform.position = new Vector3(0f, GameConstants.CAMERA_Y_CENTER, transform.position.z);
     }
 
-    private void EnforceAspect()
+    private void ApplyAdaptiveSize()
     {
-        float currentAspect = (float)Screen.width / Screen.height;
+        float screenAspect = (float)Screen.width / Screen.height;
 
-        if (currentAspect > TargetAspect)
+        // Prevent division by zero on startup or in batch mode
+        if (screenAspect <= 0.01f)
         {
-            float width = TargetAspect / currentAspect;
-            _camera.rect = new Rect((1f - width) / 2f, 0f, width, 1f);
+            _camera.orthographicSize = GameConstants.CAMERA_ORTHO_SIZE;
             return;
         }
 
-        if (currentAspect < TargetAspect)
-        {
-            float height = currentAspect / TargetAspect;
-            _camera.rect = new Rect(0f, (1f - height) / 2f, 1f, height);
-            return;
-        }
+        // Width-locked: calculate ortho size to fit TARGET_WORLD_WIDTH exactly
+        float requiredOrthoSize = (GameConstants.TARGET_WORLD_WIDTH / 2f) / screenAspect;
 
-        _camera.rect = new Rect(0f, 0f, 1f, 1f);
+        // Clamp between min (wide screens like iPad) and max (ultra-tall screens)
+        _camera.orthographicSize = Mathf.Clamp(
+            requiredOrthoSize,
+            GameConstants.MIN_ORTHO_SIZE,
+            GameConstants.MAX_ORTHO_SIZE);
     }
 
     private void LateUpdate()
     {
+        float currentAspect = (float)Screen.width / Screen.height;
+        if (Mathf.Abs(currentAspect - _lastAspect) > 0.001f)
+        {
+            _lastAspect = currentAspect;
+            ApplyAdaptiveSize();
+        }
+
         transform.position = _basePosition + new Vector3(
             Mathf.Sin(Time.time * 0.24f) * 0.06f,
             Mathf.Cos(Time.time * 0.18f) * 0.04f,

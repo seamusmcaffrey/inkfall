@@ -63,25 +63,28 @@ namespace Inkshot.Editor.AgentBridge
                 detail = isOrtho ? "Orthographic" : "Perspective (expected orthographic)",
             });
 
-            float expectedSize = GameConstants.CAMERA_ORTHO_SIZE;
-            bool correctSize = Mathf.Approximately(camera.orthographicSize, expectedSize);
+            // Adaptive camera: ortho size is recalculated at runtime based on screen aspect.
+            // In editor, accept any value within the configured min/max range.
+            float orthoSize = camera.orthographicSize;
+            bool correctSize = orthoSize >= GameConstants.MIN_ORTHO_SIZE - 0.1f
+                            && orthoSize <= GameConstants.MAX_ORTHO_SIZE + 0.1f;
             checks.Add(new ValidationCheck
             {
                 category = "Camera",
-                description = "Orthographic size matches GameConstants",
+                description = "Orthographic size within adaptive range",
                 passed = correctSize,
-                detail = $"Expected {expectedSize}, got {camera.orthographicSize}",
+                detail = $"Expected {GameConstants.MIN_ORTHO_SIZE}-{GameConstants.MAX_ORTHO_SIZE}, got {orthoSize}",
             });
 
-            Vector3 expectedPos = new(0f, 0f, -GameConstants.CAMERA_ORTHO_SIZE);
-            const float positionTolerance = 0.01f;
-            bool correctPos = Vector3.Distance(camera.transform.position, expectedPos) < positionTolerance;
+            float cameraY = camera.transform.position.y;
+            const float positionTolerance = 0.1f;
+            bool correctPos = Mathf.Abs(cameraY - GameConstants.CAMERA_Y_CENTER) < positionTolerance;
             checks.Add(new ValidationCheck
             {
                 category = "Camera",
-                description = "Camera at expected position",
+                description = "Camera Y at expected center",
                 passed = correctPos,
-                detail = $"Expected {expectedPos}, got {camera.transform.position}",
+                detail = $"Expected Y≈{GameConstants.CAMERA_Y_CENTER}, got {cameraY}",
             });
         }
 

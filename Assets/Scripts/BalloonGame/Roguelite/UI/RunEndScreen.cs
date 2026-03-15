@@ -109,16 +109,7 @@ public partial class RunEndScreen : MonoBehaviour
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
         _group = ComponentUtility.EnsureComponent<CanvasGroup>(gameObject);
 
-        _vpRoot = new GameObject("ViewportRoot");
-        _vpRoot.transform.SetParent(transform, false);
-        RectTransform vpRect = _vpRoot.AddComponent<RectTransform>();
-        vpRect.anchorMin = Vector2.zero;
-        vpRect.anchorMax = Vector2.one;
-        vpRect.offsetMin = Vector2.zero;
-        vpRect.offsetMax = Vector2.zero;
-        _vpRoot.AddComponent<ViewportConstraint>();
-
-        // Backdrop covers full screen including pillarbox bars.
+        // Backdrop first so it renders behind interactive content.
         GameObject bgGo = new("Backdrop");
         bgGo.transform.SetParent(transform, false);
         RectTransform bgRect = bgGo.AddComponent<RectTransform>();
@@ -128,6 +119,15 @@ public partial class RunEndScreen : MonoBehaviour
         _backdrop = bgGo.AddComponent<Image>();
         _backdrop.color = UIColors.PanelBackground;
         _backdrop.raycastTarget = true;
+
+        _vpRoot = new GameObject("ViewportRoot");
+        _vpRoot.transform.SetParent(transform, false);
+        RectTransform vpRect = _vpRoot.AddComponent<RectTransform>();
+        vpRect.anchorMin = Vector2.zero;
+        vpRect.anchorMax = Vector2.one;
+        vpRect.offsetMin = Vector2.zero;
+        vpRect.offsetMax = Vector2.zero;
+        _vpRoot.AddComponent<ViewportConstraint>();
 
         GameObject panel = CreatePanel();
 

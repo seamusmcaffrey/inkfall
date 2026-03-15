@@ -2,9 +2,11 @@ using UnityEngine;
 
 public static class GameConstants
 {
-    // Layout
     public const float CAMERA_ORTHO_SIZE = 7.0f;
     public const float CAMERA_Y_CENTER = 2.5f;
+    public const float TARGET_WORLD_WIDTH = 8.6f;
+    public const float MIN_ORTHO_SIZE = 7.0f;
+    public const float MAX_ORTHO_SIZE = 12.0f;
     public const int BOARD_COLUMNS = 8;
     public const int BOARD_ROWS = 9;
     public const int TOTAL_BALLOONS = BOARD_COLUMNS * BOARD_ROWS;
