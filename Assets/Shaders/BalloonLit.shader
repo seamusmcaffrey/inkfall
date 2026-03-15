@@ -6,11 +6,11 @@ Shader "Inkshot/BalloonLit"
         _Glossiness ("Glossiness", Range(0, 1)) = 0.85
         _RimPower ("Rim Power", Range(0.5, 8)) = 2.5
         _RimColor ("Rim Color", Color) = (1, 1, 1, 1)
-        _RimIntensity ("Rim Intensity", Range(0, 2)) = 0.6
-        _GradientStrength ("Gradient Strength", Range(0, 0.5)) = 0.15
-        _SpecularIntensity ("Specular Intensity", Range(0, 2)) = 1.2
-        _SpecularSize ("Specular Size", Range(1, 256)) = 64
-        _AmbientBoost ("Ambient Boost", Range(0, 1)) = 0.12
+        _RimIntensity ("Rim Intensity", Range(0, 2)) = 0.18
+        _GradientStrength ("Gradient Strength", Range(0, 0.5)) = 0.12
+        _SpecularIntensity ("Specular Intensity", Range(0, 2)) = 1.4
+        _SpecularSize ("Specular Size", Range(1, 256)) = 80
+        _AmbientBoost ("Ambient Boost", Range(0, 1)) = 0.3
     }
 
     SubShader
@@ -21,6 +21,7 @@ Shader "Inkshot/BalloonLit"
         {
             Name "BalloonForward"
             Tags { "LightMode"="UniversalForward" }
+            Cull Off
 
             HLSLPROGRAM
             #pragma vertex vert
@@ -85,7 +86,7 @@ Shader "Inkshot/BalloonLit"
                 return output;
             }
 
-            half4 frag(Varyings input) : SV_Target
+            half4 frag(Varyings input, half facing : VFACE) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(input);
                 #ifdef UNITY_INSTANCING_ENABLED
@@ -93,7 +94,7 @@ Shader "Inkshot/BalloonLit"
                 #else
                 half4 baseColor = _BaseColor;
                 #endif
-                half3 normalWS = normalize(input.normalWS);
+                half3 normalWS = normalize(input.normalWS) * (facing > 0 ? 1 : -1);
                 half3 viewDir = normalize(input.viewDirWS);
                 Light mainLight = GetMainLight();
                 half3 lightDir = normalize(mainLight.direction);
@@ -136,8 +137,8 @@ Shader "Inkshot/BalloonLit"
                     half3 addHalf = normalize(normalize(addLight.direction) + viewDir);
                     half addSpec = pow(saturate(dot(normalWS, addHalf)), _SpecularSize * 0.5) * 0.4;
                     half atten = addLight.distanceAttenuation * addLight.shadowAttenuation;
-                    color += baseColor.rgb * addNdotL * addLight.color * atten * 0.6;
-                    color += addSpec * addLight.color * atten;
+                    color += baseColor.rgb * addNdotL * addLight.color * atten * 0.35;
+                    color += addSpec * addLight.color * atten * 0.5;
                 }
                 #endif
 

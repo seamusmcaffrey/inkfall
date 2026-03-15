@@ -7,15 +7,15 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class EnvironmentBuilder : MonoBehaviour
 {
-    private const float FrameThickness = 0.35f;
-    private const float FrameDepth = 0.15f;
+    private const float FrameThickness = 0.45f;
+    private const float FrameDepth = 0.18f;
     private const float BoardZ = 0.5f;
 
-    private static readonly Color CorkColor = new(0.14f, 0.09f, 0.05f);
-    private static readonly Color FrameColor = new(0.22f, 0.20f, 0.18f);
+    private static readonly Color CorkColor = new(0.22f, 0.14f, 0.08f);
+    private static readonly Color FrameColor = new(0.30f, 0.27f, 0.24f);
     private static readonly Color FloorColor = new(0.04f, 0.03f, 0.03f);
-    private static readonly Color BoltColor = new(0.35f, 0.32f, 0.28f);
-    private static readonly Color FogColor = new(0.04f, 0.04f, 0.06f, 0.7f);
+    private static readonly Color BoltColor = new(0.45f, 0.40f, 0.34f);
+    private static readonly Color FogColor = new(0.03f, 0.03f, 0.05f, 0.55f);
     private static readonly Color AccentCyan = new(0.06f, 0.35f, 0.38f);
     private static readonly Color WallDarkColor = new(0.05f, 0.04f, 0.04f);
     private static readonly string[] StaleVisualRoots = { "BackWall", "LaneFloor" };
@@ -54,7 +54,7 @@ public class EnvironmentBuilder : MonoBehaviour
         float cx = (GameConstants.BOARD_LEFT + GameConstants.BOARD_RIGHT) * 0.5f;
         float cy = (GameConstants.BOARD_TOP + GameConstants.BOARD_BOTTOM) * 0.5f;
         SetPanel("CorkBoard", PrimitiveType.Quad, new Vector3(cx, cy, BoardZ), new Vector3(w, h, 1f),
-            CreateMaterial(CorkColor, 0.04f, 0f));
+            CreateMaterial(CorkColor, 0.15f, 0.05f));
     }
 
     private void BuildMetalFrame()
@@ -82,7 +82,7 @@ public class EnvironmentBuilder : MonoBehaviour
             new Vector3(FrameThickness, bh, FrameDepth * 2f), frameMat);
 
         float boltZ = BoardZ - FrameDepth * 1.3f;
-        Vector3 bs = new(0.12f, 0.12f, FrameDepth * 0.6f);
+        Vector3 bs = new(0.20f, 0.20f, FrameDepth * 0.7f);
         float bx = halfW + FrameThickness * 0.3f, by = halfH + FrameThickness * 0.3f;
         SetPanel("BoltTL", PrimitiveType.Cube, new Vector3(cx - bx, cy + by, boltZ), bs, boltMat);
         SetPanel("BoltTR", PrimitiveType.Cube, new Vector3(cx + bx, cy + by, boltZ), bs, boltMat);
@@ -103,16 +103,16 @@ public class EnvironmentBuilder : MonoBehaviour
 
         Color[] stripeColors =
         {
-            new(0.18f, 0.03f, 0.05f), new(0.03f, 0.15f, 0.08f),
-            new(0.06f, 0.05f, 0.18f), new(0.18f, 0.12f, 0.02f),
-            new(0.14f, 0.02f, 0.1f), new(0.02f, 0.12f, 0.15f),
+            new(0.45f, 0.06f, 0.10f), new(0.06f, 0.38f, 0.15f),
+            new(0.12f, 0.10f, 0.45f), new(0.45f, 0.30f, 0.04f),
+            new(0.35f, 0.05f, 0.25f), new(0.04f, 0.30f, 0.38f),
         };
         float startY = floorY + floorH * 0.35f;
         for (int i = 0; i < stripeColors.Length; i++)
         {
             SetPanel($"FloorStripe{i}", PrimitiveType.Quad,
                 new Vector3(0f, startY - i * 1.2f, BoardZ + 0.08f),
-                new Vector3(6f, 0.08f, 1f), CreateMaterial(stripeColors[i], unlit: true));
+                new Vector3(7f, 0.12f, 1f), CreateMaterial(stripeColors[i], unlit: true));
         }
     }
 

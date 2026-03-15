@@ -179,11 +179,11 @@ public partial class BalloonWall : MonoBehaviour
 
         float rowRatio = (float)row / (totalRows - 1);
         float topBias = 1f - rowRatio;
-        float fade = 1f - topBias * 0.12f;
+        float fadeFactor = 1f - topBias * 0.08f;
 
         Color baseColor = ResolveDisplayColor(type);
-        Color darkenedColor = new(baseColor.r * 0.6f, baseColor.g * 0.6f, baseColor.b * 0.6f);
-        Color finalColor = Color.Lerp(darkenedColor, baseColor, fade);
+        Color finalColor = baseColor * fadeFactor;
+        finalColor.a = 1f;
         renderer.GetPropertyBlock(_materialPropertyBlock);
         _materialPropertyBlock.SetColor("_Color", finalColor);
         _materialPropertyBlock.SetColor("_BaseColor", finalColor);

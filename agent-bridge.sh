@@ -6,6 +6,7 @@ PROJECT_PATH="$SCRIPT_DIR"
 OUTPUT_DIR="$PROJECT_PATH/Logs/agent-feedback"
 LOG_FILE="$OUTPUT_DIR/editor.log"
 MCP_URL="${UNITY_MCP_URL:-http://localhost:8080/mcp}"
+UNITY_LOCKFILE="$PROJECT_PATH/Temp/UnityLockfile"
 
 # ── Unity discovery ──────────────────────────────────────────────
 find_unity() {
@@ -38,15 +39,45 @@ find_unity() {
 }
 
 # ── State detection ──────────────────────────────────────────────
+unity_process_running() {
+    pgrep -x Unity >/dev/null 2>&1
+}
+
+cleanup_stale_unity_lockfile() {
+    if [[ -f "$UNITY_LOCKFILE" ]] && ! unity_process_running; then
+        rm -f "$UNITY_LOCKFILE"
+    fi
+}
+
 is_unity_running() {
-    [[ -f "$PROJECT_PATH/Temp/UnityLockfile" ]]
+    if [[ ! -f "$UNITY_LOCKFILE" ]]; then
+        return 1
+    fi
+
+    if unity_process_running; then
+        return 0
+    fi
+
+    cleanup_stale_unity_lockfile
+    return 1
 }
 
 is_mcp_available() {
     # Quick health check on the MCP HTTP endpoint
     local response
-    response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 "$MCP_URL" 2>/dev/null || echo "000")
-    [[ "$response" != "000" ]]
+
+    if ! response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 "$MCP_URL" 2>/dev/null); then
+        return 1
+    fi
+
+    case "$response" in
+        2*|4*)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
 }
 
 UNITY="$(find_unity)"
