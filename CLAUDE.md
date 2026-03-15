@@ -139,8 +139,8 @@ Scripts/BalloonGame/Editor/      # Editor-only tooling (SceneBuilder, URPSetup)
 
 ### Camera
 
-- Fixed orthographic camera, portrait orientation (9:16).
-- Orthographic size: 10.
+- Perspective camera, portrait orientation (9:16).
+- FOV: 60°, adaptive Z distance to frame `TARGET_WORLD_WIDTH`.
 - Managed by `BalloonCamera` component.
 
 ## UI Standards
@@ -268,11 +268,12 @@ Non-visual commands (`compile`, `health`, `validate`) use standard batch mode.
 
 ### MCP (live Unity connection)
 
-When Unity is open, two MCP servers (configured in `.mcp.json`) provide instant access:
+When Unity is open, MCP servers (configured in `.mcp.json`) provide instant access:
 - **CoplayDev unity-mcp** — scene graph, scripts, materials, console
 - **uLoopMCP** — screenshots, dynamic C# execution, play mode control
+- **Unity-MCP (AI Game Developer)** — 52-tool MCP bridge by Ivan Murzak. Covers assets, GameObjects, scenes, scripts, screenshots, reflection, packages, and test running. Communicates via stdio. Configure in Unity via `Window > AI Game Developer > Configure` (select Claude Code). See [tool reference](https://github.com/IvanMurzak/Unity-MCP/wiki/AI-Tools-Reference) for the full list.
 
-Start via: Unity > Window > MCP for Unity > Start Server. MCP calls take ~1-2s vs interactive mode's ~60-90s.
+Start CoplayDev/uLoopMCP via: Unity > Window > MCP for Unity > Start Server. MCP calls take ~1-2s vs interactive mode's ~60-90s.
 
 ### Output Location
 

@@ -19,7 +19,8 @@ public class PostProcessingSetup : MonoBehaviour
 
     private void Awake()
     {
-        EnsurePostProcessing();
+        // Post-processing disabled for clean even lighting.
+        // Call EnsurePostProcessing() to re-enable.
     }
 
     [ContextMenu("Setup Post Processing")]

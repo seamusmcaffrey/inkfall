@@ -71,9 +71,9 @@ public static class DefaultAssetsBootstrap
 
         var rooms = new List<RoomTemplateSO>
         {
-            CreateRoom("OpeningBooth", "opening-booth", "Opening Booth", RoomType.Normal, 8, 9, GameConstants.BASE_TARGET_SCORE, GameConstants.STARTING_DARTS, 1, 2, 0, 1, UIColors.InkCyan),
-            CreateRoom("ChromeMidway", "chrome-midway", "Chrome Midway", RoomType.Normal, 8, 9, 3600, GameConstants.STARTING_DARTS, 2, 3, 1, 1, UIColors.RoomPink),
-            CreateRoom("PrizeChamber", "prize-chamber", "Prize Chamber", RoomType.Bonus, 7, 8, 3200, GameConstants.STARTING_DARTS + 1, 2, 4, 0, 0, UIColors.ComboGold, isBonusEligible: true),
+            CreateRoom("OpeningBooth", "opening-booth", "Opening Booth", RoomType.Normal, GameConstants.BOARD_COLUMNS, GameConstants.BOARD_ROWS, GameConstants.BASE_TARGET_SCORE, GameConstants.STARTING_DARTS, 1, 2, 0, 1, UIColors.InkCyan),
+            CreateRoom("ChromeMidway", "chrome-midway", "Chrome Midway", RoomType.Normal, GameConstants.BOARD_COLUMNS, GameConstants.BOARD_ROWS, 3600, GameConstants.STARTING_DARTS, 2, 3, 1, 1, UIColors.RoomPink),
+            CreateRoom("PrizeChamber", "prize-chamber", "Prize Chamber", RoomType.Bonus, GameConstants.BOARD_COLUMNS, GameConstants.BOARD_ROWS, 3200, GameConstants.STARTING_DARTS + 1, 2, 4, 0, 0, UIColors.ComboGold, isBonusEligible: true),
         };
 
         CreateAssetIfMissing<MetaUpgradeSO>(MetaFolder + "/StarterKit.asset", asset =>

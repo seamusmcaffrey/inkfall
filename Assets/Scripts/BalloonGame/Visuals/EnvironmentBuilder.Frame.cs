@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Builds the metal frame, corner bolts, and inner bevel for depth illusion.
+/// Builds the metal frame, corner bolts, and inner bevel.
 /// </summary>
 public partial class EnvironmentBuilder
 {

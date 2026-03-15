@@ -43,6 +43,12 @@ public class GameConfigSO : ScriptableObject
     public float fullRunInkMultiplier = 2f;
     public int perkChoicesPerDraft = 3;
 
+    [Header("Balloon Visuals")]
+    [Tooltip("Imported 3D prefab to use for balloons. If null, falls back to procedural mesh.")]
+    public GameObject balloonPrefabOverride;
+    [Tooltip("Imported 3D mesh to use for balloons (without prefab). If null, falls back to procedural mesh.")]
+    public Mesh balloonMeshOverride;
+
     [Header("Special Balloons")]
     public float defaultPaintRadius = GameConstants.DEFAULT_PAINT_RADIUS;
     public int goldBalloonBonus = 250;

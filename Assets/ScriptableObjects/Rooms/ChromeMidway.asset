@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: Chrome Midway
   roomType: 0
   isBonusEligible: 0
-  columns: 8
-  rows: 9
+  columns: 5
+  rows: 5
   baseTargetScore: 3600
   baseDarts: 4
   minSpecials: 2

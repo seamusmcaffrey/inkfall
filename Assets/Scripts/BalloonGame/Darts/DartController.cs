@@ -71,7 +71,7 @@ public class DartController : MonoBehaviour
         State = DartState.Flying;
         _balloonsHitThisFlight = 0;
         _ricochetCount = 0;
-        _launchSpeed = velocity.magnitude;
+        _launchSpeed = new Vector2(velocity.x, velocity.y).magnitude;
         _hasPassedPeak = velocity.y <= GameConstants.DART_PEAK_VELOCITY_THRESHOLD;
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
@@ -111,8 +111,10 @@ public class DartController : MonoBehaviour
 
         if (_rigidbody.linearVelocity.sqrMagnitude > 0.5f)
         {
-            float angle = Mathf.Atan2(_rigidbody.linearVelocity.y, _rigidbody.linearVelocity.x) * Mathf.Rad2Deg;
-            _rigidbody.MoveRotation(Quaternion.Euler(0f, 0f, angle));
+            Vector3 vel = _rigidbody.linearVelocity.normalized;
+            Vector3 upDir = Mathf.Abs(vel.y) > 0.99f ? Vector3.forward : Vector3.up;
+            _rigidbody.MoveRotation(
+                Quaternion.LookRotation(vel, upDir) * Quaternion.Euler(0f, -90f, 0f));
         }
 
         if (_lifetime > GameConfigSO.Instance.dartLifetimeSeconds)
@@ -125,7 +127,8 @@ public class DartController : MonoBehaviour
         if (position.y < GameConstants.LANE_BOTTOM - 2f ||
             position.x < GameConstants.BOARD_LEFT - 5f ||
             position.x > GameConstants.BOARD_RIGHT + 5f ||
-            position.y > GameConstants.BOARD_TOP + 5f)
+            position.y > GameConstants.BOARD_TOP + 5f ||
+            position.z > GameConstants.BOARD_Z + 3f)
         {
             StopDart("out_of_bounds");
         }

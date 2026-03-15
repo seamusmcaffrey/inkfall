@@ -52,6 +52,7 @@ public class SlingshotInput : MonoBehaviour
             float speed = GameConfigSO.Instance.minLaunchSpeed +
                           power * (GameConfigSO.Instance.maxLaunchSpeed - GameConfigSO.Instance.minLaunchSpeed);
             Vector3 velocity = new Vector3(direction.x, direction.y, 0f) * speed;
+            velocity.z = GameConstants.DART_FORWARD_SPEED;
             return _aimAssist != null ? _aimAssist.ApplyAssist(velocity) : velocity;
         }
     }

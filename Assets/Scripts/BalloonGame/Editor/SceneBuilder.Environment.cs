@@ -27,7 +27,7 @@ public static partial class BalloonSceneBuilder
         leftWall.transform.position = new Vector3(
             GameConstants.BOARD_LEFT - GameConstants.SIDE_WALL_WIDTH * 0.5f,
             boardCenterY,
-            0.5f);
+            GameConstants.BOARD_Z);
         leftWall.transform.localScale = wallScale;
         leftWall.GetComponent<Renderer>().sharedMaterial = material;
         leftWall.GetComponent<BoxCollider>().material = bounceMaterial;
@@ -38,7 +38,7 @@ public static partial class BalloonSceneBuilder
         rightWall.transform.position = new Vector3(
             GameConstants.BOARD_RIGHT + GameConstants.SIDE_WALL_WIDTH * 0.5f,
             boardCenterY,
-            0.5f);
+            GameConstants.BOARD_Z);
         rightWall.transform.localScale = wallScale;
         rightWall.GetComponent<Renderer>().sharedMaterial = material;
         rightWall.GetComponent<BoxCollider>().material = bounceMaterial;
@@ -49,7 +49,7 @@ public static partial class BalloonSceneBuilder
         topWall.transform.position = new Vector3(
             0f,
             GameConstants.BOARD_TOP + GameConstants.SIDE_WALL_WIDTH * 0.5f,
-            0.5f);
+            GameConstants.BOARD_Z);
         topWall.transform.localScale = new Vector3(
             GameConstants.BOARD_WIDTH + GameConstants.SIDE_WALL_WIDTH * 2f + 1f,
             GameConstants.SIDE_WALL_WIDTH,

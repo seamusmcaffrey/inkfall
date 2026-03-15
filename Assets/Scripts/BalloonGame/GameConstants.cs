@@ -2,13 +2,21 @@ using UnityEngine;
 
 public static class GameConstants
 {
-    public const float CAMERA_ORTHO_SIZE = 7.0f;
+    public const float CAMERA_FOV = 60f;
     public const float CAMERA_Y_CENTER = 2.5f;
+    public const float CAMERA_DISTANCE = -18f;
     public const float TARGET_WORLD_WIDTH = 8.6f;
-    public const float MIN_ORTHO_SIZE = 7.0f;
-    public const float MAX_ORTHO_SIZE = 12.0f;
-    public const int BOARD_COLUMNS = 8;
-    public const int BOARD_ROWS = 9;
+
+    /// <summary>Visible half-height at Z=0 from default camera distance (for environment sizing).</summary>
+    public const float CAMERA_VISIBLE_HALF_HEIGHT = 10.4f;
+
+    /// <summary>Z depth where the balloon board sits. Darts fly from Z=0 toward this plane.</summary>
+    public const float BOARD_Z = 4f;
+
+    /// <summary>Forward Z velocity added to all darts so they fly into the scene.</summary>
+    public const float DART_FORWARD_SPEED = 8f;
+    public const int BOARD_COLUMNS = 5;
+    public const int BOARD_ROWS = 5;
     public const int TOTAL_BALLOONS = BOARD_COLUMNS * BOARD_ROWS;
 
     public const float BOARD_LEFT = -4.0f;
@@ -23,15 +31,10 @@ public static class GameConstants
 
     public static readonly Vector3 LAUNCH_POSITION = new(0f, -2.5f, 0f);
 
-    public const float BALLOON_MAX_WIDTH = 0.62f;
-    public const float BALLOON_MAX_HEIGHT = 0.74f;
+    public const float BALLOON_MAX_WIDTH = 3.15f;
+    public const float BALLOON_MAX_HEIGHT = 3.5f;
     public const float BALLOON_SLOT_RATIO_X = 0.92f;
     public const float BALLOON_SLOT_RATIO_Y = 0.92f;
-
-    public const float PERSPECTIVE_MIN_SCALE = 0.72f;
-    public const float PERSPECTIVE_SCALE_RANGE = 0.28f;
-    public const float PERSPECTIVE_HORIZONTAL_PINCH = 0.10f;
-    public const float PERSPECTIVE_VERTICAL_COMPRESSION = 0.12f;
 
     public const float MAX_PULL_DISTANCE = 1.8f;
     public const float AIM_ACTIVATION_RADIUS = 2.5f;
@@ -91,7 +94,7 @@ public static class GameConstants
     public const float TRAJECTORY_DURATION = 2.5f;
     public const float TRAJECTORY_DOT_SPACING = 0.18f;
     public const float AIM_ASSIST_MAX_ANGLE = 8f;
-    public const float AIM_ASSIST_MAX_DISTANCE = 5.5f;
+    public const float AIM_ASSIST_MAX_DISTANCE = 12f;
 
     // Screen FX
     public const float SHAKE_PERLIN_SPEED = 25f;

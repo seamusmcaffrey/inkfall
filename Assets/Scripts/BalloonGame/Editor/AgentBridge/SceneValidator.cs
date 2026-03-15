@@ -54,26 +54,23 @@ namespace Inkshot.Editor.AgentBridge
                 return;
             }
 
-            bool isOrtho = camera.orthographic;
+            bool isPerspective = !camera.orthographic;
             checks.Add(new ValidationCheck
             {
                 category = "Camera",
-                description = "Camera is orthographic",
-                passed = isOrtho,
-                detail = isOrtho ? "Orthographic" : "Perspective (expected orthographic)",
+                description = "Camera is perspective",
+                passed = isPerspective,
+                detail = isPerspective ? "Perspective" : "Orthographic (expected perspective)",
             });
 
-            // Adaptive camera: ortho size is recalculated at runtime based on screen aspect.
-            // In editor, accept any value within the configured min/max range.
-            float orthoSize = camera.orthographicSize;
-            bool correctSize = orthoSize >= GameConstants.MIN_ORTHO_SIZE - 0.1f
-                            && orthoSize <= GameConstants.MAX_ORTHO_SIZE + 0.1f;
+            float fov = camera.fieldOfView;
+            bool correctFov = Mathf.Abs(fov - GameConstants.CAMERA_FOV) < 1f;
             checks.Add(new ValidationCheck
             {
                 category = "Camera",
-                description = "Orthographic size within adaptive range",
-                passed = correctSize,
-                detail = $"Expected {GameConstants.MIN_ORTHO_SIZE}-{GameConstants.MAX_ORTHO_SIZE}, got {orthoSize}",
+                description = "Field of view matches config",
+                passed = correctFov,
+                detail = $"Expected {GameConstants.CAMERA_FOV}, got {fov}",
             });
 
             float cameraY = camera.transform.position.y;

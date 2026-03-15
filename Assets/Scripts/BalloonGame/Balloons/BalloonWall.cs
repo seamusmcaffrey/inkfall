@@ -61,7 +61,15 @@ public partial class BalloonWall : MonoBehaviour
                 balloon.layer = GameConstants.LAYER_BALLOONS;
 
                 var renderer = balloon.GetComponent<MeshRenderer>();
-                renderer.sharedMaterial = ResolveMaterial(type);
+                bool usingPrefab = GameConfigSO.Instance.balloonPrefabOverride != null;
+                if (usingPrefab && type != null && type.materialOverride != null)
+                {
+                    renderer.sharedMaterial = type.materialOverride;
+                }
+                else if (!usingPrefab)
+                {
+                    renderer.sharedMaterial = ResolveMaterial(type);
+                }
                 ApplyAtmosphericFade(renderer, type, row, rows);
 
                 var rigidbody = balloon.GetComponent<Rigidbody>();
@@ -150,22 +158,14 @@ public partial class BalloonWall : MonoBehaviour
 
     private Vector3 PerspectivePosition(int row, int column, int totalRows, int totalColumns, float slotX, float slotY)
     {
-        float rowRatio = (float)row / (totalRows - 1);
-        float topBias = 1f - rowRatio;
-
         float baseX = GameConstants.BOARD_LEFT + slotX * 0.5f + column * slotX;
-        float centerX = (GameConstants.BOARD_LEFT + GameConstants.BOARD_RIGHT) * 0.5f;
-        float pinchedX = centerX + (baseX - centerX) * (1f - topBias * GameConstants.PERSPECTIVE_HORIZONTAL_PINCH);
-        float compressedY = GameConstants.BOARD_TOP - slotY * 0.5f - (row * slotY * (1f - topBias * GameConstants.PERSPECTIVE_VERTICAL_COMPRESSION));
-
-        float depthOffset = (totalRows - 1 - row) * 0.01f;
-        return new Vector3(pinchedX, compressedY, depthOffset);
+        float baseY = GameConstants.BOARD_TOP - slotY * 0.5f - row * slotY;
+        return new Vector3(baseX, baseY, GameConstants.BOARD_Z);
     }
 
     private float PerspectiveScale(int row, int totalRows)
     {
-        float rowRatio = (float)row / (totalRows - 1);
-        return GameConstants.PERSPECTIVE_MIN_SCALE + rowRatio * GameConstants.PERSPECTIVE_SCALE_RANGE;
+        return 1f;
     }
 
     private void EnsurePropertyBlock()
@@ -175,18 +175,15 @@ public partial class BalloonWall : MonoBehaviour
 
     private void ApplyAtmosphericFade(Renderer renderer, BalloonTypeSO type, int row, int totalRows)
     {
+        if (type != null && type.materialOverride != null)
+            return;
+
         EnsurePropertyBlock();
 
-        float rowRatio = (float)row / (totalRows - 1);
-        float topBias = 1f - rowRatio;
-        float fadeFactor = 1f - topBias * 0.15f;
-
         Color baseColor = ResolveDisplayColor(type);
-        Color finalColor = baseColor * fadeFactor;
-        finalColor.a = 1f;
         renderer.GetPropertyBlock(_materialPropertyBlock);
-        _materialPropertyBlock.SetColor("_Color", finalColor);
-        _materialPropertyBlock.SetColor("_BaseColor", finalColor);
+        _materialPropertyBlock.SetColor("_Color", baseColor);
+        _materialPropertyBlock.SetColor("_BaseColor", baseColor);
         renderer.SetPropertyBlock(_materialPropertyBlock);
     }
 }

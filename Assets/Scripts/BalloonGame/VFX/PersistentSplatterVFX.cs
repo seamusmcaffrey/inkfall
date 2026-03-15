@@ -40,7 +40,7 @@ public class PersistentSplatterVFX : MonoBehaviour
         SplatterInstance splatter = GetFromPool();
         Transform t = splatter.Renderer.transform;
         t.SetParent(transform, false);
-        t.position = new Vector3(worldPosition.x, worldPosition.y, GameConstants.SPLATTER_Z_OFFSET);
+        t.position = new Vector3(worldPosition.x, worldPosition.y, GameConstants.BOARD_Z + GameConstants.SPLATTER_Z_OFFSET);
 
         float baseScale = Random.Range(config.splatterMinScale, config.splatterMaxScale);
         float asymmetry = Random.Range(AsymmetryMin, AsymmetryMax);

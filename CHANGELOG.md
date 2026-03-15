@@ -1,5 +1,61 @@
 # Changelog
 
+## Asset-Based Visual Overhaul — 2026-03-15
+
+### Strategic Direction Change
+The project's entire visual pipeline was previously 100% procedural — zero imported 3D models, zero pre-made textures. Every surface (cork board, metal frame, floor, balloons, darts) was generated at runtime from Perlin noise and code-built meshes. After 5+ visual/layout passes and experimenting with perspective simulation (row-based scaling/pinch in both orientations), we hit a ceiling: **flat procedural textures on Unity primitives viewed through an orthographic camera will never feel like looking into a real room.** The decision was made to pivot to imported 3D assets and prepare for a perspective camera.
+
+### What Changed
+
+**Imported Loafbrr Balloon Asset Pack (free, URP-compatible)**
+- Downloaded "Balloons" by Loafbrr from Unity Asset Store (16.9 MB, 69 files)
+- Contains 49 balloon mesh variants (letters, numbers, shapes) in a single FBX
+- Includes ORM Shader Graph with PBR textures (diffuse, normal, ORM maps at 1K)
+- 9 material variants: Gold (metallic), Silver (chrome), and 7 tinted White variants
+- Assets located at `Assets/LoafbrrAssets/Balloons/`
+
+**Balloon Prefab Override System**
+- Added `balloonPrefabOverride` (GameObject) and `balloonMeshOverride` (Mesh) fields to `GameConfigSO`
+- Modified `BalloonWall.Spawning.cs` → `CreateBalloonObject()` to instantiate from prefab when set, falling back to procedural mesh when null
+- Added component guards (null checks before AddComponent) so prefab components aren't duplicated
+- BalloonEmblem (procedural overlay) skipped when using prefab — not needed with 3D assets
+- Currently wired to `Balloon_Balloon` prefab (basic round balloon shape)
+
+**Per-Type Material Overrides via Loafbrr Materials**
+- All 8 `BalloonTypeSO` assets updated with `materialOverride` pointing to Loafbrr materials:
+  - StandardRed → Balloon_White Variant (pink-red)
+  - StandardBlue → Balloon_White Variant 4 (blue)
+  - StandardYellow → Balloon_White Variant 1 (warm yellow)
+  - StandardGreen → Balloon_White Variant 2 (green)
+  - StandardPurple → Balloon_White Variant 3 (purple)
+  - GoldBalloon → Balloon_Gold (metallic gold)
+  - HazardBalloon → Balloon_Silver (chrome)
+  - PaintBalloon → Balloon_White Variant 5 (deep red)
+- Material assignment in `BalloonWall.cs` updated: applies `materialOverride` when set, skips PropertyBlock color override to preserve PBR material properties
+- `ApplyAtmosphericFade` now skips balloons with `materialOverride` so PBR shading isn't stomped
+
+**Balloon Scale Adjustment**
+- `BALLOON_MAX_WIDTH` changed from 0.90 → 3.15, `BALLOON_MAX_HEIGHT` from 1.0 → 3.5
+- Imported balloon mesh is ~5x smaller than procedural mesh at equivalent scale
+
+**Lighting Simplified for Asset Evaluation**
+- `NeonLightRig.cs` replaced: 9 dramatic neon lights → 3 neutral directional lights (main/fill/back) with warm-neutral colors
+- Added cleanup logic to destroy old child lights before rebuilding rig
+- `PostProcessingSetup.cs` disabled at Awake (bloom 5.0, vignette 0.62, chromatic aberration removed)
+- `EnvironmentBuilder.Atmosphere.cs` emptied: fog overlays and vignette quads disabled
+- All effects preserved in code and can be re-enabled when room aesthetic is finalized
+
+### What's Next
+
+Two follow-up task prompts written as standalone files:
+- `PROMPT-perspective-camera.md` — Switch from orthographic to perspective camera (do this first)
+- `PROMPT-room-environment.md` — Build a 3D room/booth environment around the board
+
+### Known Issues
+- Gold metallic material not visually distinct under current neutral lighting — may need environment reflections or adjusted light angles
+- Balloon scale constants are now large (3.15 × 3.5) because imported mesh native size differs from procedural — should be normalized when prefab pipeline stabilizes
+- Old neon light GameObjects may persist in saved scenes from previous sessions
+
 ## Task: Build Inkshot Balloon-Dart Prototype and Stabilize Gameplay - 2026-03-13
 
 ### Scene Setup Updates

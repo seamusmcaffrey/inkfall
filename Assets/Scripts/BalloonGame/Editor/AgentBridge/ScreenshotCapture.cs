@@ -58,17 +58,18 @@ namespace Inkshot.Editor.AgentBridge
             }
 
             Vector3 originalPos = camera.transform.position;
-            float originalSize = camera.orthographicSize;
+            float originalFov = camera.fieldOfView;
 
             Renderer renderer = target.GetComponent<Renderer>();
             if (renderer != null)
             {
                 Bounds bounds = renderer.bounds;
+                float extent = Mathf.Max(bounds.extents.x, bounds.extents.y) + 1f;
+                float distance = extent / Mathf.Tan(camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
                 camera.transform.position = new Vector3(
                     bounds.center.x,
                     bounds.center.y,
-                    camera.transform.position.z);
-                camera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y) + 1f;
+                    bounds.center.z - distance);
             }
 
             string fileName = $"{label}_{objectName}_{System.DateTime.UtcNow:yyyyMMdd_HHmmss}.png";
@@ -77,7 +78,6 @@ namespace Inkshot.Editor.AgentBridge
             RenderCameraToFile(camera, outputPath);
 
             camera.transform.position = originalPos;
-            camera.orthographicSize = originalSize;
 
             return outputPath;
         }

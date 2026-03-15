@@ -26,5 +26,5 @@ MonoBehaviour:
   effectRadius: 1.5
   durability: 1
   endsComboOnPop: 0
-  materialOverride: {fileID: 0}
+  materialOverride: {fileID: 2100000, guid: 54ed77e505dae9049bbbb7c2af7930af, type: 2}
   tintOverride: {r: 0, g: 0, b: 0, a: 0}

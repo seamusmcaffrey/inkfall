@@ -16,8 +16,8 @@ MonoBehaviour:
   displayName: Opening Booth
   roomType: 0
   isBonusEligible: 0
-  columns: 8
-  rows: 9
+  columns: 5
+  rows: 5
   baseTargetScore: 3000
   baseDarts: 4
   minSpecials: 1

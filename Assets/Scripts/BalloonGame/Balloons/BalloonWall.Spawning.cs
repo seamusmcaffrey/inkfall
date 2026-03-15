@@ -108,16 +108,39 @@ public partial class BalloonWall
 
     private GameObject CreateBalloonObject()
     {
-        var balloon = new GameObject("Balloon");
-        balloon.AddComponent<MeshFilter>().sharedMesh = BalloonMeshGenerator.GetSharedMesh();
-        balloon.AddComponent<MeshRenderer>();
-        balloon.AddComponent<SphereCollider>();
-        var rigidbody = balloon.AddComponent<Rigidbody>();
-        rigidbody.isKinematic = true;
-        rigidbody.useGravity = false;
-        balloon.AddComponent<BalloonNode>();
-        balloon.AddComponent<BalloonJiggle>();
-        balloon.AddComponent<BalloonEmblem>();
+        GameObject balloon;
+        GameObject prefabSource = GameConfigSO.Instance.balloonPrefabOverride;
+
+        if (prefabSource != null)
+        {
+            balloon = Instantiate(prefabSource);
+            balloon.name = "Balloon";
+        }
+        else
+        {
+            balloon = new GameObject("Balloon");
+            Mesh mesh = GameConfigSO.Instance.balloonMeshOverride != null
+                ? GameConfigSO.Instance.balloonMeshOverride
+                : BalloonMeshGenerator.GetSharedMesh();
+            balloon.AddComponent<MeshFilter>().sharedMesh = mesh;
+            balloon.AddComponent<MeshRenderer>();
+        }
+
+        if (balloon.GetComponent<SphereCollider>() == null)
+            balloon.AddComponent<SphereCollider>();
+        if (balloon.GetComponent<Rigidbody>() == null)
+        {
+            var rb = balloon.AddComponent<Rigidbody>();
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
+        if (balloon.GetComponent<BalloonNode>() == null)
+            balloon.AddComponent<BalloonNode>();
+        if (balloon.GetComponent<BalloonJiggle>() == null)
+            balloon.AddComponent<BalloonJiggle>();
+        if (prefabSource == null && balloon.GetComponent<BalloonEmblem>() == null)
+            balloon.AddComponent<BalloonEmblem>();
+
         return balloon;
     }
 

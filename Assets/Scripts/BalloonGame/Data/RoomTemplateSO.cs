@@ -13,8 +13,8 @@ public class RoomTemplateSO : ScriptableObject
     public bool isBonusEligible;
 
     [Header("Grid")]
-    [Range(4, 10)] public int columns = GameConstants.BOARD_COLUMNS;
-    [Range(4, 12)] public int rows = GameConstants.BOARD_ROWS;
+    [Range(3, 10)] public int columns = GameConstants.BOARD_COLUMNS;
+    [Range(3, 12)] public int rows = GameConstants.BOARD_ROWS;
 
     [Header("Targets")]
     public int baseTargetScore = GameConstants.BASE_TARGET_SCORE;

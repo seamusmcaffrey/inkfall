@@ -9,7 +9,7 @@ public partial class EnvironmentBuilder : MonoBehaviour
 {
     private const float FrameThickness = 0.60f;
     private const float FrameDepth = 0.22f;
-    private const float BoardZ = 0.5f;
+    private const float BoardZ = GameConstants.BOARD_Z + 0.5f;
     private const float BoardPaddingX = 0.6f;
     private const float BoardPaddingY = 0.8f;
     private const float CorkTextureSize = 256;
@@ -18,7 +18,7 @@ public partial class EnvironmentBuilder : MonoBehaviour
     private const float CorkMetallic = 0.08f;
     private const float StripeHeight = 0.18f;
     private const float StripeWidth = 7f;
-    private const float BackWallZ = 1.5f;
+    private const float BackWallZ = GameConstants.BOARD_Z + 1.5f;
     private const float BackWallExtraWidth = 16f;
     private const float BackWallExtraHeight = 4f;
 
@@ -49,6 +49,8 @@ public partial class EnvironmentBuilder : MonoBehaviour
             if (wall == null) continue;
             Renderer r = wall.GetComponent<Renderer>();
             if (r != null) { r.sharedMaterial = dark; r.enabled = false; }
+            Vector3 pos = wall.transform.position;
+            wall.transform.position = new Vector3(pos.x, pos.y, GameConstants.BOARD_Z);
         }
         BuildEnvironment();
     }
@@ -76,14 +78,14 @@ public partial class EnvironmentBuilder : MonoBehaviour
 
     private void BuildFloorArea()
     {
-        float bwH = GameConstants.MAX_ORTHO_SIZE * 2f + BackWallExtraHeight;
+        float bwH = GameConstants.CAMERA_VISIBLE_HALF_HEIGHT * 2f + BackWallExtraHeight;
         SetPanel("BackWall", PrimitiveType.Quad,
             new Vector3(0f, GameConstants.CAMERA_Y_CENTER, BackWallZ),
             new Vector3(GameConstants.TARGET_WORLD_WIDTH + BackWallExtraWidth, bwH, 1f),
             CreateMaterial(BackWallColor, unlit: true));
 
         Texture2D floorTex = ProceduralTextures.GenerateFloorTexture((int)FloorTextureSize, (int)FloorTextureSize);
-        float floorBottom = GameConstants.CAMERA_Y_CENTER - GameConstants.MAX_ORTHO_SIZE - 1f;
+        float floorBottom = GameConstants.CAMERA_Y_CENTER - GameConstants.CAMERA_VISIBLE_HALF_HEIGHT - 1f;
         float floorY = (GameConstants.LANE_TOP + floorBottom) * 0.5f;
         float floorH = GameConstants.LANE_TOP - floorBottom;
         SetPanel("LaneFloor", PrimitiveType.Quad,

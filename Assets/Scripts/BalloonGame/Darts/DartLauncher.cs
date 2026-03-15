@@ -90,9 +90,7 @@ public class DartLauncher : MonoBehaviour
         rigidbody.isKinematic = true;
         rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
         rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        rigidbody.constraints = RigidbodyConstraints.FreezePositionZ |
-                                 RigidbodyConstraints.FreezeRotationX |
-                                 RigidbodyConstraints.FreezeRotationY;
+        rigidbody.constraints = RigidbodyConstraints.None;
 
         root.AddComponent<DartController>();
         root.AddComponent<DartTrailVFX>();
