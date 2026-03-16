@@ -5,7 +5,7 @@ using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 [DisallowMultipleComponent]
-public class SlingshotInput : MonoBehaviour
+public partial class SlingshotInput : MonoBehaviour
 {
     public event Action<Vector3> OnLaunch;
     public event Action<Vector2> OnPullUpdate;
@@ -23,39 +23,6 @@ public class SlingshotInput : MonoBehaviour
 
     public bool IsAiming => _isAiming;
     public bool IsPullArmed => _isPullArmed;
-
-    public float PullStrength
-    {
-        get
-        {
-            float distance = _pullVector.magnitude;
-            return Mathf.Pow(
-                Mathf.Clamp01(distance / GameConstants.MAX_PULL_DISTANCE),
-                GameConfigSO.Instance.pullSpeedExponent);
-        }
-    }
-
-    public Vector3 PreviewVelocity
-    {
-        get
-        {
-            float distance = _pullVector.magnitude;
-            if (distance < 0.05f)
-            {
-                return Vector3.zero;
-            }
-
-            Vector2 direction = -_pullVector.normalized;
-            float power = Mathf.Pow(
-                Mathf.Clamp01(distance / GameConstants.MAX_PULL_DISTANCE),
-                GameConfigSO.Instance.pullSpeedExponent);
-            float speed = GameConfigSO.Instance.minLaunchSpeed +
-                          power * (GameConfigSO.Instance.maxLaunchSpeed - GameConfigSO.Instance.minLaunchSpeed);
-            Vector3 velocity = new Vector3(direction.x, direction.y, 0f) * speed;
-            velocity.z = GameConstants.DART_FORWARD_SPEED;
-            return _aimAssist != null ? _aimAssist.ApplyAssist(velocity) : velocity;
-        }
-    }
 
     private void OnEnable()
     {
@@ -249,6 +216,30 @@ public class SlingshotInput : MonoBehaviour
         return Vector2.Distance(worldPosition, launchPosition) <= GameConstants.AIM_ACTIVATION_RADIUS;
     }
 
+    private void OnDrawGizmos()
+    {
+        // Slingshot pull zone (bottom of screen)
+        Vector3 pos = GameConstants.LAUNCH_POSITION;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(pos, 0.5f);
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(pos + Vector3.left * 0.8f, pos + Vector3.right * 0.8f);
+        Gizmos.DrawLine(pos + Vector3.up * 0.8f, pos + Vector3.down * 0.8f);
+        Gizmos.DrawLine(pos + Vector3.forward * 0.8f, pos + Vector3.back * 0.8f);
+
+        // Dart fire origin (mid-screen)
+        Vector3 firePos = GameConstants.FIRE_ORIGIN;
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(firePos, 0.4f);
+        Gizmos.DrawLine(firePos + Vector3.left * 0.6f, firePos + Vector3.right * 0.6f);
+        Gizmos.DrawLine(firePos + Vector3.up * 0.6f, firePos + Vector3.down * 0.6f);
+
+#if UNITY_EDITOR
+        UnityEditor.Handles.Label(pos + Vector3.up * 0.9f, "SLINGSHOT INPUT");
+        UnityEditor.Handles.Label(firePos + Vector3.up * 0.6f, "DART FIRE ORIGIN");
+#endif
+    }
+
     private Vector2 ScreenToWorld(Vector2 screenPosition)
     {
         if (_camera == null)
@@ -256,8 +247,9 @@ public class SlingshotInput : MonoBehaviour
             _camera = Camera.main;
         }
 
+        float distToLaunchPlane = Mathf.Abs(_camera.transform.position.z - GameConstants.LAUNCH_POSITION.z);
         Vector3 worldPosition = _camera.ScreenToWorldPoint(
-            new Vector3(screenPosition.x, screenPosition.y, Mathf.Abs(_camera.transform.position.z)));
+            new Vector3(screenPosition.x, screenPosition.y, distToLaunchPlane));
         return new Vector2(worldPosition.x, worldPosition.y);
     }
 }

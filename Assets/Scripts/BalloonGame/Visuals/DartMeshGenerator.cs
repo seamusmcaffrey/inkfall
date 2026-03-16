@@ -164,14 +164,18 @@ public static class DartMeshGenerator
     private static Mesh GenerateCone(float radius, float length, int segments)
     {
         var verts = new List<Vector3>();
+        var uvs = new List<Vector2>();
         var tris = new List<int>();
+
         verts.Add(new Vector3(length * 0.5f, 0f, 0f));
+        uvs.Add(new Vector2(0.5f, 1f));
 
         for (int s = 0; s < segments; s++)
         {
             float angle = s / (float)segments * Mathf.PI * 2f;
             verts.Add(new Vector3(-length * 0.5f, Mathf.Cos(angle) * radius,
                 Mathf.Sin(angle) * radius));
+            uvs.Add(new Vector2(s / (float)segments, 0f));
         }
 
         for (int s = 1; s <= segments; s++)
@@ -182,6 +186,7 @@ public static class DartMeshGenerator
 
         var mesh = new Mesh();
         mesh.SetVertices(verts);
+        mesh.SetUVs(0, uvs);
         mesh.SetTriangles(tris, 0);
         mesh.RecalculateNormals();
         return mesh;

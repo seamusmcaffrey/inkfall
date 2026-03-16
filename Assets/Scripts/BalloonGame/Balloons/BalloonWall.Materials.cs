@@ -3,8 +3,8 @@ using UnityEngine;
 
 public partial class BalloonWall
 {
-    private const float DefaultSmoothness = 0.88f;
-    private const float DefaultEmissionIntensity = 0.06f;
+    private const float DefaultSmoothness = 0.25f;
+    private const float DefaultEmissionIntensity = 0f;
     private const float GoldSmoothness = 0.95f;
     private const float GoldMetallic = 0.85f;
     private const float GoldEmissionIntensity = 0.25f;

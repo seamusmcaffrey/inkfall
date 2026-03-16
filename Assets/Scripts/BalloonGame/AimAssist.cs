@@ -42,7 +42,7 @@ public class AimAssist : MonoBehaviour
             return rawVelocity;
         }
 
-        Vector3 origin = GameConstants.LAUNCH_POSITION;
+        Vector3 origin = GameConstants.FIRE_ORIGIN;
         Vector3 direction = rawVelocity.normalized;
         BalloonNode bestBalloon = null;
         float bestScore = 0f;
@@ -88,6 +88,57 @@ public class AimAssist : MonoBehaviour
             (bestBalloon.transform.position - origin).normalized,
             GameConfigSO.Instance.aimAssistStrength * bestScore);
         return assistedDirection.normalized * rawVelocity.magnitude;
+    }
+
+    /// <summary>
+    /// Nudges an aim point on the board toward the nearest unpopped balloon
+    /// within the snap radius. Used by the aim-point ballistic model.
+    /// </summary>
+    public Vector3 AdjustAimPoint(Vector3 aimPoint)
+    {
+        ComponentUtility.ResolveSceneReference(this, ref _balloonWall);
+        if (!GameConfigSO.Instance.aimAssistEnabled || _balloonWall == null)
+        {
+            SetHighlightTarget(null);
+            return aimPoint;
+        }
+
+        BalloonNode bestBalloon = null;
+        float bestDistance = float.MaxValue;
+
+        Vector2 aimXY = new(aimPoint.x, aimPoint.y);
+
+        foreach (BalloonNode balloon in _balloonWall.Balloons)
+        {
+            if (balloon == null || balloon.IsPopped)
+            {
+                continue;
+            }
+
+            Vector2 balloonXY = new(balloon.transform.position.x, balloon.transform.position.y);
+            float dist = Vector2.Distance(aimXY, balloonXY);
+
+            if (dist < bestDistance && dist < GameConstants.AIM_ASSIST_SNAP_RADIUS)
+            {
+                bestDistance = dist;
+                bestBalloon = balloon;
+            }
+        }
+
+        SetHighlightTarget(bestBalloon);
+
+        if (bestBalloon == null)
+        {
+            return aimPoint;
+        }
+
+        float nudgeT = (1f - bestDistance / GameConstants.AIM_ASSIST_SNAP_RADIUS)
+                        * GameConfigSO.Instance.aimAssistStrength;
+        Vector3 balloonPos = bestBalloon.transform.position;
+        return new Vector3(
+            Mathf.Lerp(aimPoint.x, balloonPos.x, nudgeT),
+            Mathf.Lerp(aimPoint.y, balloonPos.y, nudgeT),
+            aimPoint.z);
     }
 
     // ----------------------------------------------------------------

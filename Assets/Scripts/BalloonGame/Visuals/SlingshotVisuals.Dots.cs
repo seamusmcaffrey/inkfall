@@ -74,6 +74,13 @@ public partial class SlingshotVisuals
             float t = (float)i / (_trajectoryPoints - 1) * _trajectoryDuration;
             Vector3 position = origin + velocity * t + 0.5f * gravity * t * t;
 
+            // Hide dots past the board plane
+            if (position.z > GameConstants.BOARD_Z + 0.5f)
+            {
+                _dots[i].gameObject.SetActive(false);
+                continue;
+            }
+
             _dots[i].gameObject.SetActive(true);
             _dots[i].position = position + Vector3.back * 0.5f;
 

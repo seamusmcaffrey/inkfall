@@ -44,6 +44,13 @@ public static class ProceduralTextures
     private static readonly Color CorkBase = new(0.30f, 0.22f, 0.14f);
     private static readonly Color FloorBase = new(0.06f, 0.05f, 0.04f);
     private static readonly Color MetalBase = new(0.12f, 0.12f, 0.10f);
+    private static readonly Color WallBase = new(0.14f, 0.11f, 0.09f);
+
+    private const float WallStuccoScale = 6f;
+    private const float WallStuccoDetail = 14f;
+    private const float WallGrainStrength = 0.04f;
+    private const float WallDetailStrength = 0.02f;
+    private const float WallVerticalGradient = 0.03f;
 
     public static Texture2D GenerateCorkTexture(int width, int height)
     {
@@ -111,6 +118,25 @@ public static class ProceduralTextures
                 c.b += pa * PatinaGreenRatio;
                 c.r -= pa * PatinaRedReduction;
             }
+            pixels[y * width + x] = c;
+        }
+        return ApplyPixels(width, height, pixels);
+    }
+
+    public static Texture2D GenerateWallTexture(int width, int height)
+    {
+        var pixels = new Color[width * height];
+        for (int y = 0; y < height; y++)
+        for (int x = 0; x < width; x++)
+        {
+            float u = (float)x / width, v = (float)y / height;
+            float stucco = SampleOctaves(u, v, WallStuccoScale);
+            float detail = Mathf.PerlinNoise(u * WallStuccoDetail + 300f, v * WallStuccoDetail + 300f);
+            float vGrad = v * WallVerticalGradient;
+            Color c = WallBase;
+            c.r += stucco * WallGrainStrength + detail * WallDetailStrength - vGrad;
+            c.g += stucco * WallGrainStrength * 0.9f + detail * WallDetailStrength * 0.9f - vGrad;
+            c.b += stucco * WallGrainStrength * 0.7f + detail * WallDetailStrength * 0.7f - vGrad;
             pixels[y * width + x] = c;
         }
         return ApplyPixels(width, height, pixels);

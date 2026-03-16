@@ -16,7 +16,7 @@ public static class GameConstants
     public const float BOARD_Z = 4f;
 
     /// <summary>Forward Z velocity added to all darts so they fly into the scene.</summary>
-    public const float DART_FORWARD_SPEED = 8f;
+    public const float DART_FORWARD_SPEED = 14f;
     public const int BOARD_COLUMNS = 5;
     public const int BOARD_ROWS = 5;
     public const int TOTAL_BALLOONS = BOARD_COLUMNS * BOARD_ROWS;
@@ -27,16 +27,30 @@ public static class GameConstants
     public const float BOARD_BOTTOM = 0.0f;
     public const float BOARD_WIDTH = BOARD_RIGHT - BOARD_LEFT;
     public const float BOARD_HEIGHT = BOARD_TOP - BOARD_BOTTOM;
+    public const float BOARD_CENTER_X = (BOARD_LEFT + BOARD_RIGHT) * 0.5f;
+    public const float BOARD_CENTER_Y = (BOARD_BOTTOM + BOARD_TOP) * 0.5f;
 
     public const float LANE_TOP = -0.8f;
     public const float LANE_BOTTOM = -3.5f;
 
-    public static readonly Vector3 LAUNCH_POSITION = new(0f, -2.5f, 0f);
+    /// <summary>
+    /// Launch position near floor level, well in front of the board.
+    /// Player throws upward and forward, like a real carnival booth.
+    /// 12 units from the board (BOARD_Z=4).
+    /// </summary>
+    public static readonly Vector3 LAUNCH_POSITION = new(0f, ROOM_FLOOR_Y + 1f, -8f);
 
-    public const float BALLOON_MAX_WIDTH = 3.15f;
-    public const float BALLOON_MAX_HEIGHT = 3.5f;
-    public const float BALLOON_SLOT_RATIO_X = 0.92f;
-    public const float BALLOON_SLOT_RATIO_Y = 0.92f;
+    /// <summary>
+    /// Where darts actually spawn and begin their flight — roughly screen center,
+    /// closer to the board than the slingshot. Separated from LAUNCH_POSITION
+    /// so the player pulls from the bottom of the screen but darts fire from mid-screen.
+    /// </summary>
+    public static readonly Vector3 FIRE_ORIGIN = new(0f, CAMERA_Y_CENTER, -4f);
+
+    /// <summary>Balloon width as a fraction of slot width (>1 means overlap neighbors).</summary>
+    public const float BALLOON_SLOT_FILL_X = 0.792f;
+    /// <summary>Balloon height as a fraction of slot height.</summary>
+    public const float BALLOON_SLOT_FILL_Y = 0.891f;
 
     public const float MAX_PULL_DISTANCE = 1.8f;
     public const float AIM_ACTIVATION_RADIUS = 2.5f;
@@ -52,7 +66,7 @@ public static class GameConstants
     public const int COMBO_MAX_STACK = 20;
 
     // Physics
-    public const float DART_GRAVITY = -12f;
+    public const float DART_GRAVITY = -14f;
     public const float SIDE_WALL_WIDTH = 0.3f;
     public const float WALL_BOUNCINESS = 0.8f;
     public const float WALL_FRICTION = 0.1f;
@@ -93,10 +107,10 @@ public static class GameConstants
 
     // Touch / aim polish
     public const int TRAJECTORY_POINT_COUNT = 30;
-    public const float TRAJECTORY_DURATION = 2.5f;
+    public const float TRAJECTORY_DURATION = 1.2f;
     public const float TRAJECTORY_DOT_SPACING = 0.18f;
     public const float AIM_ASSIST_MAX_ANGLE = 8f;
-    public const float AIM_ASSIST_MAX_DISTANCE = 12f;
+    public const float AIM_ASSIST_MAX_DISTANCE = 20f;
 
     // Screen FX
     public const float SHAKE_PERLIN_SPEED = 25f;
@@ -114,6 +128,24 @@ public static class GameConstants
     public const float DART_PEAK_VELOCITY_THRESHOLD = 0.5f;
     public const float DART_ARC_SCALE_MIN = 1.0f;
     public const float DART_ARC_SCALE_MAX = 1.3f;
+
+    // Aim-point ballistic model
+    /// <summary>Max aim offset from board center at full pull (X axis).</summary>
+    public const float AIM_RANGE_X = 4.5f;
+    /// <summary>Max aim offset from board center at full pull (Y axis).</summary>
+    public const float AIM_RANGE_Y = 4.5f;
+    /// <summary>World-space radius for aim-assist snap on the board plane.</summary>
+    public const float AIM_ASSIST_SNAP_RADIUS = 1.5f;
+    /// <summary>Overshoot margin beyond board edges for aim clamping.</summary>
+    public const float AIM_CLAMP_MARGIN = 0.5f;
+
+    // Room geometry
+    public const float ROOM_BACK_Z = 6f;
+    public const float ROOM_FRONT_Z = -2f;
+    public const float ROOM_HALF_WIDTH = 7f;
+    public const float ROOM_FLOOR_Y = -1.5f;
+    public const float ROOM_CEILING_Y = 10.5f;
+    public const float ROOM_DEPTH = ROOM_BACK_Z - ROOM_FRONT_Z;
 
     // Decals / VFX
     public const float DECAL_Z_OFFSET = -0.05f;

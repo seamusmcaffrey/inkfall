@@ -18,8 +18,18 @@ public class DartLauncher : MonoBehaviour
             return null;
         }
 
-        dart.transform.position = GameConstants.LAUNCH_POSITION;
+        // Unparent from pool container so physics isn't relative to container transform
+        dart.transform.SetParent(null, false);
+        dart.transform.position = GameConstants.FIRE_ORIGIN;
         dart.transform.rotation = Quaternion.identity;
+
+        // Explicitly sync Rigidbody position to avoid stale physics cache
+        var rb = dart.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.position = GameConstants.FIRE_ORIGIN;
+            rb.rotation = Quaternion.identity;
+        }
 
         var controller = dart.GetComponent<DartController>();
         controller.Initialize(
@@ -84,7 +94,7 @@ public class DartLauncher : MonoBehaviour
 
         var rigidbody = root.AddComponent<Rigidbody>();
         rigidbody.mass = 0.5f;
-        rigidbody.linearDamping = 0.1f;
+        rigidbody.linearDamping = 0.02f;
         rigidbody.angularDamping = 0.5f;
         rigidbody.useGravity = false;
         rigidbody.isKinematic = true;

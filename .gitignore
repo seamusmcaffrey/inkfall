@@ -31,5 +31,8 @@
 *.aab
 *.unitypackage
 *.app
+*.ipa
+*.xcarchive
+DerivedData/
 .idea/
 .vscode/

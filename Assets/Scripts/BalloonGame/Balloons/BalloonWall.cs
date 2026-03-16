@@ -55,21 +55,11 @@ public partial class BalloonWall : MonoBehaviour
                 balloon.name = $"Balloon_{row}_{column}";
                 balloon.transform.SetParent(transform, false);
                 balloon.transform.localPosition = position;
-                float width = GameConstants.BALLOON_MAX_WIDTH * GameConstants.BALLOON_SLOT_RATIO_X * scale;
-                float height = GameConstants.BALLOON_MAX_HEIGHT * GameConstants.BALLOON_SLOT_RATIO_Y * scale;
-                balloon.transform.localScale = new Vector3(width, height, width);
+                ApplyBalloonScale(balloon, slotX, slotY, scale);
                 balloon.layer = GameConstants.LAYER_BALLOONS;
 
                 var renderer = balloon.GetComponent<MeshRenderer>();
-                bool usingPrefab = GameConfigSO.Instance.balloonPrefabOverride != null;
-                if (usingPrefab && type != null && type.materialOverride != null)
-                {
-                    renderer.sharedMaterial = type.materialOverride;
-                }
-                else if (!usingPrefab)
-                {
-                    renderer.sharedMaterial = ResolveMaterial(type);
-                }
+                renderer.sharedMaterial = ResolveMaterial(type);
                 ApplyAtmosphericFade(renderer, type, row, rows);
 
                 var rigidbody = balloon.GetComponent<Rigidbody>();
@@ -171,6 +161,28 @@ public partial class BalloonWall : MonoBehaviour
     private void EnsurePropertyBlock()
     {
         _materialPropertyBlock ??= new MaterialPropertyBlock();
+    }
+
+    private static void ApplyBalloonScale(GameObject balloon, float slotX, float slotY, float scale)
+    {
+        float desiredWidth = slotX * GameConstants.BALLOON_SLOT_FILL_X * scale;
+        float desiredHeight = slotY * GameConstants.BALLOON_SLOT_FILL_Y * scale;
+
+        var filter = balloon.GetComponentInChildren<MeshFilter>();
+        if (filter != null && filter.sharedMesh != null)
+        {
+            Vector3 meshSize = filter.sharedMesh.bounds.size;
+            float meshWidth = Mathf.Max(meshSize.x, meshSize.z, 0.001f);
+            float meshHeight = Mathf.Max(meshSize.y, 0.001f);
+            balloon.transform.localScale = new Vector3(
+                desiredWidth / meshWidth,
+                desiredHeight / meshHeight,
+                desiredWidth / meshWidth);
+        }
+        else
+        {
+            balloon.transform.localScale = new Vector3(desiredWidth, desiredHeight, desiredWidth);
+        }
     }
 
     private void ApplyAtmosphericFade(Renderer renderer, BalloonTypeSO type, int row, int totalRows)

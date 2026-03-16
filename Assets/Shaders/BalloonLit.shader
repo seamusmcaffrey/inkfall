@@ -3,13 +3,13 @@ Shader "Inkshot/BalloonLit"
     Properties
     {
         _BaseColor ("Base Color", Color) = (0.9, 0.2, 0.27, 1)
-        _Glossiness ("Glossiness", Range(0, 1)) = 0.85
-        _RimPower ("Rim Power", Range(0.5, 8)) = 2.0
+        _Glossiness ("Glossiness", Range(0, 1)) = 0.45
+        _RimPower ("Rim Power", Range(0.5, 8)) = 3.0
         _RimColor ("Rim Color", Color) = (1, 1, 1, 1)
-        _RimIntensity ("Rim Intensity", Range(0, 3)) = 1.2
+        _RimIntensity ("Rim Intensity", Range(0, 3)) = 0.08
         _GradientStrength ("Gradient Strength", Range(0, 0.5)) = 0.30
-        _SpecularIntensity ("Specular Intensity", Range(0, 8)) = 2.5
-        _SpecularSize ("Specular Size", Range(1, 256)) = 160
+        _SpecularIntensity ("Specular Intensity", Range(0, 8)) = 0.15
+        _SpecularSize ("Specular Size", Range(1, 256)) = 80
         _AmbientBoost ("Ambient Boost", Range(0, 1)) = 0.02
     }
 
@@ -107,14 +107,14 @@ Shader "Inkshot/BalloonLit"
                 half3 halfDir = normalize(lightDir + viewDir);
                 half NdotH = saturate(dot(normalWS, halfDir));
                 half specSharp = pow(NdotH, _SpecularSize) * _SpecularIntensity;
-                half specBroad = pow(NdotH, 24.0) * 0.20 * _Glossiness;
+                half specBroad = pow(NdotH, 24.0) * 0.01 * _Glossiness;
 
                 // Fresnel rim with color tint
                 half fresnel = 1.0 - saturate(dot(normalWS, viewDir));
                 half rim = pow(fresnel, _RimPower) * _RimIntensity;
 
                 // Subsurface scattering approximation for latex translucency
-                half sss = saturate(dot(viewDir, -lightDir)) * fresnel * 0.40;
+                half sss = saturate(dot(viewDir, -lightDir)) * fresnel * 0.12;
 
                 // Vertical gradient for depth curvature
                 half gradient = lerp(1.0, 1.0 + _GradientStrength, input.uv.y);

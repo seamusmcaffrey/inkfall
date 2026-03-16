@@ -13,29 +13,23 @@ public partial class EnvironmentBuilder : MonoBehaviour
     private const float BoardPaddingX = 0.6f;
     private const float BoardPaddingY = 0.8f;
     private const float CorkTextureSize = 256;
-    private const float FloorTextureSize = 256;
     private const float CorkSmoothness = 0.25f;
     private const float CorkMetallic = 0.08f;
-    private const float StripeHeight = 0.18f;
-    private const float StripeWidth = 7f;
-    private const float BackWallZ = GameConstants.BOARD_Z + 1.5f;
-    private const float BackWallExtraWidth = 16f;
-    private const float BackWallExtraHeight = 4f;
+    private const int RoomTextureSize = 256;
 
     private static readonly Color CorkColor = new(0.06f, 0.04f, 0.025f);
-    private static readonly Color FloorColor = new(0.03f, 0.025f, 0.02f);
     private static readonly Color BoltColor = new(0.55f, 0.48f, 0.38f);
-    private static readonly Color AccentCyan = new(0.06f, 0.30f, 0.32f);
     private static readonly Color WallDarkColor = new(0.05f, 0.04f, 0.04f);
-    private static readonly Color BackWallColor = new(0.008f, 0.008f, 0.012f);
-    private static readonly string[] StaleVisualRoots = { "BackWall", "LaneFloor", "Directional Light", "LaunchOrigin" };
-    private static readonly string[] WallNames = { "LeftWall", "RightWall", "TopWall" };
-
-    private static readonly Color[] StripeColors =
+    private static readonly Color CeilingColor = new(0.04f, 0.035f, 0.03f);
+    private static readonly Color FloorTint = new(0.9f, 0.85f, 0.78f);
+    private static readonly string[] StaleVisualRoots =
     {
-        new(0.45f, 0.06f, 0.10f), new(0.06f, 0.38f, 0.15f),
-        new(0.12f, 0.10f, 0.45f), new(0.45f, 0.30f, 0.04f),
+        "BackWall", "LaneFloor", "Directional Light", "LaunchOrigin",
+        "StripeGlow0", "StripeGlow1", "StripeGlow2", "StripeGlow3",
+        "FloorStripe0", "FloorStripe1", "FloorStripe2", "FloorStripe3",
+        "LaneLineLeft", "LaneLineRight",
     };
+    private static readonly string[] WallNames = { "LeftWall", "RightWall", "TopWall" };
 
     private void Awake()
     {
@@ -58,11 +52,10 @@ public partial class EnvironmentBuilder : MonoBehaviour
     [ContextMenu("Build Environment")]
     public void BuildEnvironment()
     {
+        BuildRoom();
         BuildCorkBoard();
         BuildMetalFrame();
-        BuildFloorArea();
         BuildAtmosphere();
-        BuildLaneGuides();
     }
 
     private void BuildCorkBoard()
@@ -76,62 +69,25 @@ public partial class EnvironmentBuilder : MonoBehaviour
             CreateTexturedLitMaterial(corkTex, tiling: 3f));
     }
 
-    private void BuildFloorArea()
-    {
-        float bwH = GameConstants.CAMERA_VISIBLE_HALF_HEIGHT * 2f + BackWallExtraHeight;
-        SetPanel("BackWall", PrimitiveType.Quad,
-            new Vector3(0f, GameConstants.CAMERA_Y_CENTER, BackWallZ),
-            new Vector3(GameConstants.TARGET_WORLD_WIDTH + BackWallExtraWidth, bwH, 1f),
-            CreateMaterial(BackWallColor, unlit: true));
-
-        Texture2D floorTex = ProceduralTextures.GenerateFloorTexture((int)FloorTextureSize, (int)FloorTextureSize);
-        float floorBottom = GameConstants.CAMERA_Y_CENTER - GameConstants.CAMERA_VISIBLE_HALF_HEIGHT - 1f;
-        float floorY = (GameConstants.LANE_TOP + floorBottom) * 0.5f;
-        float floorH = GameConstants.LANE_TOP - floorBottom;
-        SetPanel("LaneFloor", PrimitiveType.Quad,
-            new Vector3(0f, floorY, BoardZ + 0.1f),
-            new Vector3(GameConstants.TARGET_WORLD_WIDTH + 1f, floorH, 1f),
-            CreateTexturedMaterial(floorTex, Color.white, unlit: true, tiling: 2f));
-
-        float stripeSpacing = (GameConstants.LANE_TOP - GameConstants.LANE_BOTTOM) / (StripeColors.Length + 1);
-        float startY = (GameConstants.LANE_TOP + GameConstants.LANE_BOTTOM) * 0.5f
-            + (GameConstants.LANE_TOP - GameConstants.LANE_BOTTOM) * 0.35f;
-        for (int i = 0; i < StripeColors.Length; i++)
-        {
-            float sy = startY - i * stripeSpacing;
-            Color glowColor = new(StripeColors[i].r, StripeColors[i].g, StripeColors[i].b, 0.35f);
-            SetPanel($"StripeGlow{i}", PrimitiveType.Quad,
-                new Vector3(0f, sy, BoardZ + 0.09f),
-                new Vector3(StripeWidth + 0.5f, StripeHeight * 2.5f, 1f), CreateMaterial(glowColor, unlit: true));
-            SetPanel($"FloorStripe{i}", PrimitiveType.Quad,
-                new Vector3(0f, sy, BoardZ + 0.08f),
-                new Vector3(StripeWidth, StripeHeight, 1f), CreateMaterial(StripeColors[i], unlit: true));
-        }
-    }
-
     private void BuildAtmosphere()
     {
         BuildAtmosphereOverlays();
     }
 
-    private void BuildLaneGuides()
+    private void SetPanel(string name, PrimitiveType type, Vector3 pos, Vector3 scale, Material mat)
     {
-        float laneMidY = (GameConstants.LANE_TOP + GameConstants.LANE_BOTTOM) * 0.5f;
-        float laneH = GameConstants.LANE_TOP - GameConstants.LANE_BOTTOM;
-        Material cyan = CreateMaterial(AccentCyan, unlit: true);
-        SetPanel("LaneLineLeft", PrimitiveType.Quad,
-            new Vector3(-1.7f, laneMidY, BoardZ - 0.05f), new Vector3(0.10f, laneH, 1f), cyan);
-        SetPanel("LaneLineRight", PrimitiveType.Quad,
-            new Vector3(1.7f, laneMidY, BoardZ - 0.05f), new Vector3(0.10f, laneH, 1f), cyan);
+        SetPanel(name, type, pos, Quaternion.identity, scale, mat);
     }
 
-    private void SetPanel(string name, PrimitiveType type, Vector3 pos, Vector3 scale, Material mat)
+    private void SetPanel(string name, PrimitiveType type, Vector3 pos, Quaternion rotation,
+        Vector3 scale, Material mat)
     {
         Transform existing = transform.Find(name);
         GameObject panel = existing != null ? existing.gameObject : GameObject.CreatePrimitive(type);
         panel.name = name;
         panel.transform.SetParent(transform, false);
         panel.transform.localPosition = pos;
+        panel.transform.localRotation = rotation;
         panel.transform.localScale = scale;
         panel.layer = GameConstants.LAYER_ENVIRONMENT;
         Renderer r = panel.GetComponent<Renderer>();

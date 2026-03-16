@@ -51,18 +51,19 @@ public partial class SlingshotVisuals : MonoBehaviour
 
     private void OnPullUpdate(Vector2 pullVector)
     {
-        Vector3 origin = GameConstants.LAUNCH_POSITION;
-        Vector3 pullEnd = origin + new Vector3(pullVector.x, pullVector.y, 0f);
+        Vector3 slingshotPos = GameConstants.LAUNCH_POSITION;
+        Vector3 fireOrigin = GameConstants.FIRE_ORIGIN;
+        Vector3 pullEnd = slingshotPos + new Vector3(pullVector.x, pullVector.y, 0f);
 
-        // Rubber band
+        // Rubber band — anchored at slingshot (bottom of screen, where the finger is)
         _bandLine.positionCount = 2;
-        _bandLine.SetPosition(0, origin + Vector3.back);
+        _bandLine.SetPosition(0, slingshotPos + Vector3.back);
         _bandLine.SetPosition(1, pullEnd + Vector3.back);
 
         // Origin ring
-        UpdateOriginRing(origin);
+        UpdateOriginRing(slingshotPos);
 
-        // Trajectory
+        // Trajectory — starts from fire origin (mid-screen, where dart spawns)
         Vector3 velocity = _input.PreviewVelocity;
         if (velocity.sqrMagnitude < 1f)
         {
@@ -73,17 +74,28 @@ public partial class SlingshotVisuals : MonoBehaviour
 
         Vector3 gravity = new Vector3(0f, GameConstants.DART_GRAVITY, 0f);
 
-        // Keep the thin line as a subtle connector
-        _trajectoryLine.positionCount = _trajectoryPoints;
+        int visibleCount = 0;
         for (int index = 0; index < _trajectoryPoints; index++)
         {
             float time = (float)index / (_trajectoryPoints - 1) * _trajectoryDuration;
-            Vector3 position = origin + velocity * time + 0.5f * gravity * time * time;
+            Vector3 position = fireOrigin + velocity * time + 0.5f * gravity * time * time;
+            if (position.z > GameConstants.BOARD_Z + 0.5f)
+            {
+                break;
+            }
+            visibleCount++;
+        }
+
+        _trajectoryLine.positionCount = visibleCount;
+        for (int index = 0; index < visibleCount; index++)
+        {
+            float time = (float)index / (_trajectoryPoints - 1) * _trajectoryDuration;
+            Vector3 position = fireOrigin + velocity * time + 0.5f * gravity * time * time;
             _trajectoryLine.SetPosition(index, position + Vector3.back);
         }
 
         // Position the trajectory dots along the same arc
-        UpdateTrajectoryDots(origin, velocity, gravity);
+        UpdateTrajectoryDots(fireOrigin, velocity, gravity);
     }
 
     private void LateUpdate()

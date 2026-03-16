@@ -24,10 +24,7 @@ public class DartPhysicsTestRunner : MonoBehaviour
 
     public IEnumerator FireSequenceWithScreenshots()
     {
-        var config = GameConfigSO.Instance;
-        float minSpeed = config.minLaunchSpeed;
-        float maxSpeed = config.maxLaunchSpeed;
-        float exponent = config.pullSpeedExponent;
+        float exponent = GameConfigSO.Instance.pullSpeedExponent;
 
         // Force shader compilation before first capture to avoid magenta frames
         Shader.WarmupAllShaders();
@@ -39,21 +36,27 @@ public class DartPhysicsTestRunner : MonoBehaviour
         for (int i = 0; i < PullLevels.Length; i++)
         {
             float pull = PullLevels[i];
-            float pullStrength = Mathf.Pow(pull, exponent);
-            float speed = minSpeed + pullStrength * (maxSpeed - minSpeed);
-            Vector3 velocity = Vector3.up * speed;
+            float power = Mathf.Pow(pull, exponent);
+            float aimY = GameConstants.BOARD_CENTER_Y + power * GameConstants.AIM_RANGE_Y;
+            aimY = Mathf.Min(aimY, GameConstants.BOARD_TOP);
+            Vector3 aimPoint = new Vector3(0f, aimY, GameConstants.BOARD_Z);
+            Vector3 velocity = SlingshotInput.ComputeBallisticVelocity(
+                GameConstants.FIRE_ORIGIN, aimPoint);
 
-            float theoreticalPeak = GameConstants.LAUNCH_POSITION.y + (speed * speed) / (2f * Mathf.Abs(GameConstants.DART_GRAVITY));
+            float theoreticalPeak = velocity.y > 0f
+                ? GameConstants.FIRE_ORIGIN.y +
+                  (velocity.y * velocity.y) / (2f * Mathf.Abs(GameConstants.DART_GRAVITY))
+                : GameConstants.FIRE_ORIGIN.y;
 #if UNITY_EDITOR
-            Debug.Log($"[DartTest] {PullLabels[i]}: pull={pull}, pullStrength={pullStrength:F3}, speed={speed:F1}, velocity={velocity}");
-            Debug.Log($"[DartTest]   Config: minSpeed={minSpeed}, maxSpeed={maxSpeed}, exponent={exponent}, gravity={GameConstants.DART_GRAVITY}");
-            Debug.Log($"[DartTest]   Launch Y={GameConstants.LAUNCH_POSITION.y}, Board Y={GameConstants.BOARD_BOTTOM} to {GameConstants.BOARD_TOP}");
+            Debug.Log($"[DartTest] {PullLabels[i]}: pull={pull}, power={power:F3}, aimY={aimY:F1}, velocity={velocity}");
+            Debug.Log($"[DartTest]   Config: exponent={exponent}, gravity={GameConstants.DART_GRAVITY}, forwardSpeed={GameConstants.DART_FORWARD_SPEED}");
+            Debug.Log($"[DartTest]   Launch Y={GameConstants.FIRE_ORIGIN.y}, Board Y={GameConstants.BOARD_BOTTOM} to {GameConstants.BOARD_TOP}");
             Debug.Log($"[DartTest]   Theoretical peak Y={theoreticalPeak:F1} (board bottom={GameConstants.BOARD_BOTTOM}, top={GameConstants.BOARD_TOP})");
 #endif
 
             yield return new WaitForSeconds(DelayBeforeFire);
             var dart = FireDartTracked(velocity, ColumnOffsets[i]);
-            float peakY = GameConstants.LAUNCH_POSITION.y;
+            float peakY = GameConstants.FIRE_ORIGIN.y;
             float elapsed = 0f;
             while (elapsed < FlightDuration && dart != null)
             {
@@ -117,7 +120,7 @@ public class DartPhysicsTestRunner : MonoBehaviour
             if (controller != null)
             {
                 var rb = controller.GetComponent<Rigidbody>();
-                rb.position = GameConstants.LAUNCH_POSITION + new Vector3(xOffset, 0f, 0f);
+                rb.position = GameConstants.FIRE_ORIGIN + new Vector3(xOffset, 0f, 0f);
                 return controller.gameObject;
             }
             return null;
@@ -130,7 +133,7 @@ public class DartPhysicsTestRunner : MonoBehaviour
     {
         var dart = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         dart.name = "TestDart";
-        dart.transform.position = GameConstants.LAUNCH_POSITION + new Vector3(xOffset, 0f, 0f);
+        dart.transform.position = GameConstants.FIRE_ORIGIN + new Vector3(xOffset, 0f, 0f);
         dart.transform.localScale = Vector3.one * 0.3f;
 
         var rb = dart.GetComponent<Rigidbody>();

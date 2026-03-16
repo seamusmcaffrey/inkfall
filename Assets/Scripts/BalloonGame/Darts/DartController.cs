@@ -70,7 +70,11 @@ public class DartController : MonoBehaviour
         State = DartState.Flying;
         _balloonsHitThisFlight = 0;
         _ricochetCount = 0;
-        _launchSpeed = new Vector2(velocity.x, velocity.y).magnitude;
+        _launchSpeed = velocity.magnitude;
+
+        // Sync Rigidbody to transform before enabling physics
+        _rigidbody.position = transform.position;
+        _rigidbody.rotation = transform.rotation;
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = false;
         _rigidbody.linearVelocity = velocity;
