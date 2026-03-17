@@ -151,10 +151,18 @@ public partial class SlingshotInput : MonoBehaviour
     {
         Vector2 launchPosition = new(GameConstants.LAUNCH_POSITION.x, GameConstants.LAUNCH_POSITION.y);
         Vector2 rawPull = worldPosition - launchPosition;
+
+        // Clamp pull to downward-only — slingshot never drags above the anchor
+        rawPull.y = Mathf.Min(rawPull.y, 0f);
+
         float distance = Mathf.Min(rawPull.magnitude, GameConstants.MAX_PULL_DISTANCE);
-        _pullVector = rawPull.sqrMagnitude > Mathf.Epsilon
+        Vector2 targetPull = rawPull.sqrMagnitude > Mathf.Epsilon
             ? rawPull.normalized * distance
             : Vector2.zero;
+
+        // Smooth the pull vector so aim drifts toward the finger instead of snapping
+        float smoothT = Mathf.Clamp01(GameConstants.AIM_SMOOTH_SPEED * Time.deltaTime);
+        _pullVector = Vector2.Lerp(_pullVector, targetPull, smoothT);
 
         if (!_hasClearedDeadZone && _pullVector.magnitude >= GameConstants.PULL_DEAD_ZONE)
         {
@@ -227,16 +235,8 @@ public partial class SlingshotInput : MonoBehaviour
         Gizmos.DrawLine(pos + Vector3.up * 0.8f, pos + Vector3.down * 0.8f);
         Gizmos.DrawLine(pos + Vector3.forward * 0.8f, pos + Vector3.back * 0.8f);
 
-        // Dart fire origin (mid-screen)
-        Vector3 firePos = GameConstants.FIRE_ORIGIN;
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(firePos, 0.4f);
-        Gizmos.DrawLine(firePos + Vector3.left * 0.6f, firePos + Vector3.right * 0.6f);
-        Gizmos.DrawLine(firePos + Vector3.up * 0.6f, firePos + Vector3.down * 0.6f);
-
 #if UNITY_EDITOR
-        UnityEditor.Handles.Label(pos + Vector3.up * 0.9f, "SLINGSHOT INPUT");
-        UnityEditor.Handles.Label(firePos + Vector3.up * 0.6f, "DART FIRE ORIGIN");
+        UnityEditor.Handles.Label(pos + Vector3.up * 0.9f, "SLINGSHOT / DART ORIGIN");
 #endif
     }
 

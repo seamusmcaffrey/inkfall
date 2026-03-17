@@ -1,7 +1,8 @@
-using UnityEngine;
+using System.Runtime.InteropServices;
 
 /// <summary>
-/// Platform-safe haptics entry point.
+/// Platform-safe haptics entry point. Uses iOS Taptic Engine via native plugin
+/// for differentiated feedback (Light/Medium/Heavy/Selection/Success).
 /// </summary>
 public static class Haptics
 {
@@ -10,8 +11,17 @@ public static class Haptics
         Light,
         Medium,
         Heavy,
+        Selection,
         Success,
     }
+
+#if UNITY_IOS && !UNITY_EDITOR
+    [DllImport("__Internal")] private static extern void _HapticImpactLight();
+    [DllImport("__Internal")] private static extern void _HapticImpactMedium();
+    [DllImport("__Internal")] private static extern void _HapticImpactHeavy();
+    [DllImport("__Internal")] private static extern void _HapticSelection();
+    [DllImport("__Internal")] private static extern void _HapticNotificationSuccess();
+#endif
 
     public static void Play(HapticType type)
     {
@@ -20,29 +30,27 @@ public static class Haptics
             return;
         }
 
-#if UNITY_IOS || UNITY_ANDROID
+#if UNITY_IOS && !UNITY_EDITOR
         switch (type)
         {
             case HapticType.Light:
-                Handheld.Vibrate();
+                _HapticImpactLight();
                 break;
-
             case HapticType.Medium:
-                Handheld.Vibrate();
+                _HapticImpactMedium();
                 break;
-
             case HapticType.Heavy:
-                Handheld.Vibrate();
+                _HapticImpactHeavy();
                 break;
-
+            case HapticType.Selection:
+                _HapticSelection();
+                break;
             case HapticType.Success:
-                Handheld.Vibrate();
+                _HapticNotificationSuccess();
                 break;
         }
-#else
-#if UNITY_EDITOR
-        Debug.Log($"[Haptics] {type}");
-#endif
+#elif UNITY_EDITOR
+        UnityEngine.Debug.Log($"[Haptics] {type}");
 #endif
     }
 }

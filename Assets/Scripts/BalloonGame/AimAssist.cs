@@ -42,7 +42,7 @@ public class AimAssist : MonoBehaviour
             return rawVelocity;
         }
 
-        Vector3 origin = GameConstants.FIRE_ORIGIN;
+        Vector3 origin = GameConstants.LAUNCH_POSITION;
         Vector3 direction = rawVelocity.normalized;
         BalloonNode bestBalloon = null;
         float bestScore = 0f;

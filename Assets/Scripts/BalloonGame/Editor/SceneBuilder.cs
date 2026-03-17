@@ -119,6 +119,7 @@ public static partial class BalloonSceneBuilder
         slingshotControllerObject.AddComponent<SlingshotVisuals>();
         slingshotControllerObject.AddComponent<LaunchLaneVisuals>();
         slingshotControllerObject.AddComponent<LaunchFeel>();
+        slingshotControllerObject.AddComponent<SlingshotHaptics>();
         aimAssist.SetBalloonWall(balloonWall);
 
         var gameManagerObject = new GameObject("GameManager");

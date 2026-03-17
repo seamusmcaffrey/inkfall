@@ -20,14 +20,14 @@ public class DartLauncher : MonoBehaviour
 
         // Unparent from pool container so physics isn't relative to container transform
         dart.transform.SetParent(null, false);
-        dart.transform.position = GameConstants.FIRE_ORIGIN;
+        dart.transform.position = GameConstants.LAUNCH_POSITION;
         dart.transform.rotation = Quaternion.identity;
 
         // Explicitly sync Rigidbody position to avoid stale physics cache
         var rb = dart.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.position = GameConstants.FIRE_ORIGIN;
+            rb.position = GameConstants.LAUNCH_POSITION;
             rb.rotation = Quaternion.identity;
         }
 

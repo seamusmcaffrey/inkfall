@@ -164,6 +164,7 @@ public class JuiceManager : MonoBehaviour
     private void HandleDartLaunched(DartLaunchedEvent evt)
     {
         AudioManager.Instance.PlaySfx(SoundLibrarySO.Instance.launch, 0.35f);
+        HapticsUtility.Medium();
     }
 
     private void HandleRoomCleared(RoomClearedEvent evt)

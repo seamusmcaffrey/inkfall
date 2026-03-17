@@ -14,7 +14,7 @@ public class GameConfigSO : ScriptableObject
     private static GameConfigSO _instance;
 
     [Header("Input / Launch")]
-    public float pullSpeedExponent = 1.45f;
+    public float pullSpeedExponent = 3f;
     [Tooltip("Legacy: not used by aim-point model. Kept for test runner backward compat.")]
     public float minLaunchSpeed = 10f;
     [Tooltip("Legacy: not used by aim-point model. Kept for test runner backward compat.")]

@@ -58,7 +58,7 @@ public class SceneViewDartTester : EditorWindow
     {
         Event e = Event.current;
         int controlId = GUIUtility.GetControlID(FocusType.Passive);
-        Vector2 launchXY = new(GameConstants.FIRE_ORIGIN.x, GameConstants.FIRE_ORIGIN.y);
+        Vector2 launchXY = new(GameConstants.LAUNCH_POSITION.x, GameConstants.LAUNCH_POSITION.y);
 
         switch (e.type)
         {
@@ -107,11 +107,11 @@ public class SceneViewDartTester : EditorWindow
     private static Vector3 ScreenToLaunchPlane(Vector2 guiPosition)
     {
         Ray ray = HandleUtility.GUIPointToWorldRay(guiPosition);
-        float launchZ = GameConstants.FIRE_ORIGIN.z;
+        float launchZ = GameConstants.LAUNCH_POSITION.z;
 
         if (Mathf.Abs(ray.direction.z) < 0.001f)
         {
-            return GameConstants.FIRE_ORIGIN;
+            return GameConstants.LAUNCH_POSITION;
         }
 
         float t = (launchZ - ray.origin.z) / ray.direction.z;
@@ -122,7 +122,7 @@ public class SceneViewDartTester : EditorWindow
     {
         Vector3 aim = SlingshotInput.ComputeAimPoint(_pullVector);
         Vector3 velocity = SlingshotInput.ComputeBallisticVelocity(
-            GameConstants.FIRE_ORIGIN, aim);
+            GameConstants.LAUNCH_POSITION, aim);
 
         var launcher = FindAnyObjectByType<DartLauncher>();
         if (launcher != null)
@@ -134,20 +134,20 @@ public class SceneViewDartTester : EditorWindow
     private static void DrawLaunchIndicator()
     {
         Handles.color = new Color(1f, 1f, 0f, 0.5f);
-        Handles.DrawWireDisc(GameConstants.FIRE_ORIGIN, Vector3.forward, DragActivationRadius);
-        Handles.DrawWireDisc(GameConstants.FIRE_ORIGIN, Vector3.forward, 0.3f);
+        Handles.DrawWireDisc(GameConstants.LAUNCH_POSITION, Vector3.forward, DragActivationRadius);
+        Handles.DrawWireDisc(GameConstants.LAUNCH_POSITION, Vector3.forward, 0.3f);
     }
 
     private static void DrawPullLine()
     {
-        Vector3 pullEnd = GameConstants.FIRE_ORIGIN + new Vector3(_pullVector.x, _pullVector.y, 0f);
+        Vector3 pullEnd = GameConstants.LAUNCH_POSITION + new Vector3(_pullVector.x, _pullVector.y, 0f);
         Handles.color = new Color(1f, 0.3f, 0.2f, 0.9f);
-        Handles.DrawLine(GameConstants.FIRE_ORIGIN, pullEnd, 3f);
+        Handles.DrawLine(GameConstants.LAUNCH_POSITION, pullEnd, 3f);
     }
 
     private static void DrawTrajectoryArc()
     {
-        Vector3 origin = GameConstants.FIRE_ORIGIN;
+        Vector3 origin = GameConstants.LAUNCH_POSITION;
         Vector3 aim = SlingshotInput.ComputeAimPoint(_pullVector);
         Vector3 velocity = SlingshotInput.ComputeBallisticVelocity(origin, aim);
         Vector3 gravity = new(0f, GameConstants.DART_GRAVITY, 0f);
