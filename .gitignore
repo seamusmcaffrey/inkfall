@@ -26,6 +26,9 @@
 *.pdb.meta
 *.mdb.meta
 
+# Crash dumps
+mono_crash*
+
 # Builds
 *.apk
 *.aab

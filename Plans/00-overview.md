@@ -4,7 +4,7 @@ Core gameplay loop: **Drag slingshot → launch dart → dart arcs via Rigidbody
 
 ## What We're Building
 
-A new scene (`InkshotScene`) inside the existing AutoAimBowAndArrow Unity 6 project. We reuse and extend the project's existing physics, input, and projectile systems — not replace them.
+A new scene (`InkshotScene`) inside the Inkfall Unity 6 project. We reuse and extend the project's existing physics, input, and projectile systems — not replace them.
 
 ## Design Inspiration
 
