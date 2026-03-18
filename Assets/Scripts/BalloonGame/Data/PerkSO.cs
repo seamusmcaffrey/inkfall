@@ -13,17 +13,30 @@ public class PerkSO : ScriptableObject
     public Sprite icon;
 
     [Header("Classification")]
+    public PerkFamily family = PerkFamily.ThrowMods;
     public PerkRarity rarity = PerkRarity.Common;
     public PerkEffectType effectType = PerkEffectType.None;
     public bool isPassive = true;
+    public bool isKeystone;
+    public bool isStarterExclusive;
+    public int shopCost = 3;
+    public int roomUnlock = 1;
 
     [Header("Effect Parameters")]
     public float effectValue = 1f;
     public float effectValueSecondary;
     public int effectIntValue;
 
+    [Header("Run Focus")]
+    public bool hasColorFocus;
+    public BalloonColor colorFocus = BalloonColor.Red;
+    public bool hasStickerFocus;
+    public StickerFamily stickerFocus = StickerFamily.None;
+    public RunModifierBundle modifiers = new();
+
     [Header("Unlocking")]
     public bool requiresUnlock;
+    public string requiredMetaUpgradeId;
     public int unlockCost;
 
     [Header("Presentation")]

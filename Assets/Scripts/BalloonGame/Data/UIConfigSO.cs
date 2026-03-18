@@ -25,6 +25,17 @@ public class UIConfigSO : ScriptableObject
     public float comboPunchDuration = 0.25f;
     public float comboPunchScale = 1.4f;
     public float comboFadeDuration = 0.5f;
+    public float comboTimerWidth = 132f;
+    public float comboTimerHeight = 8f;
+    public float comboFeedbackOffsetY = 96f;
+    public float comboCalloutWidth = 240f;
+    public float comboCalloutHeight = 44f;
+    public float comboCalloutDuration = 1.2f;
+    public float comboCalloutFadeDuration = 0.18f;
+    public float comboCalloutPunchScale = 1.08f;
+    public float comboCalloutTitleSize = 8.5f;
+    public float comboCalloutBodySize = 12.5f;
+    public float comboCalloutRowSize = 7.5f;
 
     [Header("Floating Score Text")]
     public float floatingTextRisePx = 1.5f;

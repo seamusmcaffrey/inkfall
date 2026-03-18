@@ -37,6 +37,46 @@ public struct ComboChangedEvent
 }
 
 /// <summary>
+/// Fired while the combo window is active or when it expires.
+/// </summary>
+public struct ComboWindowStateEvent
+{
+    public int ComboCount;
+    public float RemainingSeconds;
+    public float MaxSeconds;
+    public float NormalizedRemaining;
+    public bool IsActive;
+}
+
+/// <summary>
+/// Visual styles for perk chain callouts and flash treatments.
+/// </summary>
+public enum PerkChainVisualStyle
+{
+    Lightning,
+    Acid,
+    Rat,
+    Sweep,
+    Echo,
+}
+
+/// <summary>
+/// Fired when a perk chain resolves and should be surfaced to feedback systems.
+/// </summary>
+public struct PerkChainTriggeredEvent
+{
+    public string PerkId;
+    public string DisplayName;
+    public Color AccentColor;
+    public Vector3 SourcePosition;
+    public Vector3 TargetPosition;
+    public int SourceRow;
+    public int TargetRow;
+    public bool ClearsRow;
+    public PerkChainVisualStyle VisualStyle;
+}
+
+/// <summary>
 /// Fired when a dart completes its flight.
 /// </summary>
 public struct DartFinishedEvent

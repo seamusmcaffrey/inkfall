@@ -12,6 +12,7 @@ public class TitleScreen : MonoBehaviour
 {
     [SerializeField] private RunManager _runManager;
     [SerializeField] private SettingsPanel _settingsPanel = null;
+    [SerializeField] private MetaTreeScreen _metaTreeScreen = null;
     private CanvasGroup _group;
 
     private void Awake()
@@ -78,6 +79,18 @@ public class TitleScreen : MonoBehaviour
         }
     }
 
+    private void OpenMeta()
+    {
+        ResolveDependencies();
+        _metaTreeScreen?.Show();
+    }
+
+    private void OpenLoadouts()
+    {
+        ResolveDependencies();
+        _runManager?.OpenLoadoutSelection();
+    }
+
     private void Hide()
     {
         _group.alpha = 0f;
@@ -125,14 +138,21 @@ public class TitleScreen : MonoBehaviour
         CreateText(vpRoot.transform, "INKSHOT", new Vector2(0f, 220f), 84f, UIColors.RoomPink);
         CreateText(vpRoot.transform, "Chrome darts. Neon carnival. One more room.",
             new Vector2(0f, 150f), 26f, UIColors.InkCyan);
-        CreateButton(vpRoot.transform, "START RUN", new Vector2(0f, -40f), StartRun);
-        CreateButton(vpRoot.transform, "SETTINGS", new Vector2(0f, -120f), OpenSettings);
+        CreateButton(vpRoot.transform, "START RUN", new Vector2(0f, -20f), StartRun);
+        CreateButton(vpRoot.transform, "LOADOUT", new Vector2(0f, -100f), OpenLoadouts);
+        CreateButton(vpRoot.transform, "SETTINGS", new Vector2(0f, -180f), OpenSettings);
+        CreateButton(vpRoot.transform, "META TREE", new Vector2(0f, -260f), OpenMeta);
     }
 
     private void ResolveDependencies()
     {
         ComponentUtility.ResolveSceneReference(this, ref _runManager);
         ComponentUtility.ResolveSceneReference(this, ref _settingsPanel);
+        ComponentUtility.ResolveSceneReference(this, ref _metaTreeScreen);
+        if (_metaTreeScreen == null)
+        {
+            _metaTreeScreen = new GameObject("MetaTreeScreen").AddComponent<MetaTreeScreen>();
+        }
     }
 
     private static void CreateText(Transform parent, string text, Vector2 anchoredPosition, float size, Color color)

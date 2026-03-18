@@ -4,9 +4,12 @@
 public enum RunState
 {
     Idle,
+    LoadoutDraft,
     RoomIntro,
     InRoom,
     PerkDraft,
+    RelicDraft,
+    Shop,
     RunEnd,
 }
 

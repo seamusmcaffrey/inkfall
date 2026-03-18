@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Permanent meta progression upgrade definition.
@@ -11,7 +12,14 @@ public class MetaUpgradeSO : ScriptableObject
     [TextArea(1, 3)] public string description = "Permanent run improvement";
     public Sprite icon;
     public int cost = 50;
+    public string branchLabel = "Core";
+    public List<string> prerequisiteIds = new();
+    public List<string> unlockedLoadoutIds = new();
+    public List<string> unlockedPerkIds = new();
+    public List<string> unlockedRelicIds = new();
+    public List<StickerFamily> unlockedStickerFamilies = new();
     public PerkEffectType effectType = PerkEffectType.None;
     public float effectValue = 1f;
     public int effectIntValue;
+    public RunModifierBundle modifiers = new();
 }

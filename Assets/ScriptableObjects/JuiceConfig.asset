@@ -66,6 +66,12 @@ MonoBehaviour:
   comboFlashDuration: 0.2
   comboFlashAttackRatio: 0.15
   comboFlashEdgeThickness: 0.12
+  perkChainFlashEnabled: 1
+  perkChainFlashMaxAlpha: 0.18
+  perkChainFlashDuration: 0.22
+  perkChainFlashAttackRatio: 0.16
+  perkChainFlashStyleStep: 0.035
+  perkChainFlashRowClearBonus: 0.05
   slowMotionEnabled: 1
   slowMotionComboThreshold: 5
   slowMotionTimeScale: 0.4

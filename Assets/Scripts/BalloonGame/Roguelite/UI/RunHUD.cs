@@ -8,38 +8,55 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public class RunHUD : MonoBehaviour
 {
+    [SerializeField] private PerkManager _perkManager;
+
     private RectTransform _safeRoot;
     private TextMeshProUGUI _roomText;
-    private TextMeshProUGUI _inkText;
+    private TextMeshProUGUI _ticketText;
+    private TextMeshProUGUI _finisherText;
+    private TextMeshProUGUI _loadoutText;
     private TextMeshProUGUI _perkText;
+    private TextMeshProUGUI _statusText;
 
     private void Awake()
     {
+        ComponentUtility.ResolveSceneReference(this, ref _perkManager);
         EnsureUi();
     }
 
     private void OnEnable()
     {
         EventBus.Subscribe<RoomStartedEvent>(HandleRoomStarted);
-        EventBus.Subscribe<CurrencyChangedEvent>(HandleCurrencyChanged);
+        EventBus.Subscribe<RunCurrencyChangedEvent>(HandleCurrencyChanged);
         EventBus.Subscribe<PerkSelectedEvent>(HandlePerkSelected);
+        EventBus.Subscribe<LoadoutSelectedEvent>(HandleLoadoutSelected);
+        EventBus.Subscribe<RelicSelectedEvent>(HandleRelicSelected);
+        EventBus.Subscribe<FinisherChargeChangedEvent>(HandleFinisherChargeChanged);
+        EventBus.Subscribe<PerkChainTriggeredEvent>(HandlePerkChainTriggered);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<RoomStartedEvent>(HandleRoomStarted);
-        EventBus.Unsubscribe<CurrencyChangedEvent>(HandleCurrencyChanged);
+        EventBus.Unsubscribe<RunCurrencyChangedEvent>(HandleCurrencyChanged);
         EventBus.Unsubscribe<PerkSelectedEvent>(HandlePerkSelected);
+        EventBus.Unsubscribe<LoadoutSelectedEvent>(HandleLoadoutSelected);
+        EventBus.Unsubscribe<RelicSelectedEvent>(HandleRelicSelected);
+        EventBus.Unsubscribe<FinisherChargeChangedEvent>(HandleFinisherChargeChanged);
+        EventBus.Unsubscribe<PerkChainTriggeredEvent>(HandlePerkChainTriggered);
     }
 
     private void HandleRoomStarted(RoomStartedEvent evt)
     {
         _roomText.text = $"RUN ROOM {evt.RoomNumber}";
+        _statusText.text = _perkManager != null && (_perkManager.ActivePerks.Count > 0 || _perkManager.ActiveRelics.Count > 0)
+            ? "REACTIONS LIVE"
+            : "BUILD ENGINE";
     }
 
-    private void HandleCurrencyChanged(CurrencyChangedEvent evt)
+    private void HandleCurrencyChanged(RunCurrencyChangedEvent evt)
     {
-        _inkText.text = $"INK {evt.TotalInk}";
+        _ticketText.text = $"TICKETS {evt.PrizeTickets}";
     }
 
     private void HandlePerkSelected(PerkSelectedEvent evt)
@@ -52,6 +69,31 @@ public class RunHUD : MonoBehaviour
         {
             _perkText.text += $"  •  {evt.Perk.perkName}";
         }
+
+        _statusText.text = $"READY {evt.Perk.perkName}";
+    }
+
+    private void HandleLoadoutSelected(LoadoutSelectedEvent evt)
+    {
+        _loadoutText.text = evt.Loadout != null ? $"LOADOUT {evt.Loadout.displayName}" : "LOADOUT NONE";
+    }
+
+    private void HandleRelicSelected(RelicSelectedEvent evt)
+    {
+        if (!string.IsNullOrEmpty(evt.Relic?.perkName))
+        {
+            _statusText.text = $"RELIC {evt.Relic.perkName}";
+        }
+    }
+
+    private void HandleFinisherChargeChanged(FinisherChargeChangedEvent evt)
+    {
+        _finisherText.text = $"FINISHER {evt.Charge:0.0}/{evt.MaxCharge:0.0}";
+    }
+
+    private void HandlePerkChainTriggered(PerkChainTriggeredEvent evt)
+    {
+        _statusText.text = $"{FormatStyle(evt.VisualStyle)} {evt.DisplayName}";
     }
 
     private void EnsureUi()
@@ -95,17 +137,34 @@ public class RunHUD : MonoBehaviour
             _roomText = CreateText("Room", new Vector2(32f, -180f), 16f);
         }
 
-        if (_inkText == null)
+        if (_ticketText == null)
         {
-            _inkText = CreateText("Ink", new Vector2(32f, -200f), 16f);
+            _ticketText = CreateText("Tickets", new Vector2(32f, -200f), 16f);
+        }
+
+        if (_finisherText == null)
+        {
+            _finisherText = CreateText("Finisher", new Vector2(32f, -220f), 16f);
+        }
+
+        if (_loadoutText == null)
+        {
+            _loadoutText = CreateText("Loadout", new Vector2(32f, -240f), 14f);
         }
 
         if (_perkText == null)
         {
-            _perkText = CreateText("Perks", new Vector2(32f, -220f), 14f);
+            _perkText = CreateText("Perks", new Vector2(32f, -260f), 14f);
         }
 
-        _inkText.text = $"INK {SaveManager.Instance.Data.totalInk}";
+        if (_statusText == null)
+        {
+            _statusText = CreateText("Status", new Vector2(32f, -280f), 14f);
+        }
+
+        _ticketText.text = "TICKETS 0";
+        _finisherText.text = "FINISHER 0.0/3.0";
+        _statusText.text = "BUILD ENGINE";
     }
 
     private TextMeshProUGUI CreateText(string name, Vector2 anchoredPosition, float fontSize)
@@ -125,4 +184,14 @@ public class RunHUD : MonoBehaviour
         label.raycastTarget = false;
         return label;
     }
+
+    private static string FormatStyle(PerkChainVisualStyle style) => style switch
+    {
+        PerkChainVisualStyle.Lightning => "LIGHTNING",
+        PerkChainVisualStyle.Acid => "ACID",
+        PerkChainVisualStyle.Rat => "RATS",
+        PerkChainVisualStyle.Sweep => "SWEEP",
+        PerkChainVisualStyle.Echo => "ECHO",
+        _ => "CHAIN",
+    };
 }

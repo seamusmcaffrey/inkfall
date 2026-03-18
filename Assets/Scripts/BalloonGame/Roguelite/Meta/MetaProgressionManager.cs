@@ -19,18 +19,50 @@ public class MetaProgressionManager : MonoBehaviour
 
     public bool Purchase(MetaUpgradeSO upgrade)
     {
-        if (upgrade == null || IsUnlocked(upgrade))
+        if (!CanPurchase(upgrade, out _))
         {
             return false;
         }
 
-        if (!SaveManager.Instance.SpendInk(upgrade.cost))
-        {
-            return false;
-        }
-
+        SaveManager.Instance.SpendInk(upgrade.cost);
         SaveManager.Instance.Data.purchasedMetaUpgradeIds.Add(upgrade.upgradeId);
         SaveManager.Instance.Save();
+        return true;
+    }
+
+    public bool CanPurchase(MetaUpgradeSO upgrade, out string reason)
+    {
+        if (upgrade == null)
+        {
+            reason = "Missing upgrade.";
+            return false;
+        }
+
+        if (IsUnlocked(upgrade))
+        {
+            reason = "Already unlocked.";
+            return false;
+        }
+
+        foreach (string prerequisiteId in upgrade.prerequisiteIds)
+        {
+            if (!SaveManager.Instance.Data.purchasedMetaUpgradeIds.Contains(prerequisiteId))
+            {
+                MetaUpgradeSO prerequisite = InkshotContentCatalog.GetMetaById(prerequisiteId);
+                reason = prerequisite != null
+                    ? $"Requires {prerequisite.displayName}."
+                    : "Missing prerequisite.";
+                return false;
+            }
+        }
+
+        if (SaveManager.Instance.Data.totalInk < upgrade.cost)
+        {
+            reason = $"Need {upgrade.cost} Ink.";
+            return false;
+        }
+
+        reason = "Purchase unlock.";
         return true;
     }
 }

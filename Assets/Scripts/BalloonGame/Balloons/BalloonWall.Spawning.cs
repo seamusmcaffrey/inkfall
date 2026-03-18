@@ -3,8 +3,6 @@ using UnityEngine;
 
 public partial class BalloonWall
 {
-    private readonly List<BalloonTypeSO> _runtimeTypes = new();
-
     private BalloonTypeSO PickBalloonType(int row, int column, List<Vector2Int> specialSlots, int specialCount, int hazardCount)
     {
         List<BalloonTypeSO> availableTypes = GetAvailableTypes();
@@ -15,7 +13,12 @@ public partial class BalloonWall
         {
             int slotIndex = specialSlots.IndexOf(slot);
             BalloonSpecialType requestedType = slotIndex < hazardCount ? BalloonSpecialType.Hazard : BalloonSpecialType.Paint;
-            BalloonTypeSO specialType = availableTypes.Find(type => type.specialType == requestedType);
+            List<BalloonTypeSO> specialTypes = availableTypes.FindAll(type =>
+                type.specialType != BalloonSpecialType.Standard &&
+                (requestedType == BalloonSpecialType.Hazard
+                    ? type.specialType == BalloonSpecialType.Hazard
+                    : type.specialType != BalloonSpecialType.Hazard));
+            BalloonTypeSO specialType = PickWeightedType(specialTypes);
             if (specialType != null)
             {
                 return specialType;
@@ -29,37 +32,50 @@ public partial class BalloonWall
 
     private List<BalloonTypeSO> GetAvailableTypes()
     {
-        if (GameConfigSO.Instance.balloonTypes != null && GameConfigSO.Instance.balloonTypes.Count > 0)
+        var availableTypes = new List<BalloonTypeSO>();
+        foreach (BalloonTypeSO type in GameConfigSO.Instance.balloonTypes)
         {
-            return GameConfigSO.Instance.balloonTypes;
+            if (type == null || !type.canSpawn || type.roomUnlock > (_roomConfig != null ? _roomConfig.roomNumber : 1))
+            {
+                continue;
+            }
+
+            if (!string.IsNullOrEmpty(type.requiredMetaUpgradeId) && !SaveManager.Instance.Data.purchasedMetaUpgradeIds.Contains(type.requiredMetaUpgradeId))
+            {
+                continue;
+            }
+
+            if (_perkManager != null && _perkManager.FewerPrizeBalloons && type.specialType == BalloonSpecialType.Gold)
+            {
+                continue;
+            }
+
+            availableTypes.Add(type);
         }
 
-        if (_runtimeTypes.Count > 0)
+        return availableTypes;
+    }
+
+    private StickerFamily ResolveStickerFamily(BalloonTypeSO type)
+    {
+        if (type != null && type.forcedStickerFamily != StickerFamily.None)
         {
-            return _runtimeTypes;
+            return type.forcedStickerFamily;
         }
 
-        foreach (BalloonColor color in _colors)
+        if (_runSystemsManager == null)
         {
-            BalloonTypeSO standard = ScriptableObject.CreateInstance<BalloonTypeSO>();
-            standard.typeId = $"standard-{color.ToString().ToLowerInvariant()}";
-            standard.displayName = $"{color.ToDisplayName()} Balloon";
-            standard.balloonColor = color;
-            standard.specialType = BalloonSpecialType.Standard;
-            standard.basePoints = GameConstants.SCORE_PER_BALLOON;
-            _runtimeTypes.Add(standard);
+            return StickerFamily.None;
         }
 
-        _runtimeTypes.Add(CreateRuntimeType("paint", "Paint Balloon", BalloonColor.Blue,
-            BalloonSpecialType.Paint, GameConstants.SCORE_PER_BALLOON + 25,
-            effectRadius: GameConfigSO.Instance.defaultPaintRadius));
-        _runtimeTypes.Add(CreateRuntimeType("hazard", "Hazard Balloon", BalloonColor.Purple,
-            BalloonSpecialType.Hazard, -GameConfigSO.Instance.hazardBalloonPenalty,
-            hazardPenalty: GameConfigSO.Instance.hazardBalloonPenalty));
-        _runtimeTypes.Add(CreateRuntimeType("gold", "Gold Balloon", BalloonColor.Yellow,
-            BalloonSpecialType.Gold, GameConstants.SCORE_PER_BALLOON + 50, currencyReward: 3));
+        float chance = GameConfigSO.Instance.baseStickerSpawnChance + _runSystemsManager.GetPurchasedMetaUpgrades().Count * 0.01f + _perkManager.StickerSpawnBonus;
+        if (Random.value > Mathf.Clamp01(chance))
+        {
+            return StickerFamily.None;
+        }
 
-        return _runtimeTypes;
+        IReadOnlyList<StickerFamily> families = _runSystemsManager.GetUnlockedStickerFamilies();
+        return families.Count == 0 ? StickerFamily.None : families[Random.Range(0, families.Count)];
     }
 
     private static List<Vector2Int> PickUniqueSlots(int rows, int columns, int count)
@@ -78,93 +94,29 @@ public partial class BalloonWall
         return slots;
     }
 
-    private void EnsurePool()
+    private static BalloonTypeSO PickWeightedType(List<BalloonTypeSO> types)
     {
-        if (!Application.isPlaying)
+        if (types == null || types.Count == 0)
         {
-            return;
+            return null;
         }
 
-        if (_balloonPool != null)
+        float totalWeight = 0f;
+        foreach (BalloonTypeSO type in types)
         {
-            return;
+            totalWeight += Mathf.Max(0.01f, type.spawnWeight);
         }
 
-        _balloonPrefab = CreateBalloonObject();
-        _balloonPrefab.SetActive(false);
-        _balloonPool = ComponentUtility.EnsureComponent<ObjectPool>(gameObject);
-        _balloonPool.Configure(_balloonPrefab, GetPoolSize());
-    }
-
-    private GameObject GetBalloonInstance()
-    {
-        if (Application.isPlaying && _balloonPool != null)
+        float roll = Random.value * totalWeight;
+        foreach (BalloonTypeSO type in types)
         {
-            return _balloonPool.Get();
-        }
-
-        return CreateBalloonObject();
-    }
-
-    private GameObject CreateBalloonObject()
-    {
-        GameObject balloon;
-        GameObject prefabSource = GameConfigSO.Instance.balloonPrefabOverride;
-
-        if (prefabSource != null)
-        {
-            balloon = Instantiate(prefabSource);
-            balloon.name = "Balloon";
-        }
-        else
-        {
-            balloon = new GameObject("Balloon");
-            Mesh mesh = GameConfigSO.Instance.balloonMeshOverride != null
-                ? GameConfigSO.Instance.balloonMeshOverride
-                : BalloonMeshGenerator.GetSharedMesh();
-            balloon.AddComponent<MeshFilter>().sharedMesh = mesh;
-            balloon.AddComponent<MeshRenderer>();
-        }
-
-        if (balloon.GetComponent<SphereCollider>() == null)
-            balloon.AddComponent<SphereCollider>();
-        if (balloon.GetComponent<Rigidbody>() == null)
-        {
-            var rb = balloon.AddComponent<Rigidbody>();
-            rb.isKinematic = true;
-            rb.useGravity = false;
-        }
-        if (balloon.GetComponent<BalloonNode>() == null)
-            balloon.AddComponent<BalloonNode>();
-        if (balloon.GetComponent<BalloonJiggle>() == null)
-            balloon.AddComponent<BalloonJiggle>();
-        if (prefabSource == null && balloon.GetComponent<BalloonEmblem>() == null)
-            balloon.AddComponent<BalloonEmblem>();
-
-        return balloon;
-    }
-
-    private static BalloonTypeSO CreateRuntimeType(string id, string name, BalloonColor color,
-        BalloonSpecialType special, int points, float effectRadius = 0f, int hazardPenalty = 0, int currencyReward = 0)
-    {
-        var t = ScriptableObject.CreateInstance<BalloonTypeSO>();
-        t.typeId = id; t.displayName = name; t.balloonColor = color;
-        t.specialType = special; t.basePoints = points;
-        t.effectRadius = effectRadius; t.hazardPenalty = hazardPenalty; t.currencyReward = currencyReward;
-        return t;
-    }
-
-    private int GetPoolSize()
-    {
-        int maxCount = GameConstants.TOTAL_BALLOONS;
-        if (GameConfigSO.Instance.roomTemplates == null) return maxCount;
-        foreach (RoomTemplateSO template in GameConfigSO.Instance.roomTemplates)
-        {
-            if (template != null)
+            roll -= Mathf.Max(0.01f, type.spawnWeight);
+            if (roll <= 0f)
             {
-                maxCount = Mathf.Max(maxCount, template.rows * template.columns);
+                return type;
             }
         }
-        return maxCount;
+
+        return types[types.Count - 1];
     }
 }

@@ -20,6 +20,17 @@ MonoBehaviour:
   comboPunchDuration: 0.25
   comboPunchScale: 1.4
   comboFadeDuration: 0.5
+  comboTimerWidth: 132
+  comboTimerHeight: 8
+  comboFeedbackOffsetY: 96
+  comboCalloutWidth: 240
+  comboCalloutHeight: 44
+  comboCalloutDuration: 1.2
+  comboCalloutFadeDuration: 0.18
+  comboCalloutPunchScale: 1.08
+  comboCalloutTitleSize: 8.5
+  comboCalloutBodySize: 12.5
+  comboCalloutRowSize: 7.5
   floatingTextRisePx: 1.5
   floatingTextDuration: 0.8
   floatingTextFontSize: 8

@@ -18,8 +18,11 @@ MonoBehaviour:
   isBonusEligible: 1
   columns: 5
   rows: 5
-  baseTargetScore: 3200
+  baseTargetScore: 1200
   baseDarts: 5
+  targetPressure: 0.5
+  depthPressureBonus: 0.1
+  flatTargetBonus: 60
   minSpecials: 2
   maxSpecials: 4
   minHazards: 0

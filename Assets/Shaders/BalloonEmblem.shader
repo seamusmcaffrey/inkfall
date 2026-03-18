@@ -3,7 +3,7 @@ Shader "Inkshot/BalloonEmblem"
     Properties
     {
         _EmblemColor ("Emblem Color", Color) = (1, 0.85, 0.2, 1)
-        _Shape ("Shape (0=circle,1=star,2=triangle,3=crown,4=shield)", Range(0, 4)) = 0
+        _Shape ("Shape", Range(0, 8)) = 0
         _Glow ("Glow Intensity", Range(0, 2)) = 0.4
     }
 
@@ -96,6 +96,44 @@ Shader "Inkshot/BalloonEmblem"
                 return saturate(top + bottom_curve) * step(-0.24, p.y);
             }
 
+            half skull(half2 uv)
+            {
+                half2 p = uv - half2(0.5, 0.56);
+                half head = smoothstep(0.24, 0.2, length(p));
+                half jaw = step(abs(uv.x - 0.5), 0.12) * step(abs(uv.y - 0.28), 0.08);
+                half eyes = smoothstep(0.04, 0.02, length(uv - half2(0.42, 0.56)))
+                          + smoothstep(0.04, 0.02, length(uv - half2(0.58, 0.56)));
+                return saturate(head + jaw - eyes);
+            }
+
+            half bolt(half2 uv)
+            {
+                half2 p = uv - 0.5;
+                half a = smoothstep(0.05, 0.0, abs(p.x + p.y * 0.35 + 0.03));
+                half b = smoothstep(0.05, 0.0, abs(p.x - p.y * 0.45 - 0.04));
+                half mask = step(abs(p.x), 0.24) * step(abs(p.y), 0.32);
+                return saturate((a + b) * mask);
+            }
+
+            half clover(half2 uv)
+            {
+                half c1 = smoothstep(0.14, 0.1, length(uv - half2(0.42, 0.58)));
+                half c2 = smoothstep(0.14, 0.1, length(uv - half2(0.58, 0.58)));
+                half c3 = smoothstep(0.14, 0.1, length(uv - half2(0.48, 0.42)));
+                half stem = step(abs(uv.x - 0.5), 0.04) * step(uv.y, 0.34) * step(0.18, uv.y);
+                return saturate(c1 + c2 + c3 + stem);
+            }
+
+            half target(half2 uv)
+            {
+                half2 p = uv - 0.5;
+                half r = length(p);
+                half ring1 = smoothstep(0.26, 0.23, r) - smoothstep(0.18, 0.15, r);
+                half ring2 = smoothstep(0.1, 0.07, r);
+                half cross = step(abs(p.x), 0.02) * step(r, 0.28) + step(abs(p.y), 0.02) * step(r, 0.28);
+                return saturate(ring1 + ring2 + cross);
+            }
+
             half4 frag(Varyings input) : SV_Target
             {
                 half2 uv = input.uv;
@@ -106,7 +144,11 @@ Shader "Inkshot/BalloonEmblem"
                 else if (shape == 1) alpha = star(uv);
                 else if (shape == 2) alpha = triangle(uv);
                 else if (shape == 3) alpha = crown(uv);
-                else alpha = shield(uv);
+                else if (shape == 4) alpha = shield(uv);
+                else if (shape == 5) alpha = skull(uv);
+                else if (shape == 6) alpha = bolt(uv);
+                else if (shape == 7) alpha = clover(uv);
+                else alpha = target(uv);
 
                 half3 color = _EmblemColor.rgb * (1.0 + _Glow);
                 return half4(color, alpha * _EmblemColor.a);

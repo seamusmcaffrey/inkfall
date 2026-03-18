@@ -18,6 +18,7 @@ public class SaveData
     public float uiVolume = GameConstants.DEFAULT_UI_VOLUME;
     public bool hapticsEnabled = true;
     public bool hasCompletedTutorial;
+    public string selectedLoadoutId = "scatter-string";
     public List<string> unlockedPerkIds = new();
     public List<string> purchasedMetaUpgradeIds = new();
     public List<RunHistoryRecord> runHistory = new();

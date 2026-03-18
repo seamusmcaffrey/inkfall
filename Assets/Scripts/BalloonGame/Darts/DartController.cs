@@ -17,6 +17,8 @@ public class DartController : MonoBehaviour
     public static event System.Action<DartController, Collision> OnWallBounce;
 
     public DartState State { get; private set; } = DartState.Ready;
+    public int BalloonsHitThisFlight => _balloonsHitThisFlight;
+    public string LastStopReason { get; private set; }
 
     private Rigidbody _rigidbody;
     private float _lifetime;
@@ -70,6 +72,7 @@ public class DartController : MonoBehaviour
         State = DartState.Flying;
         _balloonsHitThisFlight = 0;
         _ricochetCount = 0;
+        LastStopReason = string.Empty;
         _launchSpeed = velocity.magnitude;
 
         // Sync Rigidbody to transform before enabling physics
@@ -184,6 +187,7 @@ public class DartController : MonoBehaviour
         }
 
         State = DartState.Stopped;
+        LastStopReason = reason;
         transform.localScale = Vector3.one;
         _rigidbody.linearVelocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;

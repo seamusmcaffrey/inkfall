@@ -12,6 +12,7 @@ public class BalloonNode : MonoBehaviour
     public BalloonColor BalloonColor { get; private set; }
     public string BalloonTypeId { get; private set; }
     public BalloonSpecialType SpecialType { get; private set; }
+    public StickerFamily StickerFamily { get; private set; }
     public int PointValue { get; private set; }
     public bool IsPopped { get; private set; }
 
@@ -27,7 +28,7 @@ public class BalloonNode : MonoBehaviour
         _wall = GetComponentInParent<BalloonWall>();
     }
 
-    public void Initialize(int row, int column, BalloonTypeSO balloonType)
+    public void Initialize(int row, int column, BalloonTypeSO balloonType, StickerFamily stickerFamily = StickerFamily.None)
     {
         Row = row;
         Column = column;
@@ -35,6 +36,7 @@ public class BalloonNode : MonoBehaviour
         BalloonColor = balloonType != null ? balloonType.balloonColor : BalloonColor.Red;
         BalloonTypeId = balloonType != null ? balloonType.typeId : "standard";
         SpecialType = balloonType != null ? balloonType.specialType : BalloonSpecialType.Standard;
+        StickerFamily = stickerFamily;
         PointValue = ResolvePointValue(balloonType);
         IsPopped = false;
         gameObject.layer = GameConstants.LAYER_BALLOONS;
@@ -59,7 +61,7 @@ public class BalloonNode : MonoBehaviour
         runtimeType.balloonColor = color;
         runtimeType.specialType = BalloonSpecialType.Standard;
         runtimeType.basePoints = GameConstants.SCORE_PER_BALLOON;
-        Initialize(row, column, runtimeType);
+        Initialize(row, column, runtimeType, StickerFamily.None);
     }
 
     public void Pop()
@@ -109,11 +111,6 @@ public class BalloonNode : MonoBehaviour
             });
         }
 
-        if (SpecialType == BalloonSpecialType.Gold && _balloonType != null && _balloonType.currencyReward > 0)
-        {
-            SaveManager.Instance.AddInk(_balloonType.currencyReward);
-        }
-
         gameObject.SetActive(false);
     }
 
@@ -137,16 +134,6 @@ public class BalloonNode : MonoBehaviour
             return GameConstants.SCORE_PER_BALLOON;
         }
 
-        int points = balloonType.ResolvedPoints;
-        if (balloonType.specialType == BalloonSpecialType.Gold)
-        {
-            points += GameConfigSO.Instance.goldBalloonBonus;
-        }
-        else if (balloonType.specialType == BalloonSpecialType.Hazard)
-        {
-            points = -Mathf.Max(balloonType.hazardPenalty, GameConfigSO.Instance.hazardBalloonPenalty);
-        }
-
-        return points;
+        return RunScoreMath.ResolveBalloonValue(balloonType, GameConfigSO.Instance);
     }
 }

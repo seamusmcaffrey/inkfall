@@ -132,6 +132,13 @@ public partial class InGameHUD
         cr.anchoredPosition = new Vector2(0f, 120f);
         combo.AddComponent<ComboDisplay>();
 
+        GameObject comboFeedback = new("ComboFeedback");
+        comboFeedback.transform.SetParent(_safeRoot, false);
+        RectTransform feedbackRect = comboFeedback.AddComponent<RectTransform>();
+        feedbackRect.anchorMin = feedbackRect.anchorMax = new Vector2(0.5f, 0.5f);
+        feedbackRect.anchoredPosition = new Vector2(0f, UIConfigSO.Instance.comboFeedbackOffsetY);
+        comboFeedback.AddComponent<ComboFeedbackPanel>();
+
         GameObject floats = new("FloatingScores");
         floats.transform.SetParent(_safeRoot, false);
         floats.AddComponent<RectTransform>();

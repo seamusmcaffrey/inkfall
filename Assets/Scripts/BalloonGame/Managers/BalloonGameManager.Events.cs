@@ -10,10 +10,12 @@ public partial class BalloonGameManager
         }
 
         _slingshotInput?.SetCanFire(false);
+        _runSystemsManager?.BeginShot();
         _activeDart = _dartLauncher.SpawnAndLaunch(velocity);
         CurrentState = GameState.DartInFlight;
         UpdateHud();
         EventBus.Publish(new GameStateChangedEvent { State = CurrentState });
+        EventBus.Publish(new DartLaunchedEvent { LaunchVelocity = velocity, PullStrength = 0f });
     }
 
     private void HandleDartFinished(DartController dart)
@@ -24,18 +26,43 @@ public partial class BalloonGameManager
         }
 
         _activeDart = null;
-
-        if (CurrentState == GameState.RoomCleared)
-        {
-            return;
-        }
+        _runSystemsManager?.ResolveShotEnd(_scoreManager);
 
         DartsRemaining--;
+        if (dart.BalloonsHitThisFlight == 0 &&
+            (dart.LastStopReason == "timeout" || dart.LastStopReason == "out_of_bounds") &&
+            _perkManager != null &&
+            (_perkManager.MissesReturnInsteadOfStick || Random.value < _perkManager.MissReturnChanceBonus))
+        {
+            DartsRemaining++;
+        }
+
         EventBus.Publish(new DartsRemainingChangedEvent
         {
             DartsRemaining = DartsRemaining,
             StartingDarts = CurrentRoomConfig != null ? CurrentRoomConfig.startingDarts : GameConstants.STARTING_DARTS,
         });
+
+        if (_scoreManager.IsTargetReached)
+        {
+            BankAndClearRoom();
+            return;
+        }
+
+        if (_balloonWall != null && _balloonWall.ActiveCount() <= 0)
+        {
+            CurrentState = GameState.RoomFailed;
+            _slingshotInput?.SetCanFire(false);
+            UpdateHud();
+            OnRoomFailed?.Invoke(_scoreManager.CurrentScore);
+            EventBus.Publish(new RoomFailedEvent
+            {
+                RoomNumber = CurrentRoomNumber,
+                FinalScore = _scoreManager.CurrentScore,
+            });
+            return;
+        }
+
         if (DartsRemaining <= 0)
         {
             CurrentState = GameState.RoomFailed;
@@ -63,19 +90,15 @@ public partial class BalloonGameManager
 
     private void HandleTargetReached()
     {
-        CurrentState = GameState.RoomCleared;
-        _slingshotInput?.SetCanFire(false);
-        int inkEarned = Mathf.Max(0, GameConfigSO.Instance.inkPerRoom + _scoreManager.CurrentScore / 1000 * GameConfigSO.Instance.inkPer1000Score);
-        SaveManager.Instance.AddInk(inkEarned);
         UpdateHud();
-        OnRoomCleared?.Invoke(_scoreManager.CurrentScore);
-        EventBus.Publish(new RoomClearedEvent
+    }
+
+    private void HandleWallBounce(DartController dart, Collision _)
+    {
+        if (dart == _activeDart)
         {
-            RoomNumber = CurrentRoomNumber,
-            FinalScore = _scoreManager.CurrentScore,
-            InkEarned = inkEarned,
-            WasFinalRoom = CurrentRoomNumber >= GameConfigSO.Instance.totalRooms,
-        });
+            _runSystemsManager?.RegisterBounce();
+        }
     }
 
     private void HandleBalloonPopped(BalloonNode _)

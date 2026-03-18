@@ -25,6 +25,10 @@ public class BalloonTypeSO : ScriptableObject
     public float effectRadius = GameConstants.DEFAULT_PAINT_RADIUS;
     public int durability = 1;
     public bool endsComboOnPop;
+    public bool isChaosBalloon;
+    public int roomUnlock = 1;
+    public string requiredMetaUpgradeId;
+    public StickerFamily forcedStickerFamily = StickerFamily.None;
 
     [Header("Rendering")]
     public Material materialOverride;
@@ -40,4 +44,9 @@ public enum BalloonSpecialType
     Gold,
     Hazard,
     Shield,
+    Mixer,
+    Invert,
+    Wash,
+    Clone,
+    Rainbow,
 }

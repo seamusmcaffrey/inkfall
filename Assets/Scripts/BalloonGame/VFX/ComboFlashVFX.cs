@@ -41,6 +41,27 @@ public class ComboFlashVFX : MonoBehaviour
         StartCoroutine(FlashRoutine(alpha, config.comboFlashDuration, config.comboFlashAttackRatio));
     }
 
+    public void Flash(PerkChainTriggeredEvent evt, JuiceConfigSO config)
+    {
+        EnsureUi();
+        StopAllCoroutines();
+
+        float alpha = Mathf.Min(
+            config.perkChainFlashMaxAlpha + (int)evt.VisualStyle * config.perkChainFlashStyleStep,
+            GameConstants.COMBO_FLASH_ALPHA_CAP);
+        if (evt.ClearsRow)
+        {
+            alpha = Mathf.Min(alpha + config.perkChainFlashRowClearBonus, GameConstants.COMBO_FLASH_ALPHA_CAP);
+        }
+
+        for (int i = 0; i < _edgeImages.Length; i++)
+        {
+            _edgeImages[i].color = evt.AccentColor;
+        }
+
+        StartCoroutine(FlashRoutine(alpha, config.perkChainFlashDuration, config.perkChainFlashAttackRatio));
+    }
+
     private IEnumerator FlashRoutine(float peakAlpha, float duration, float attackRatio)
     {
         float attackTime = duration * attackRatio;

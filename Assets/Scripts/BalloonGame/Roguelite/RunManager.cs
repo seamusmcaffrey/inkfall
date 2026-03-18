@@ -2,18 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Top-level run orchestrator.
-/// </summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(RoomGenerator))]
 [RequireComponent(typeof(PerkManager))]
-public class RunManager : MonoBehaviour
+[RequireComponent(typeof(RunSystemsManager))]
+public partial class RunManager : MonoBehaviour
 {
     [SerializeField] private BalloonGameManager _balloonGameManager = null;
     [SerializeField] private RoomGenerator _roomGenerator;
     [SerializeField] private PerkManager _perkManager;
+    [SerializeField] private RunSystemsManager _runSystemsManager;
     [SerializeField] private PerkSelectionScreen _perkSelectionScreen = null;
+    [SerializeField] private RunChoiceScreen _choiceScreen = null;
     [SerializeField] private RoomIntroScreen _roomIntroScreen = null;
     [SerializeField] private RunEndScreen _runEndScreen = null;
     [SerializeField] private RunHUD _runHud;
@@ -21,7 +21,6 @@ public class RunManager : MonoBehaviour
     [SerializeField] private bool _autoStart = false;
 
     private readonly RunData _runData = new();
-    private List<PerkSO> _fallbackPerks;
 
     public RunState CurrentState { get; private set; } = RunState.Idle;
 
@@ -65,30 +64,15 @@ public class RunManager : MonoBehaviour
             return;
         }
 
-        if (_balloonGameManager == null)
-        {
-#if UNITY_EDITOR
-            Debug.LogError("RunManager could not find BalloonGameManager in the active scene.");
-#endif
-            return;
-        }
-
         _runData.currentRoomNumber = 1;
         _runData.totalInkEarned = 0;
         _runData.totalScore = 0;
         _runData.isActive = true;
-        _perkManager.ResetRun();
-        if (_runEndScreen != null)
-        {
-            _runEndScreen.Hide();
-        }
-
+        _runEndScreen?.Hide();
+        _runSystemsManager.InitializeRun(_runSystemsManager.ResolveSelectedLoadout());
         EnterRoom(_runData.currentRoomNumber);
     }
 
-    /// <summary>
-    /// Injects scene references created by the scene builder.
-    /// </summary>
     public void SetDependencies(
         BalloonGameManager balloonGameManager,
         PerkSelectionScreen perkSelectionScreen,
@@ -105,13 +89,21 @@ public class RunManager : MonoBehaviour
         _fadeOverlay = fadeOverlay;
     }
 
+    public void OpenLoadoutSelection()
+    {
+        if (CurrentState == RunState.Idle)
+        {
+            StartCoroutine(PromptLoadoutSelection());
+        }
+    }
+
     private void EnterRoom(int roomNumber)
     {
         ResolveDependencies();
         CurrentState = RunState.RoomIntro;
         EventBus.Publish(new RunStateChangedEvent { State = CurrentState, RoomNumber = roomNumber });
         RoomConfig room = _roomGenerator.Generate(roomNumber);
-        room.startingDarts += _perkManager.AdditionalDarts;
+        room.startingDarts = Mathf.Max(1, room.startingDarts + _perkManager.AdditionalDarts);
         if (_roomIntroScreen != null && !GameConstants.DEV_SKIP_INTRO)
         {
             _roomIntroScreen.Show(room);
@@ -140,14 +132,14 @@ public class RunManager : MonoBehaviour
     private void HandleRoomCleared(int finalScore)
     {
         _runData.totalScore += finalScore;
-        _runData.totalInkEarned = SaveManager.Instance.Data.totalInk;
+        _runData.totalInkEarned = _runSystemsManager.PrizeTickets;
         if (_runData.currentRoomNumber >= GameConfigSO.Instance.totalRooms)
         {
             EndRun(true, finalScore);
             return;
         }
 
-        StartCoroutine(DraftThenContinue());
+        StartCoroutine(BetweenRoomFlow());
     }
 
     private void HandleRoomFailed(int finalScore)
@@ -156,54 +148,22 @@ public class RunManager : MonoBehaviour
         EndRun(false, finalScore);
     }
 
-    private IEnumerator DraftThenContinue()
-    {
-        CurrentState = RunState.PerkDraft;
-        EventBus.Publish(new RunStateChangedEvent { State = CurrentState, RoomNumber = _runData.currentRoomNumber });
-        List<PerkSO> choices = GetPerkChoices();
-
-        if (_perkSelectionScreen == null || choices.Count == 0)
-        {
-            if (choices.Count > 0)
-            {
-                _perkManager.AddPerk(choices[0]);
-                EventBus.Publish(new PerkSelectedEvent { Perk = choices[0] });
-            }
-        }
-        else
-        {
-            bool selectionMade = false;
-            _perkSelectionScreen.Show(choices, perk =>
-            {
-                _perkManager.AddPerk(perk);
-                selectionMade = true;
-            });
-
-            while (!selectionMade)
-            {
-                yield return null;
-            }
-        }
-
-        _runData.currentRoomNumber++;
-        EnterRoom(_runData.currentRoomNumber);
-    }
-
     private void EndRun(bool clearedRun, int latestRoomScore)
     {
         CurrentState = RunState.RunEnd;
         EventBus.Publish(new RunStateChangedEvent { State = CurrentState, RoomNumber = _runData.currentRoomNumber });
-        SaveManager.Instance.RecordRun(_runData.currentRoomNumber, _runData.totalScore, _runData.totalInkEarned, clearedRun);
+        int ticketsEarned = _runSystemsManager.PrizeTickets;
+        _runSystemsManager.CommitRunRewards();
+        SaveManager.Instance.RecordRun(_runData.currentRoomNumber, _runData.totalScore, ticketsEarned, clearedRun);
         _runData.isActive = false;
-        var endData = new RunEndData
+        _runEndScreen?.Show(new RunEndData
         {
             cleared = clearedRun,
             roomsReached = _runData.currentRoomNumber,
             totalScore = _runData.totalScore,
             lastRoomScore = latestRoomScore,
             totalInk = SaveManager.Instance.Data.totalInk,
-        };
-        _runEndScreen?.Show(endData, RestartRun);
+        }, RestartRun);
     }
 
     private void RestartRun()
@@ -216,49 +176,27 @@ public class RunManager : MonoBehaviour
     {
         _roomGenerator = ComponentUtility.EnsureComponent<RoomGenerator>(gameObject);
         _perkManager = ComponentUtility.EnsureComponent<PerkManager>(gameObject);
+        _runSystemsManager = ComponentUtility.EnsureComponent<RunSystemsManager>(gameObject);
         ComponentUtility.ResolveSceneReference(this, ref _balloonGameManager);
         ComponentUtility.ResolveSceneReference(this, ref _perkSelectionScreen);
+        ComponentUtility.ResolveSceneReference(this, ref _choiceScreen);
         ComponentUtility.ResolveSceneReference(this, ref _roomIntroScreen);
         ComponentUtility.ResolveSceneReference(this, ref _runEndScreen);
         ComponentUtility.ResolveSceneReference(this, ref _runHud);
         ComponentUtility.ResolveSceneReference(this, ref _fadeOverlay);
+        if (_choiceScreen == null)
+        {
+            _choiceScreen = new GameObject("RunChoiceScreen").AddComponent<RunChoiceScreen>();
+        }
     }
 
-    private List<PerkSO> GetPerkChoices()
+    private void AwardPerk(PerkSO perk)
     {
-        List<PerkSO> pool = GameConfigSO.Instance.perkPool;
-        if (pool == null || pool.Count == 0)
-        {
-            pool = GetFallbackPerks();
-        }
-
-        int count = Mathf.Min(GameConfigSO.Instance.perkChoicesPerDraft, pool.Count);
-        var choices = new List<PerkSO>(count);
-        for (int index = 0; index < count; index++)
-        {
-            choices.Add(pool[(index + _runData.currentRoomNumber) % pool.Count]);
-        }
-
-        return choices;
+        _perkManager.AddPerk(perk);
+        EventBus.Publish(new PerkSelectedEvent { Perk = perk });
     }
 
-    private List<PerkSO> GetFallbackPerks()
-    {
-        if (_fallbackPerks != null)
-        {
-            return _fallbackPerks;
-        }
-
-        _fallbackPerks = new List<PerkSO>();
-        _fallbackPerks.Add(CreatePerk("swift-hands", "Swift Hands", "Launch darts faster.", PerkEffectType.DartSpeed, 0.15f, 0));
-        _fallbackPerks.Add(CreatePerk("needle-thread", "Needle Thread", "+1 dart pierce.", PerkEffectType.DartPierce, 0f, 1));
-        _fallbackPerks.Add(CreatePerk("wet-wall", "Wet Wall", "Paint explosions reach farther.", PerkEffectType.PaintRadius, 0.35f, 0));
-        _fallbackPerks.Add(CreatePerk("double-down", "Double Down", "Score multiplier up.", PerkEffectType.ScoreMultiplier, 0.2f, 0));
-        _fallbackPerks.Add(CreatePerk("insurance", "Insurance", "Gain a hazard shield each room.", PerkEffectType.HazardShield, 1f, 0));
-        return _fallbackPerks;
-    }
-
-    private static PerkSO CreatePerk(string id, string name, string description, PerkEffectType type, float effectValue, int effectIntValue)
+    private static PerkSO CreateRuntimePerk(string id, string name, string description, PerkEffectType type, float effectValue, int effectIntValue)
     {
         PerkSO perk = ScriptableObject.CreateInstance<PerkSO>();
         perk.perkId = id;

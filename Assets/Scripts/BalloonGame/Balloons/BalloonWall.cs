@@ -10,6 +10,8 @@ public partial class BalloonWall : MonoBehaviour
 
     [SerializeField] private RoomConfig _roomConfig;
     [SerializeField] private ObjectPool _balloonPool;
+    [SerializeField] private RunSystemsManager _runSystemsManager;
+    [SerializeField] private PerkManager _perkManager;
 
     private GameObject _balloonPrefab;
     private MaterialPropertyBlock _materialPropertyBlock;
@@ -24,6 +26,8 @@ public partial class BalloonWall : MonoBehaviour
 
     public void GenerateWall(RoomConfig roomConfig)
     {
+        ComponentUtility.ResolveSceneReference(this, ref _runSystemsManager);
+        ComponentUtility.ResolveSceneReference(this, ref _perkManager);
         _roomConfig = roomConfig;
         ClearWall();
         EnsureMaterials();
@@ -36,6 +40,11 @@ public partial class BalloonWall : MonoBehaviour
         float slotY = GameConstants.BOARD_HEIGHT / rows;
         int specialCount = roomConfig != null ? Random.Range(roomConfig.minSpecials, roomConfig.maxSpecials + 1) : 0;
         int hazardCount = roomConfig != null ? Random.Range(roomConfig.minHazards, roomConfig.maxHazards + 1) : 0;
+        if (_perkManager != null)
+        {
+            specialCount = Mathf.Max(0, specialCount + _perkManager.ExtraSpecialSpawns);
+            hazardCount = Mathf.Max(0, hazardCount + _perkManager.ExtraHazardSpawns);
+        }
         List<Vector2Int> specialSlots = PickUniqueSlots(rows, columns, specialCount + hazardCount);
 
         for (int row = 0; row < rows; row++)
@@ -43,6 +52,7 @@ public partial class BalloonWall : MonoBehaviour
             for (int column = 0; column < columns; column++)
             {
                 BalloonTypeSO type = PickBalloonType(row, column, specialSlots, specialCount, hazardCount);
+                StickerFamily stickerFamily = ResolveStickerFamily(type);
                 float scale = PerspectiveScale(row, rows);
                 Vector3 position = PerspectivePosition(row, column, rows, columns, slotX, slotY);
 
@@ -77,10 +87,13 @@ public partial class BalloonWall : MonoBehaviour
                 var emblem = balloon.GetComponent<BalloonEmblem>();
                 if (emblem != null)
                 {
-                    emblem.Configure(type != null ? type.specialType : BalloonSpecialType.Standard, type != null ? type.balloonColor : BalloonColor.Red);
+                    emblem.Configure(
+                        type != null ? type.specialType : BalloonSpecialType.Standard,
+                        type != null ? type.balloonColor : BalloonColor.Red,
+                        stickerFamily);
                 }
 
-                node.Initialize(row, column, type);
+                node.Initialize(row, column, type, stickerFamily);
                 _balloons.Add(node);
             }
         }

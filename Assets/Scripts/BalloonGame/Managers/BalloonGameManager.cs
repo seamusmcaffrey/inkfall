@@ -32,6 +32,7 @@ public partial class BalloonGameManager : MonoBehaviour
     [SerializeField] private DartLauncher _dartLauncher;
     [SerializeField] private PerkManager _perkManager;
     [SerializeField] private RoomGenerator _roomGenerator;
+    [SerializeField] private RunSystemsManager _runSystemsManager;
 
     private DartController _activeDart;
     private float _introTimer;
@@ -50,6 +51,7 @@ public partial class BalloonGameManager : MonoBehaviour
         _perkManager = ComponentUtility.EnsureComponent<PerkManager>(gameObject);
         _roomGenerator = ComponentUtility.EnsureComponent<RoomGenerator>(gameObject);
         _dartLauncher = ComponentUtility.EnsureComponent<DartLauncher>(gameObject);
+        _runSystemsManager = ComponentUtility.EnsureComponent<RunSystemsManager>(gameObject);
     }
 
     /// <summary>
@@ -75,9 +77,11 @@ public partial class BalloonGameManager : MonoBehaviour
             _scoreManager.OnScoreChanged += HandleScoreChanged;
             _scoreManager.OnTargetReached += HandleTargetReached;
             _scoreManager.SetPerkManager(_perkManager);
+            _scoreManager.SetRunSystemsManager(_runSystemsManager);
         }
 
         DartController.OnDartFinished += HandleDartFinished;
+        DartController.OnWallBounce += HandleWallBounce;
         BalloonNode.OnAnyBalloonPopped += HandleBalloonPopped;
         if (_roomGenerator == null)
         {
@@ -87,7 +91,7 @@ public partial class BalloonGameManager : MonoBehaviour
                 roomName = "Opening Booth",
                 rows = GameConstants.BOARD_ROWS,
                 columns = GameConstants.BOARD_COLUMNS,
-                targetScore = GameConstants.BASE_TARGET_SCORE,
+                targetScore = Mathf.RoundToInt(GameConstants.OPENING_ROOM_TARGET_SCORE * GameConfigSO.Instance.roomTargetMultiplier),
                 startingDarts = GameConstants.STARTING_DARTS,
                 roomType = RoomType.Normal,
                 accentColor = Color.cyan,
@@ -109,6 +113,7 @@ public partial class BalloonGameManager : MonoBehaviour
         }
 
         DartController.OnDartFinished -= HandleDartFinished;
+        DartController.OnWallBounce -= HandleWallBounce;
         BalloonNode.OnAnyBalloonPopped -= HandleBalloonPopped;
     }
 
@@ -144,9 +149,11 @@ public partial class BalloonGameManager : MonoBehaviour
         CurrentState = GameState.RoomIntro;
         _introTimer = GameConstants.DEV_SKIP_INTRO ? 0f : IntroDuration;
         DartsRemaining = roomConfig != null ? roomConfig.startingDarts : GameConstants.STARTING_DARTS;
+        DartsRemaining = Mathf.Max(1, DartsRemaining);
         _activeDart = null;
 
         _scoreManager?.Initialize(roomConfig != null ? roomConfig.targetScore : GameConstants.BASE_TARGET_SCORE);
+        _runSystemsManager?.BeginRoom(roomConfig);
         _balloonWall?.GenerateWall(roomConfig);
         PoolManager.WarmupAll();
         _slingshotInput?.SetCanFire(false);
@@ -183,5 +190,24 @@ public partial class BalloonGameManager : MonoBehaviour
 
     private void UpdateHud()
     {
+    }
+
+    public void BankAndClearRoom()
+    {
+        RoomRewardPreview preview = _runSystemsManager != null
+            ? _runSystemsManager.PreviewRoomRewards(_scoreManager.CurrentScore, _scoreManager.TargetScore)
+            : default;
+        _runSystemsManager?.FinalizeRoomRewards(_scoreManager.CurrentScore, _scoreManager.TargetScore);
+        CurrentState = GameState.RoomCleared;
+        _slingshotInput?.SetCanFire(false);
+        UpdateHud();
+        OnRoomCleared?.Invoke(_scoreManager.CurrentScore);
+        EventBus.Publish(new RoomClearedEvent
+        {
+            RoomNumber = CurrentRoomNumber,
+            FinalScore = _scoreManager.CurrentScore,
+            InkEarned = preview.TicketGain,
+            WasFinalRoom = CurrentRoomNumber >= GameConfigSO.Instance.totalRooms,
+        });
     }
 }

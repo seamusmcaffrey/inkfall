@@ -19,6 +19,9 @@ public class RoomTemplateSO : ScriptableObject
     [Header("Targets")]
     public int baseTargetScore = GameConstants.BASE_TARGET_SCORE;
     public int baseDarts = GameConstants.STARTING_DARTS;
+    [Range(0.2f, 1f)] public float targetPressure = 0.5f;
+    [Range(0f, 0.2f)] public float depthPressureBonus = 0.1f;
+    public int flatTargetBonus;
 
     [Header("Special Balloons")]
     public int minSpecials;

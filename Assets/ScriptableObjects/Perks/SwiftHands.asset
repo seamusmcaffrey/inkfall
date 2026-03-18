@@ -16,12 +16,62 @@ MonoBehaviour:
   perkName: Swift Hands
   description: Launch darts faster.
   icon: {fileID: 0}
+  family: 0
   rarity: 0
   effectType: 1
   isPassive: 1
+  isKeystone: 0
+  isStarterExclusive: 0
+  shopCost: 3
+  roomUnlock: 1
   effectValue: 0.15
   effectValueSecondary: 0
   effectIntValue: 0
+  hasColorFocus: 0
+  colorFocus: 0
+  hasStickerFocus: 0
+  stickerFocus: 0
+  modifiers:
+    extraPierce: 0
+    extraRicochets: 0
+    extraDarts: 0
+    extraRerolls: 0
+    startingTickets: 0
+    adjacentBurstCount: 0
+    miniHitCount: 0
+    extraSpecialSpawns: 0
+    extraHazardSpawns: 0
+    recipeUnlockRoomDelta: 0
+    scoreFlatBonus: 0
+    ticketFlatBonus: 0
+    finisherFlatCharge: 0
+    launchSpeedBonus: 0
+    paintRadiusBonus: 0
+    scoreMultiplierBonus: 0
+    goldMultiplierBonus: 0
+    overflowTicketRateBonus: 0
+    overflowFinisherRateBonus: 0
+    finisherChargeMultiplierBonus: 0
+    hazardPenaltyScaleBonus: 0
+    shopDiscountBonus: 0
+    refundChanceBonus: 0
+    missReturnChanceBonus: 0
+    anchorRadiusBonus: 0
+    bounceScoreBonus: 0
+    colorFocusBonus: 0
+    stickerFocusBonus: 0
+    stickerSpawnBonus: 0
+    chaosSpawnBonus: 0
+    recipesAlwaysOn: 0
+    reversePaintOrder: 0
+    firstStuckDartAnchor: 0
+    anchorPaintPulse: 0
+    yellowCountsAsGold: 0
+    skullsAreJackpots: 0
+    missesReturnInsteadOfStick: 0
+    doubleFinisherCharge: 0
+    fewerPrizeBalloons: 0
   requiresUnlock: 0
+  requiredMetaUpgradeId: 
   unlockCost: 0
   accentColor: {r: 0, g: 0.95, b: 0.95, a: 1}

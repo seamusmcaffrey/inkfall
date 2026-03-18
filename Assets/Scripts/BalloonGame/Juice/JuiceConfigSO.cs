@@ -84,6 +84,14 @@ public class JuiceConfigSO : ScriptableObject
     public float comboFlashAttackRatio = 0.15f;
     public float comboFlashEdgeThickness = GameConstants.COMBO_FLASH_EDGE_THICKNESS;
 
+    [Header("Perk Chain Flash")]
+    public bool perkChainFlashEnabled = true;
+    public float perkChainFlashMaxAlpha = 0.18f;
+    public float perkChainFlashDuration = 0.22f;
+    public float perkChainFlashAttackRatio = 0.16f;
+    public float perkChainFlashStyleStep = 0.035f;
+    public float perkChainFlashRowClearBonus = 0.05f;
+
     [Header("Slow Motion")]
     public bool slowMotionEnabled = true;
     public int slowMotionComboThreshold = GameConstants.SLOMO_COMBO_THRESHOLD_DEFAULT;

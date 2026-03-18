@@ -12,6 +12,8 @@ public class PerkSelectionScreen : MonoBehaviour
     private RectTransform _contentRoot;
     private CanvasGroup _group;
     private Image _backdrop;
+    private Button _rerollButton;
+    private Text _rerollLabel;
     private readonly List<PerkCardUI> _cards = new();
 
     private void Awake()
@@ -20,7 +22,7 @@ public class PerkSelectionScreen : MonoBehaviour
         Hide();
     }
 
-    public void Show(IReadOnlyList<PerkSO> perks, Action<PerkSO> onSelected)
+    public void Show(IReadOnlyList<PerkSO> perks, Action<PerkSO> onSelected, Action onReroll = null, int rerollCost = 0, int currentTickets = 0)
     {
         EnsureUi();
         while (_cards.Count < perks.Count)
@@ -38,11 +40,18 @@ public class PerkSelectionScreen : MonoBehaviour
             {
                 _cards[i].Build(perks[i], perk =>
                 {
-                    EventBus.Publish(new PerkSelectedEvent { Perk = perk });
                     Hide();
                     onSelected?.Invoke(perk);
                 });
             }
+        }
+
+        _rerollButton.gameObject.SetActive(onReroll != null);
+        _rerollButton.onClick.RemoveAllListeners();
+        if (onReroll != null)
+        {
+            _rerollButton.onClick.AddListener(() => onReroll.Invoke());
+            _rerollLabel.text = rerollCost <= 0 ? $"REROLL  [{currentTickets} TICKETS]" : $"REROLL {rerollCost}  [{currentTickets}]";
         }
 
         _group.alpha = 1f;
@@ -103,5 +112,24 @@ public class PerkSelectionScreen : MonoBehaviour
         layout.childAlignment = TextAnchor.MiddleCenter;
         layout.childControlWidth = false;
         layout.childControlHeight = false;
+
+        GameObject reroll = new("RerollButton");
+        reroll.transform.SetParent(vpRoot.transform, false);
+        RectTransform rerollRect = reroll.AddComponent<RectTransform>();
+        rerollRect.anchorMin = rerollRect.anchorMax = new Vector2(0.5f, 0.5f);
+        rerollRect.anchoredPosition = new Vector2(0f, 300f);
+        rerollRect.sizeDelta = new Vector2(320f, 60f);
+        reroll.AddComponent<Image>().color = UIColors.InkCyan;
+        _rerollButton = reroll.AddComponent<Button>();
+        _rerollLabel = new GameObject("Label").AddComponent<Text>();
+        _rerollLabel.transform.SetParent(reroll.transform, false);
+        RectTransform labelRect = _rerollLabel.rectTransform;
+        labelRect.anchorMin = Vector2.zero;
+        labelRect.anchorMax = Vector2.one;
+        labelRect.offsetMin = Vector2.zero;
+        labelRect.offsetMax = Vector2.zero;
+        _rerollLabel.alignment = TextAnchor.MiddleCenter;
+        _rerollLabel.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        _rerollLabel.color = Color.black;
     }
 }

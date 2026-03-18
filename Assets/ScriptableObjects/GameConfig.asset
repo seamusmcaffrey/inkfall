@@ -24,21 +24,52 @@ MonoBehaviour:
   defaultMaxPierce: 1
   baseScorePerBalloon: 100
   comboWindowSeconds: 1.5
-  comboMultiplierPerStep: 0.5
+  comboMultiplierPerStep: 0.28
+  comboSoftCap: 6
+  comboMultiplierLateStep: 0.12
   comboMaxStack: 20
   scoreMultiplier: 1
-  totalRooms: 13
+  totalRooms: 12
   bonusRoomInterval: 4
-  targetScoreScaling: 0.15
+  targetScoreScaling: 0.1
+  roomTargetMultiplier: 0.5
+  roomDepthScoreBonusPerRoom: 0.025
   inkPerRoom: 10
   inkPer1000Score: 5
   fullRunInkMultiplier: 2
   perkChoicesPerDraft: 3
+  recipeUnlockRoom: 4
+  startingPrizeTickets: 2
+  perkRerollBaseCost: 2
+  perkRerollCostStep: 1
+  shopIntervalRooms: 3
+  shopOfferCount: 4
+  shopRefreshCost: 2
+  overflowScorePerTicket: 200
+  overflowScorePerFinisherCharge: 400
+  finisherChargePerPop: 0.08
+  finisherChargePerRecipe: 0.35
+  finisherScoreBurstThreshold: 600
+  staticSurgeRange: 2.75
+  sewerRatRange: 3.8
+  chainParadeBonusChains: 1
+  burrowCrownRatCount: 2
+  stormfrontComboThreshold: 4
+  staticSurgeSweepComboThreshold: 5
+  causticFloodComboThreshold: 4
+  ratKingComboThreshold: 5
+  jackpotLaneComboThreshold: 5
+  jackpotLaneTicketBonus: 1
+  curtainCallComboThreshold: 6
+  prismSweepComboThreshold: 6
+  prismSweepUniqueColorsRequired: 3
   balloonPrefabOverride: {fileID: 2346095561133664942, guid: 3763f3535841a4842bfe341f2eba7b74, type: 3}
   balloonMeshOverride: {fileID: 0}
   defaultPaintRadius: 1.5
   goldBalloonBonus: 250
   hazardBalloonPenalty: 150
+  baseStickerSpawnChance: 0.38
+  baseChaosBalloonChance: 0.08
   balloonTypes:
   - {fileID: 11400000, guid: 90ec001c350fa49dd91e6fabb88078d4, type: 2}
   - {fileID: 11400000, guid: 4340d226fe5484b9c91baccdbd11cdc7, type: 2}
@@ -58,4 +89,496 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0ef6eb4ee392746719b1abdedde57ccd, type: 2}
   - {fileID: 11400000, guid: deeb5a24609c840faa6d4db047074a0f, type: 2}
   - {fileID: 11400000, guid: 87cf1e1fa1b5a44a986ff3c77a7107e0, type: 2}
-  metaUpgrades: []
+  keystoneRelics:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  starterLoadouts:
+  - loadoutId: scatter-string
+    displayName: Static String
+    description: Starts wide and reactive with extra mini-hits.
+    tradeoff: Less focused bursts, more chain reactions.
+    accentColor: {r: 1, g: 0.18, b: 0.58, a: 1}
+    requiredMetaUpgradeId: 
+    modifiers:
+      extraPierce: 0
+      extraRicochets: 0
+      extraDarts: 0
+      extraRerolls: 0
+      startingTickets: 0
+      adjacentBurstCount: 1
+      miniHitCount: 1
+      extraSpecialSpawns: 0
+      extraHazardSpawns: 0
+      recipeUnlockRoomDelta: 0
+      scoreFlatBonus: 0
+      ticketFlatBonus: 0
+      finisherFlatCharge: 0
+      launchSpeedBonus: 0
+      paintRadiusBonus: 0
+      scoreMultiplierBonus: 0
+      goldMultiplierBonus: 0
+      overflowTicketRateBonus: 0
+      overflowFinisherRateBonus: 0
+      finisherChargeMultiplierBonus: 0
+      hazardPenaltyScaleBonus: 0
+      shopDiscountBonus: 0
+      refundChanceBonus: 0
+      missReturnChanceBonus: 0
+      anchorRadiusBonus: 0
+      bounceScoreBonus: 0
+      colorFocusBonus: 0
+      stickerFocusBonus: 0
+      stickerSpawnBonus: 0
+      chaosSpawnBonus: 0
+      recipesAlwaysOn: 0
+      reversePaintOrder: 0
+      firstStuckDartAnchor: 0
+      anchorPaintPulse: 0
+      yellowCountsAsGold: 0
+      skullsAreJackpots: 0
+      missesReturnInsteadOfStick: 0
+      doubleFinisherCharge: 0
+      fewerPrizeBalloons: 0
+    startingPerkIds: []
+  - loadoutId: needle-rig
+    displayName: Relay Rig
+    description: Starts with pierce and cleaner bounce lanes.
+    tradeoff: Paint bursts are smaller.
+    accentColor: {r: 1, g: 0.82, b: 0.12, a: 1}
+    requiredMetaUpgradeId: 
+    modifiers:
+      extraPierce: 1
+      extraRicochets: 0
+      extraDarts: 0
+      extraRerolls: 0
+      startingTickets: 0
+      adjacentBurstCount: 0
+      miniHitCount: 0
+      extraSpecialSpawns: 0
+      extraHazardSpawns: 0
+      recipeUnlockRoomDelta: 0
+      scoreFlatBonus: 0
+      ticketFlatBonus: 0
+      finisherFlatCharge: 0
+      launchSpeedBonus: 0.08
+      paintRadiusBonus: -0.15
+      scoreMultiplierBonus: 0
+      goldMultiplierBonus: 0
+      overflowTicketRateBonus: 0
+      overflowFinisherRateBonus: 0
+      finisherChargeMultiplierBonus: 0
+      hazardPenaltyScaleBonus: 0
+      shopDiscountBonus: 0
+      refundChanceBonus: 0
+      missReturnChanceBonus: 0
+      anchorRadiusBonus: 0
+      bounceScoreBonus: 0
+      colorFocusBonus: 0
+      stickerFocusBonus: 0
+      stickerSpawnBonus: 0
+      chaosSpawnBonus: 0
+      recipesAlwaysOn: 0
+      reversePaintOrder: 0
+      firstStuckDartAnchor: 0
+      anchorPaintPulse: 0
+      yellowCountsAsGold: 0
+      skullsAreJackpots: 0
+      missesReturnInsteadOfStick: 0
+      doubleFinisherCharge: 0
+      fewerPrizeBalloons: 0
+    startingPerkIds: []
+  - loadoutId: heavy-reel
+    displayName: Flood Reel
+    description: Starts chunkier with better overflow conversion.
+    tradeoff: Launch speed slows down and finesse drops.
+    accentColor: {r: 0.95, g: 0.18, b: 0.22, a: 1}
+    requiredMetaUpgradeId: heavy-reel-license
+    modifiers:
+      extraPierce: 0
+      extraRicochets: 0
+      extraDarts: 0
+      extraRerolls: 0
+      startingTickets: 0
+      adjacentBurstCount: 0
+      miniHitCount: 0
+      extraSpecialSpawns: 0
+      extraHazardSpawns: 0
+      recipeUnlockRoomDelta: 0
+      scoreFlatBonus: 40
+      ticketFlatBonus: 0
+      finisherFlatCharge: 0
+      launchSpeedBonus: -0.08
+      paintRadiusBonus: 0
+      scoreMultiplierBonus: 0
+      goldMultiplierBonus: 0
+      overflowTicketRateBonus: 0.1
+      overflowFinisherRateBonus: 0
+      finisherChargeMultiplierBonus: 0
+      hazardPenaltyScaleBonus: 0
+      shopDiscountBonus: 0
+      refundChanceBonus: 0
+      missReturnChanceBonus: 0
+      anchorRadiusBonus: 0
+      bounceScoreBonus: 0
+      colorFocusBonus: 0
+      stickerFocusBonus: 0
+      stickerSpawnBonus: 0
+      chaosSpawnBonus: 0
+      recipesAlwaysOn: 0
+      reversePaintOrder: 0
+      firstStuckDartAnchor: 0
+      anchorPaintPulse: 0
+      yellowCountsAsGold: 0
+      skullsAreJackpots: 0
+      missesReturnInsteadOfStick: 0
+      doubleFinisherCharge: 0
+      fewerPrizeBalloons: 0
+    startingPerkIds: []
+  - loadoutId: trickline
+    displayName: Stormline
+    description: Starts with a ricochet and better anchor geometry.
+    tradeoff: Raw score is lower until the build comes online.
+    accentColor: {r: 0.45, g: 0.82, b: 1, a: 1}
+    requiredMetaUpgradeId: 
+    modifiers:
+      extraPierce: 0
+      extraRicochets: 1
+      extraDarts: 0
+      extraRerolls: 0
+      startingTickets: 0
+      adjacentBurstCount: 0
+      miniHitCount: 0
+      extraSpecialSpawns: 0
+      extraHazardSpawns: 0
+      recipeUnlockRoomDelta: 0
+      scoreFlatBonus: 0
+      ticketFlatBonus: 0
+      finisherFlatCharge: 0
+      launchSpeedBonus: 0
+      paintRadiusBonus: 0
+      scoreMultiplierBonus: -0.05
+      goldMultiplierBonus: 0
+      overflowTicketRateBonus: 0
+      overflowFinisherRateBonus: 0
+      finisherChargeMultiplierBonus: 0
+      hazardPenaltyScaleBonus: 0
+      shopDiscountBonus: 0
+      refundChanceBonus: 0
+      missReturnChanceBonus: 0
+      anchorRadiusBonus: 0.2
+      bounceScoreBonus: 0
+      colorFocusBonus: 0
+      stickerFocusBonus: 0
+      stickerSpawnBonus: 0
+      chaosSpawnBonus: 0
+      recipesAlwaysOn: 0
+      reversePaintOrder: 0
+      firstStuckDartAnchor: 0
+      anchorPaintPulse: 0
+      yellowCountsAsGold: 0
+      skullsAreJackpots: 0
+      missesReturnInsteadOfStick: 0
+      doubleFinisherCharge: 0
+      fewerPrizeBalloons: 0
+    startingPerkIds: []
+  - loadoutId: bankers-draw
+    displayName: Glimmer Draw
+    description: Starts richer and converts overflow faster.
+    tradeoff: Paint radius is tighter.
+    accentColor: {r: 0.22, g: 0.96, b: 0.42, a: 1}
+    requiredMetaUpgradeId: 
+    modifiers:
+      extraPierce: 0
+      extraRicochets: 0
+      extraDarts: 0
+      extraRerolls: 0
+      startingTickets: 4
+      adjacentBurstCount: 0
+      miniHitCount: 0
+      extraSpecialSpawns: 0
+      extraHazardSpawns: 0
+      recipeUnlockRoomDelta: 0
+      scoreFlatBonus: 0
+      ticketFlatBonus: 0
+      finisherFlatCharge: 0
+      launchSpeedBonus: 0
+      paintRadiusBonus: -0.15
+      scoreMultiplierBonus: 0
+      goldMultiplierBonus: 0
+      overflowTicketRateBonus: 0.2
+      overflowFinisherRateBonus: 0
+      finisherChargeMultiplierBonus: 0
+      hazardPenaltyScaleBonus: 0
+      shopDiscountBonus: 0
+      refundChanceBonus: 0
+      missReturnChanceBonus: 0
+      anchorRadiusBonus: 0
+      bounceScoreBonus: 0
+      colorFocusBonus: 0
+      stickerFocusBonus: 0
+      stickerSpawnBonus: 0
+      chaosSpawnBonus: 0
+      recipesAlwaysOn: 0
+      reversePaintOrder: 0
+      firstStuckDartAnchor: 0
+      anchorPaintPulse: 0
+      yellowCountsAsGold: 0
+      skullsAreJackpots: 0
+      missesReturnInsteadOfStick: 0
+      doubleFinisherCharge: 0
+      fewerPrizeBalloons: 0
+    startingPerkIds: []
+  - loadoutId: prism-kit
+    displayName: Prism Kit
+    description: Starts recipes and chaos balloons earlier.
+    tradeoff: You enter the run with one fewer dart.
+    accentColor: {r: 0, g: 0.95, b: 0.95, a: 1}
+    requiredMetaUpgradeId: prism-license
+    modifiers:
+      extraPierce: 0
+      extraRicochets: 0
+      extraDarts: -1
+      extraRerolls: 0
+      startingTickets: 0
+      adjacentBurstCount: 0
+      miniHitCount: 0
+      extraSpecialSpawns: 0
+      extraHazardSpawns: 0
+      recipeUnlockRoomDelta: -1
+      scoreFlatBonus: 0
+      ticketFlatBonus: 0
+      finisherFlatCharge: 0
+      launchSpeedBonus: 0
+      paintRadiusBonus: 0
+      scoreMultiplierBonus: 0
+      goldMultiplierBonus: 0
+      overflowTicketRateBonus: 0
+      overflowFinisherRateBonus: 0
+      finisherChargeMultiplierBonus: 0
+      hazardPenaltyScaleBonus: 0
+      shopDiscountBonus: 0
+      refundChanceBonus: 0
+      missReturnChanceBonus: 0
+      anchorRadiusBonus: 0
+      bounceScoreBonus: 0
+      colorFocusBonus: 0
+      stickerFocusBonus: 0
+      stickerSpawnBonus: 0
+      chaosSpawnBonus: 0.08
+      recipesAlwaysOn: 0
+      reversePaintOrder: 0
+      firstStuckDartAnchor: 0
+      anchorPaintPulse: 0
+      yellowCountsAsGold: 0
+      skullsAreJackpots: 0
+      missesReturnInsteadOfStick: 0
+      doubleFinisherCharge: 0
+      fewerPrizeBalloons: 0
+    startingPerkIds: []
+  paintRecipes:
+  - recipeId: afterburner
+    displayName: Afterburner
+    description: Red then blue bursts into nearby ricochet pops.
+    primaryColor: 0
+    secondaryColor: 1
+    unlockRoom: 4
+    effectType: 0
+    power: 2
+    secondaryPower: 0
+    radius: 1.5
+  - recipeId: jackpot-bank
+    displayName: Relay Bank
+    description: Blue then yellow turns angle play into tickets.
+    primaryColor: 1
+    secondaryColor: 2
+    unlockRoom: 4
+    effectType: 1
+    power: 2
+    secondaryPower: 0
+    radius: 1.5
+  - recipeId: safety-dividend
+    displayName: Safety Dividend
+    description: Yellow then green banks safer overflow.
+    primaryColor: 2
+    secondaryColor: 3
+    unlockRoom: 4
+    effectType: 2
+    power: 2
+    secondaryPower: 0
+    radius: 1.5
+  - recipeId: clean-splice
+    displayName: Clean Splice
+    description: Green then purple clones a cleaned-up pop.
+    primaryColor: 3
+    secondaryColor: 4
+    unlockRoom: 4
+    effectType: 3
+    power: 1
+    secondaryPower: 0
+    radius: 1.5
+  - recipeId: hexburst
+    displayName: Hexburst
+    description: Purple then red spikes score and chaos at once.
+    primaryColor: 4
+    secondaryColor: 0
+    unlockRoom: 4
+    effectType: 4
+    power: 1
+    secondaryPower: 0
+    radius: 1.5
+  - recipeId: hot-streak
+    displayName: Hot Streak
+    description: Red then yellow ignites a jackpot finisher shove.
+    primaryColor: 0
+    secondaryColor: 2
+    unlockRoom: 4
+    effectType: 4
+    power: 2
+    secondaryPower: 0
+    radius: 1.5
+  - recipeId: anchor-wash
+    displayName: Anchor Wash
+    description: Blue then green pulses the nearest anchor.
+    primaryColor: 1
+    secondaryColor: 3
+    unlockRoom: 4
+    effectType: 5
+    power: 2
+    secondaryPower: 0
+    radius: 1.5
+  - recipeId: gilded-glitch
+    displayName: Glimmer Glitch
+    description: Yellow then purple twists jackpots toward weirdness.
+    primaryColor: 2
+    secondaryColor: 4
+    unlockRoom: 4
+    effectType: 6
+    power: 2
+    secondaryPower: 0
+    radius: 1.5
+  - recipeId: primer-bomb
+    displayName: Primer Bomb
+    description: Green then red primes a larger adjacent burst.
+    primaryColor: 3
+    secondaryColor: 0
+    unlockRoom: 4
+    effectType: 7
+    power: 2
+    secondaryPower: 0
+    radius: 1.5
+  - recipeId: mirror-echo
+    displayName: Mirror Echo
+    description: Purple then blue mirrors the last bounce into more pops.
+    primaryColor: 4
+    secondaryColor: 1
+    unlockRoom: 4
+    effectType: 8
+    power: 2
+    secondaryPower: 0
+    radius: 1.5
+  comboFinishers:
+  - finisherId: ink-wave
+    displayName: Ink Wave
+    description: Flood a cluster with paint.
+    effectType: 0
+    minPopCount: 5
+    minScoreBurst: 500
+    minRecipeCount: 1
+    minStickerCount: 1
+    chargeCost: 1
+    cooldownShots: 2
+    power: 4
+    radius: 2.2
+  - finisherId: dart-rain
+    displayName: Dart Rain
+    description: Rain extra hits across the wall.
+    effectType: 1
+    minPopCount: 6
+    minScoreBurst: 650
+    minRecipeCount: 1
+    minStickerCount: 0
+    chargeCost: 1.2
+    cooldownShots: 3
+    power: 4
+    radius: 2
+  - finisherId: radial-spray
+    displayName: Radial Spray
+    description: Explode outward from the best pop.
+    effectType: 0
+    minPopCount: 4
+    minScoreBurst: 700
+    minRecipeCount: 0
+    minStickerCount: 2
+    chargeCost: 1
+    cooldownShots: 2
+    power: 5
+    radius: 2.6
+  - finisherId: chain-surge
+    displayName: Chain Surge
+    description: Turn the shot into a ticket burst.
+    effectType: 2
+    minPopCount: 5
+    minScoreBurst: 850
+    minRecipeCount: 1
+    minStickerCount: 1
+    chargeCost: 1.1
+    cooldownShots: 3
+    power: 4
+    radius: 2
+  - finisherId: clone-storm
+    displayName: Clone Storm
+    description: Duplicate the best hit into nearby balloons.
+    effectType: 3
+    minPopCount: 6
+    minScoreBurst: 700
+    minRecipeCount: 1
+    minStickerCount: 2
+    chargeCost: 1.2
+    cooldownShots: 3
+    power: 4
+    radius: 2
+  - finisherId: echo-burst
+    displayName: Echo Burst
+    description: Anchors and ricochets echo one more time.
+    effectType: 4
+    minPopCount: 4
+    minScoreBurst: 600
+    minRecipeCount: 1
+    minStickerCount: 1
+    chargeCost: 1
+    cooldownShots: 2
+    power: 3
+    radius: 2.1
+  - finisherId: cleanup-sweep-finisher
+    displayName: Cleanup Sweep
+    description: Clean the remaining mess into points and safety.
+    effectType: 5
+    minPopCount: 5
+    minScoreBurst: 550
+    minRecipeCount: 0
+    minStickerCount: 3
+    chargeCost: 1
+    cooldownShots: 2
+    power: 3
+    radius: 2
+  metaUpgrades:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

@@ -36,3 +36,6 @@
 DerivedData/
 .idea/
 .vscode/
+
+# ThirdParty download staging
+Assets/ThirdParty/_Downloads/

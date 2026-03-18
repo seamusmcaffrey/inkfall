@@ -15,6 +15,7 @@ public class ScoreManager : MonoBehaviour
 
     [SerializeField] private ComboTracker _comboTracker;
     [SerializeField] private PerkManager _perkManager;
+    [SerializeField] private RunSystemsManager _runSystemsManager;
 
     public void Initialize(int targetScore)
     {
@@ -35,11 +36,17 @@ public class ScoreManager : MonoBehaviour
     {
         _comboTracker = ComponentUtility.EnsureComponent<ComboTracker>(gameObject);
         _perkManager = ComponentUtility.EnsureComponent<PerkManager>(gameObject);
+        _runSystemsManager = ComponentUtility.EnsureComponent<RunSystemsManager>(gameObject);
     }
 
     public void SetPerkManager(PerkManager perkManager)
     {
         _perkManager = perkManager;
+    }
+
+    public void SetRunSystemsManager(RunSystemsManager runSystemsManager)
+    {
+        _runSystemsManager = runSystemsManager;
     }
 
     private void OnEnable()
@@ -56,11 +63,14 @@ public class ScoreManager : MonoBehaviour
     {
         bool reachedBeforePop = IsTargetReached;
         var comboData = _comboTracker != null ? _comboTracker.RegisterPop() : (1, 1f);
-        float perkScoreMultiplier = _perkManager != null ? _perkManager.ScoreMultiplier : GameConfigSO.Instance.scoreMultiplier;
-        int points = Mathf.RoundToInt(balloon.PointValue * comboData.Item2 * Mathf.Max(0.1f, perkScoreMultiplier));
-        CurrentScore += points;
+        BalloonScoreResult scoreResult = _runSystemsManager != null
+            ? _runSystemsManager.CalculateBalloonScore(balloon, comboData.Item1, comboData.Item2)
+            : new BalloonScoreResult { FinalPoints = Mathf.RoundToInt(balloon.PointValue * comboData.Item2) };
+        int points = scoreResult.FinalPoints;
+        CurrentScore = Mathf.Max(0, CurrentScore + points);
         OnBalloonPopped?.Invoke(points);
         OnScoreChanged?.Invoke(CurrentScore);
+        _runSystemsManager?.RegisterBalloonResolved(balloon, scoreResult);
         EventBus.Publish(new BalloonScoredEvent
         {
             WorldPosition = balloon.transform.position,
@@ -80,6 +90,25 @@ public class ScoreManager : MonoBehaviour
         });
 
         if (!reachedBeforePop && IsTargetReached)
+        {
+            OnTargetReached?.Invoke();
+        }
+    }
+
+    public void AddScoreDelta(int delta)
+    {
+        bool reachedBefore = IsTargetReached;
+        CurrentScore = Mathf.Max(0, CurrentScore + delta);
+        OnScoreChanged?.Invoke(CurrentScore);
+        EventBus.Publish(new ScoreChangedEvent
+        {
+            CurrentScore = CurrentScore,
+            TargetScore = TargetScore,
+            PointsJustAdded = delta,
+            TargetReached = IsTargetReached,
+        });
+
+        if (!reachedBefore && IsTargetReached)
         {
             OnTargetReached?.Invoke();
         }

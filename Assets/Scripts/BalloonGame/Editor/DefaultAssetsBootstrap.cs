@@ -71,9 +71,9 @@ public static class DefaultAssetsBootstrap
 
         var rooms = new List<RoomTemplateSO>
         {
-            CreateRoom("OpeningBooth", "opening-booth", "Opening Booth", RoomType.Normal, GameConstants.BOARD_COLUMNS, GameConstants.BOARD_ROWS, GameConstants.BASE_TARGET_SCORE, GameConstants.STARTING_DARTS, 1, 2, 0, 1, UIColors.InkCyan),
-            CreateRoom("ChromeMidway", "chrome-midway", "Chrome Midway", RoomType.Normal, GameConstants.BOARD_COLUMNS, GameConstants.BOARD_ROWS, 3600, GameConstants.STARTING_DARTS, 2, 3, 1, 1, UIColors.RoomPink),
-            CreateRoom("PrizeChamber", "prize-chamber", "Prize Chamber", RoomType.Bonus, GameConstants.BOARD_COLUMNS, GameConstants.BOARD_ROWS, 3200, GameConstants.STARTING_DARTS + 1, 2, 4, 0, 0, UIColors.ComboGold, isBonusEligible: true),
+            CreateRoom("OpeningBooth", "opening-booth", "Opening Booth", RoomType.Normal, GameConstants.BOARD_COLUMNS, GameConstants.BOARD_ROWS, GameConstants.OPENING_ROOM_TARGET_SCORE, GameConstants.STARTING_DARTS, 1, 2, 0, 1, UIColors.InkCyan, 0.44f, 0.08f, 30),
+            CreateRoom("ChromeMidway", "chrome-midway", "Chrome Midway", RoomType.Normal, GameConstants.BOARD_COLUMNS, GameConstants.BOARD_ROWS, GameConstants.BASE_TARGET_SCORE, GameConstants.STARTING_DARTS, 2, 3, 1, 1, UIColors.RoomPink, 0.5f, 0.1f, 50),
+            CreateRoom("PrizeChamber", "prize-chamber", "Prize Chamber", RoomType.Bonus, GameConstants.BOARD_COLUMNS, GameConstants.BOARD_ROWS, 1200, GameConstants.STARTING_DARTS + 1, 2, 4, 0, 0, UIColors.ComboGold, 0.5f, 0.1f, 60, isBonusEligible: true),
         };
 
         CreateAssetIfMissing<MetaUpgradeSO>(MetaFolder + "/StarterKit.asset", asset =>
@@ -132,7 +132,7 @@ public static class DefaultAssetsBootstrap
         });
     }
 
-    private static RoomTemplateSO CreateRoom(string fileName, string templateId, string displayName, RoomType roomType, int columns, int rows, int targetScore, int baseDarts, int minSpecials, int maxSpecials, int minHazards, int maxHazards, Color accent, bool isBonusEligible = false)
+    private static RoomTemplateSO CreateRoom(string fileName, string templateId, string displayName, RoomType roomType, int columns, int rows, int targetScore, int baseDarts, int minSpecials, int maxSpecials, int minHazards, int maxHazards, Color accent, float targetPressure, float depthPressureBonus, int flatTargetBonus, bool isBonusEligible = false)
     {
         return CreateAssetIfMissing<RoomTemplateSO>($"{RoomFolder}/{fileName}.asset", asset =>
         {
@@ -143,6 +143,9 @@ public static class DefaultAssetsBootstrap
             asset.rows = rows;
             asset.baseTargetScore = targetScore;
             asset.baseDarts = baseDarts;
+            asset.targetPressure = targetPressure;
+            asset.depthPressureBonus = depthPressureBonus;
+            asset.flatTargetBonus = flatTargetBonus;
             asset.minSpecials = minSpecials;
             asset.maxSpecials = maxSpecials;
             asset.minHazards = minHazards;

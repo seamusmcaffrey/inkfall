@@ -8,9 +8,15 @@ using UnityEngine;
 public class ComboTracker : MonoBehaviour
 {
     private float _comboTimer;
+    [SerializeField] private PerkManager _perkManager;
 
     public int CurrentCombo { get; private set; }
     public float CurrentMultiplier { get; private set; } = 1f;
+
+    private void Awake()
+    {
+        _perkManager = ComponentUtility.EnsureComponent<PerkManager>(gameObject);
+    }
 
     private void Update()
     {
@@ -23,12 +29,15 @@ public class ComboTracker : MonoBehaviour
         if (_comboTimer <= 0f)
         {
             ResetCombo(true);
+            return;
         }
+
+        PublishWindowState(true);
     }
 
     public (int comboCount, float multiplier) RegisterPop()
     {
-        float comboWindow = GameConfigSO.Instance.comboWindowSeconds;
+        float comboWindow = GetComboWindowSeconds();
         if (_comboTimer > 0f)
         {
             CurrentCombo = Mathf.Min(CurrentCombo + 1, GameConfigSO.Instance.comboMaxStack);
@@ -39,13 +48,14 @@ public class ComboTracker : MonoBehaviour
         }
 
         _comboTimer = comboWindow;
-        CurrentMultiplier = 1f + Mathf.Max(0, CurrentCombo - 1) * GameConfigSO.Instance.comboMultiplierPerStep;
+        CurrentMultiplier = RunScoreMath.EvaluateComboMultiplier(CurrentCombo);
         EventBus.Publish(new ComboChangedEvent
         {
             ComboCount = CurrentCombo,
             Multiplier = CurrentMultiplier,
             WasReset = false,
         });
+        PublishWindowState(true);
 
         return (CurrentCombo, CurrentMultiplier);
     }
@@ -69,6 +79,31 @@ public class ComboTracker : MonoBehaviour
                 Multiplier = 1f,
                 WasReset = true,
             });
+            PublishWindowState(false);
         }
+    }
+
+    private void PublishWindowState(bool isActive)
+    {
+        float maxSeconds = GetComboWindowSeconds();
+        float remainingSeconds = isActive ? Mathf.Max(_comboTimer, 0f) : 0f;
+        float normalizedRemaining = maxSeconds > 0f
+            ? Mathf.Clamp01(remainingSeconds / maxSeconds)
+            : 0f;
+
+        EventBus.Publish(new ComboWindowStateEvent
+        {
+            ComboCount = CurrentCombo,
+            RemainingSeconds = remainingSeconds,
+            MaxSeconds = maxSeconds,
+            NormalizedRemaining = normalizedRemaining,
+            IsActive = isActive,
+        });
+    }
+
+    private float GetComboWindowSeconds()
+    {
+        float bonus = _perkManager != null ? _perkManager.ComboWindowBonus : 0f;
+        return Mathf.Max(0.2f, GameConfigSO.Instance.comboWindowSeconds + bonus);
     }
 }

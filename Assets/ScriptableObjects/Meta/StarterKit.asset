@@ -17,6 +17,52 @@ MonoBehaviour:
   description: Start each run with +1 dart.
   icon: {fileID: 0}
   cost: 75
+  branchLabel: Core
+  prerequisiteIds: []
+  unlockedLoadoutIds: []
+  unlockedPerkIds: []
+  unlockedRelicIds: []
+  unlockedStickerFamilies: 
   effectType: 8
   effectValue: 1
   effectIntValue: 1
+  modifiers:
+    extraPierce: 0
+    extraRicochets: 0
+    extraDarts: 0
+    extraRerolls: 0
+    startingTickets: 0
+    adjacentBurstCount: 0
+    miniHitCount: 0
+    extraSpecialSpawns: 0
+    extraHazardSpawns: 0
+    recipeUnlockRoomDelta: 0
+    scoreFlatBonus: 0
+    ticketFlatBonus: 0
+    finisherFlatCharge: 0
+    launchSpeedBonus: 0
+    paintRadiusBonus: 0
+    scoreMultiplierBonus: 0
+    goldMultiplierBonus: 0
+    overflowTicketRateBonus: 0
+    overflowFinisherRateBonus: 0
+    finisherChargeMultiplierBonus: 0
+    hazardPenaltyScaleBonus: 0
+    shopDiscountBonus: 0
+    refundChanceBonus: 0
+    missReturnChanceBonus: 0
+    anchorRadiusBonus: 0
+    bounceScoreBonus: 0
+    colorFocusBonus: 0
+    stickerFocusBonus: 0
+    stickerSpawnBonus: 0
+    chaosSpawnBonus: 0
+    recipesAlwaysOn: 0
+    reversePaintOrder: 0
+    firstStuckDartAnchor: 0
+    anchorPaintPulse: 0
+    yellowCountsAsGold: 0
+    skullsAreJackpots: 0
+    missesReturnInsteadOfStick: 0
+    doubleFinisherCharge: 0
+    fewerPrizeBalloons: 0

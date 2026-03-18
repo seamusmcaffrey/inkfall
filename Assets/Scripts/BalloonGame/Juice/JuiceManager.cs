@@ -51,6 +51,7 @@ public class JuiceManager : MonoBehaviour
         EventBus.Subscribe<PaintExplosionEvent>(HandlePaintExplosion);
         EventBus.Subscribe<WallBounceEvent>(HandleWallBounce);
         EventBus.Subscribe<ComboChangedEvent>(HandleComboChanged);
+        EventBus.Subscribe<PerkChainTriggeredEvent>(HandlePerkChainTriggered);
         EventBus.Subscribe<DartLaunchedEvent>(HandleDartLaunched);
         EventBus.Subscribe<RoomClearedEvent>(HandleRoomCleared);
         EventBus.Subscribe<RoomFailedEvent>(HandleRoomFailed);
@@ -62,6 +63,7 @@ public class JuiceManager : MonoBehaviour
         EventBus.Unsubscribe<PaintExplosionEvent>(HandlePaintExplosion);
         EventBus.Unsubscribe<WallBounceEvent>(HandleWallBounce);
         EventBus.Unsubscribe<ComboChangedEvent>(HandleComboChanged);
+        EventBus.Unsubscribe<PerkChainTriggeredEvent>(HandlePerkChainTriggered);
         EventBus.Unsubscribe<DartLaunchedEvent>(HandleDartLaunched);
         EventBus.Unsubscribe<RoomClearedEvent>(HandleRoomCleared);
         EventBus.Unsubscribe<RoomFailedEvent>(HandleRoomFailed);
@@ -159,6 +161,16 @@ public class JuiceManager : MonoBehaviour
         {
             _slowMotion.TriggerForCombo(evt.ComboCount);
         }
+    }
+
+    private void HandlePerkChainTriggered(PerkChainTriggeredEvent evt)
+    {
+        if (!_config.juiceEnabled || !_config.perkChainFlashEnabled)
+        {
+            return;
+        }
+
+        _comboFlash.Flash(evt, _config);
     }
 
     private void HandleDartLaunched(DartLaunchedEvent evt)

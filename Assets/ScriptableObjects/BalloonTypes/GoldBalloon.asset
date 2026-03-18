@@ -26,5 +26,9 @@ MonoBehaviour:
   effectRadius: 1.5
   durability: 1
   endsComboOnPop: 0
+  isChaosBalloon: 0
+  roomUnlock: 1
+  requiredMetaUpgradeId: 
+  forcedStickerFamily: 0
   materialOverride: {fileID: 2100000, guid: ed206dafde7c025478ee5865973b4c32, type: 2}
   tintOverride: {r: 0, g: 0, b: 0, a: 0}
