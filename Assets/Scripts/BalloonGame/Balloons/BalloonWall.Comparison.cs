@@ -10,7 +10,7 @@ using UnityEditor;
 public partial class BalloonWall
 {
     private const string LoafbrrPrefabRoot = "Assets/LoafbrrAssets/Balloons/prefab/Baloons/";
-    private const bool ComparisonModeEnabled = true;
+    private const bool ComparisonModeEnabled = false;
 
     private static readonly string[] ComparisonPrefabNames =
     {

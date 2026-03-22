@@ -8,19 +8,19 @@ using UnityEngine.Rendering.Universal;
 [DisallowMultipleComponent]
 public class PostProcessingSetup : MonoBehaviour
 {
-    private const float BloomThreshold = 0.4f;
-    private const float BloomIntensity = 5.0f;
-    private const float BloomScatter = 0.82f;
-    private const float VignetteIntensity = 0.62f;
-    private const float VignetteSmoothness = 0.50f;
-    private const float ChromaticIntensity = 0.14f;
+    private const float BloomThreshold = 0.20f;
+    private const float BloomIntensity = 10.0f;
+    private const float BloomScatter = 0.92f;
+    private const float VignetteIntensity = 0.50f;
+    private const float VignetteSmoothness = 0.45f;
+    private const float ChromaticIntensity = 0.10f;
+    private const float FilmGrainIntensity = 0.15f;
 
     private Volume _volume;
 
     private void Awake()
     {
-        // Post-processing disabled for clean even lighting.
-        // Call EnsurePostProcessing() to re-enable.
+        EnsurePostProcessing();
     }
 
     [ContextMenu("Setup Post Processing")]
@@ -39,6 +39,8 @@ public class PostProcessingSetup : MonoBehaviour
         AddBloom(profile);
         AddVignette(profile);
         AddChromaticAberration(profile);
+        AddFilmGrain(profile);
+        AddColorGrading(profile);
     }
 
     private static void AddBloom(VolumeProfile profile)
@@ -50,6 +52,8 @@ public class PostProcessingSetup : MonoBehaviour
         bloom.intensity.value = BloomIntensity;
         bloom.scatter.overrideState = true;
         bloom.scatter.value = BloomScatter;
+        bloom.tint.overrideState = true;
+        bloom.tint.value = new Color(1f, 0.95f, 0.9f);
     }
 
     private static void AddVignette(VolumeProfile profile)
@@ -68,5 +72,25 @@ public class PostProcessingSetup : MonoBehaviour
         var ca = profile.Add<ChromaticAberration>();
         ca.intensity.overrideState = true;
         ca.intensity.value = ChromaticIntensity;
+    }
+
+    private static void AddFilmGrain(VolumeProfile profile)
+    {
+        var grain = profile.Add<FilmGrain>();
+        grain.type.overrideState = true;
+        grain.type.value = FilmGrainLookup.Medium1;
+        grain.intensity.overrideState = true;
+        grain.intensity.value = FilmGrainIntensity;
+    }
+
+    private static void AddColorGrading(VolumeProfile profile)
+    {
+        var grading = profile.Add<ColorAdjustments>();
+        grading.postExposure.overrideState = true;
+        grading.postExposure.value = 0.15f;
+        grading.contrast.overrideState = true;
+        grading.contrast.value = 12f;
+        grading.saturation.overrideState = true;
+        grading.saturation.value = 10f;
     }
 }

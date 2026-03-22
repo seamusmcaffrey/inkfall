@@ -6,10 +6,11 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class BalloonEmblem : MonoBehaviour
 {
-    private const float EmblemScale = 0.62f;
+    private const float EmblemScale = 0.80f;
     private const float EmblemZOffset = -0.52f;
+    private const float StickerDefaultGlow = 0.85f;
     private static readonly Vector3 StickerOffset = new(0.24f, 0.24f, EmblemZOffset - 0.01f);
-    private static readonly Vector3 StickerScale = new(0.32f, 0.32f, 1f);
+    private static readonly Vector3 StickerScale = new(0.48f, 0.48f, 1f);
 
     private static Material _emblemMaterial;
     private static Mesh _quadMesh;
@@ -68,7 +69,7 @@ public class BalloonEmblem : MonoBehaviour
         _stickerRenderer.GetPropertyBlock(_stickerProps);
         _stickerProps.SetColor("_EmblemColor", stickerFamily.ToColor());
         _stickerProps.SetFloat("_Shape", GetStickerShapeIndex(stickerFamily));
-        _stickerProps.SetFloat("_Glow", 0.55f);
+        _stickerProps.SetFloat("_Glow", StickerDefaultGlow);
         _stickerRenderer.SetPropertyBlock(_stickerProps);
         _stickerRenderer.gameObject.SetActive(true);
     }
@@ -134,7 +135,7 @@ public class BalloonEmblem : MonoBehaviour
             new Vector2(0f, 0f), new Vector2(1f, 0f),
             new Vector2(1f, 1f), new Vector2(0f, 1f),
         });
-        mesh.SetTriangles(new[] { 0, 2, 1, 0, 3, 2 }, 0);
+        mesh.SetTriangles(new[] { 0, 1, 2, 0, 2, 3 }, 0);
         mesh.RecalculateNormals();
         return mesh;
     }
@@ -177,16 +178,16 @@ public class BalloonEmblem : MonoBehaviour
     {
         return type switch
         {
-            BalloonSpecialType.Gold => 0.8f,
-            BalloonSpecialType.Hazard => 1.0f,
-            BalloonSpecialType.Paint => 0.5f,
-            BalloonSpecialType.Shield => 0.45f,
-            BalloonSpecialType.Mixer => 0.65f,
-            BalloonSpecialType.Invert => 0.65f,
-            BalloonSpecialType.Wash => 0.55f,
-            BalloonSpecialType.Clone => 0.7f,
-            BalloonSpecialType.Rainbow => 0.85f,
-            _ => 0.3f,
+            BalloonSpecialType.Gold => 1.1f,
+            BalloonSpecialType.Hazard => 1.3f,
+            BalloonSpecialType.Paint => 0.8f,
+            BalloonSpecialType.Shield => 0.75f,
+            BalloonSpecialType.Mixer => 0.95f,
+            BalloonSpecialType.Invert => 0.95f,
+            BalloonSpecialType.Wash => 0.85f,
+            BalloonSpecialType.Clone => 1.0f,
+            BalloonSpecialType.Rainbow => 1.15f,
+            _ => 0.6f,
         };
     }
 

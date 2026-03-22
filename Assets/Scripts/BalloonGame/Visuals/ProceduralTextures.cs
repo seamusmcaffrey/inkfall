@@ -18,18 +18,20 @@ public static class ProceduralTextures
     private const float CorkGrainG = 0.12f;
     private const float CorkGrainB = 0.06f;
 
-    private const int PlankHeight = 32;
-    private const float PlankSeamWidth = 1.5f;
-    private const float PlankSeamDarken = 0.35f;
-    private const float WoodGrainScaleX = 12f;
-    private const float WoodGrainScaleY = 1.5f;
-    private const float PlankColorVariation = 0.02f;
+    private const int PlankHeight = 24;
+    private const float PlankSeamWidth = 1.2f;
+    private const float PlankSeamDarken = 0.45f;
+    private const float WoodGrainScaleX = 14f;
+    private const float WoodGrainScaleY = 1.2f;
+    private const float PlankColorVariation = 0.03f;
     private const float PlankOffsetPerIndex = 7f;
-    private const float FloorGrainR = 0.030f;
-    private const float FloorGrainG = 0.025f;
-    private const float FloorGrainB = 0.020f;
+    private const float FloorGrainR = 0.040f;
+    private const float FloorGrainG = 0.032f;
+    private const float FloorGrainB = 0.022f;
     private const float FloorTintGFactor = 0.8f;
     private const float FloorTintBFactor = 0.6f;
+    private const float LaneStripeWidth = 3f;
+    private const float LaneStripeBrightness = 0.08f;
     private const float PatinaGreenRatio = 0.7f;
     private const float PatinaRedReduction = 0.3f;
 
@@ -41,9 +43,9 @@ public static class ProceduralTextures
     private const float PatinaThreshold = 0.58f;
     private const float PatinaStrength = 0.10f;
 
-    private static readonly Color CorkBase = new(0.30f, 0.22f, 0.14f);
-    private static readonly Color FloorBase = new(0.06f, 0.05f, 0.04f);
-    private static readonly Color MetalBase = new(0.12f, 0.12f, 0.10f);
+    private static readonly Color CorkBase = new(0.35f, 0.26f, 0.17f);
+    private static readonly Color FloorBase = new(0.10f, 0.08f, 0.06f);
+    private static readonly Color MetalBase = new(0.16f, 0.15f, 0.13f);
     private static readonly Color WallBase = new(0.14f, 0.11f, 0.09f);
 
     private const float WallStuccoScale = 6f;
@@ -86,10 +88,15 @@ public static class ProceduralTextures
             float seamFactor = seamDist < PlankSeamWidth ? 1f - seamDist / PlankSeamWidth : 0f;
             float grain = Mathf.PerlinNoise(u * WoodGrainScaleX, v * WoodGrainScaleY + plankIndex * PlankOffsetPerIndex);
             float tint = (plankIndex % 3) * PlankColorVariation;
+
+            // Bowling lane stripe pattern — alternating light/dark planks
+            bool isLightPlank = plankIndex % 2 == 0;
+            float stripeBrightness = isLightPlank ? LaneStripeBrightness : 0f;
+
             Color c = FloorBase;
-            c.r += grain * FloorGrainR + tint;
-            c.g += grain * FloorGrainG + tint * FloorTintGFactor;
-            c.b += grain * FloorGrainB + tint * FloorTintBFactor;
+            c.r += grain * FloorGrainR + tint + stripeBrightness;
+            c.g += grain * FloorGrainG + tint * FloorTintGFactor + stripeBrightness * 0.9f;
+            c.b += grain * FloorGrainB + tint * FloorTintBFactor + stripeBrightness * 0.7f;
             c *= 1f - seamFactor * PlankSeamDarken;
             pixels[y * width + x] = c;
         }

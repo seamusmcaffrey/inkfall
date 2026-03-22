@@ -7,8 +7,8 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public partial class EnvironmentBuilder : MonoBehaviour
 {
-    private const float FrameThickness = 0.60f;
-    private const float FrameDepth = 0.22f;
+    private const float FrameThickness = 0.70f;
+    private const float FrameDepth = 0.25f;
     private const float BoardZ = GameConstants.BOARD_Z + 0.5f;
     private const float BoardPaddingX = 0.6f;
     private const float BoardPaddingY = 0.8f;
@@ -21,7 +21,7 @@ public partial class EnvironmentBuilder : MonoBehaviour
     private static readonly Color BoltColor = new(0.55f, 0.48f, 0.38f);
     private static readonly Color WallDarkColor = new(0.05f, 0.04f, 0.04f);
     private static readonly Color CeilingColor = new(0.04f, 0.035f, 0.03f);
-    private static readonly Color FloorTint = new(0.9f, 0.85f, 0.78f);
+    private static readonly Color FloorTint = new(1.2f, 1.1f, 0.95f);
     private static readonly string[] StaleVisualRoots =
     {
         "BackWall", "LaneFloor", "Directional Light", "LaunchOrigin",

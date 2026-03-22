@@ -137,22 +137,22 @@ Shader "Inkshot/BalloonLit"
                 // Dual specular: sharp highlight + broad latex sheen
                 half3 halfDir = normalize(lightDir + viewDir);
                 half NdotH = saturate(dot(normalWS, halfDir));
-                half specSharp = pow(NdotH, _SpecularSize) * _SpecularIntensity;
-                half specBroad = pow(NdotH, 16.0) * 0.15 * _Glossiness;
+                half specSharp = pow(NdotH, _SpecularSize) * _SpecularIntensity * 1.3;
+                half specBroad = pow(NdotH, 8.0) * 0.4 * _Glossiness;
 
                 // Fresnel and edge darkening (simulates latex thickness at edges)
                 half fresnel = 1.0 - saturate(dot(normalWS, viewDir));
                 half edgeFactor = 1.0 - pow(fresnel, 1.5) * _EdgeDarken;
-                half rim = pow(fresnel, _RimPower) * _RimIntensity;
+                half rim = pow(fresnel, _RimPower) * _RimIntensity * 1.5;
 
                 // Subsurface scattering approximation for latex translucency
-                half sss = saturate(dot(viewDir, -lightDir)) * fresnel * 0.08;
+                half sss = saturate(dot(viewDir, -lightDir)) * fresnel * 0.12;
 
                 // Fake environment reflection (matcap-like overhead booth lighting)
                 half3 viewNormal = mul((half3x3)UNITY_MATRIX_V, normalWS);
                 half envGradient = viewNormal.y * 0.5 + 0.5;
                 half envReflect = pow(envGradient, 2.0) * _EnvReflection * _Glossiness;
-                half3 reflColor = lerp(half3(1, 1, 1), baseColor.rgb * 2.0, 0.15) * envReflect;
+                half3 reflColor = lerp(half3(1, 1, 1), baseColor.rgb * 2.0, 0.15) * envReflect * 1.3;
 
                 // Vertical gradient for depth curvature (darkens bottom)
                 half gradient = lerp(1.0, 1.0 - _GradientStrength, saturate(1.0 - input.uv.y));
@@ -173,7 +173,7 @@ Shader "Inkshot/BalloonLit"
                     half addShadow = saturate(addNdotL * 1.2 + 0.1);
                     half addLighting = lerp(addWrap, addShadow, _ShadowContrast);
                     half atten = addLight.distanceAttenuation * addLight.shadowAttenuation;
-                    diffuse += baseColor.rgb * addLighting * addLight.color * atten * 0.35;
+                    diffuse += baseColor.rgb * addLighting * addLight.color * atten * 0.45;
                 }
                 #endif
 
@@ -182,7 +182,7 @@ Shader "Inkshot/BalloonLit"
 
                 // Saturation boost for vibrancy
                 half luma = dot(diffuse, half3(0.299, 0.587, 0.114));
-                diffuse = lerp(half3(luma, luma, luma), diffuse, 1.45);
+                diffuse = lerp(half3(luma, luma, luma), diffuse, 1.6);
 
                 // Apply edge darkening to diffuse
                 diffuse *= edgeFactor;
@@ -197,9 +197,9 @@ Shader "Inkshot/BalloonLit"
                 {
                     Light addLight = GetAdditionalLight(si, float4(input.positionWS, 1));
                     half3 addHalf = normalize(normalize(addLight.direction) + viewDir);
-                    half addSpec = pow(saturate(dot(normalWS, addHalf)), _SpecularSize * 0.5) * 0.4;
+                    half addSpec = pow(saturate(dot(normalWS, addHalf)), _SpecularSize * 0.4) * 0.8;
                     half atten = addLight.distanceAttenuation * addLight.shadowAttenuation;
-                    specular += addSpec * addLight.color * atten * 0.65;
+                    specular += addSpec * addLight.color * atten * 1.0;
                 }
                 #endif
 

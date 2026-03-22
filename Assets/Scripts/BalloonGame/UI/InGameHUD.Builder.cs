@@ -14,12 +14,14 @@ public partial class InGameHUD
             Object.Destroy(transform.GetChild(i).gameObject);
 
         _canvas = ComponentUtility.EnsureComponent<Canvas>(gameObject);
-        _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        _canvas.renderMode = RenderMode.ScreenSpaceCamera;
+        _canvas.worldCamera = Camera.main;
+        _canvas.planeDistance = 1f;
         _canvas.sortingOrder = 200;
         CanvasScaler scaler = ComponentUtility.EnsureComponent<CanvasScaler>(gameObject);
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = GameConstants.UI_REFERENCE_RESOLUTION;
-        scaler.matchWidthOrHeight = 0f;
+        scaler.matchWidthOrHeight = 0.5f;
         ComponentUtility.EnsureComponent<GraphicRaycaster>(gameObject);
 
         GameObject vpRoot = new("ViewportRoot");
@@ -55,21 +57,21 @@ public partial class InGameHUD
 
         // Center: Score label, large value, and target
         _scoreLabel = CreateLabel("ScoreLabel", topBar, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0f, 8f), 9f, UIColors.TargetGray, TextAlignmentOptions.Center);
+            new Vector2(0f, 22f), 18f, UIColors.TargetGray, TextAlignmentOptions.Center);
         _scoreLabel.text = "SCORE";
         _scoreValue = CreateLabel("ScoreValue", topBar, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0f, -2f), 16f, UIColors.ScoreWhite, TextAlignmentOptions.Center);
+            new Vector2(0f, -2f), 36f, UIColors.ScoreWhite, TextAlignmentOptions.Center);
         _scoreValue.fontStyle = FontStyles.Bold;
         _targetLabel = CreateLabel("TargetLabel", topBar, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0f, -12f), 8f, UIColors.TargetGray, TextAlignmentOptions.Center);
+            new Vector2(0f, -26f), 14f, UIColors.TargetGray, TextAlignmentOptions.Center);
 
         // Right: Darts count + Currency with ink icon
         _dartsText = CreateLabel("Darts", topBar, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-            new Vector2(-margin - 50f, 3f), 11f, UIColors.DartBlue, TextAlignmentOptions.Right);
+            new Vector2(-margin - 80f, 10f), 22f, UIColors.DartBlue, TextAlignmentOptions.Right);
         _dartsText.fontStyle = FontStyles.Bold;
 
         _currencyText = CreateLabel("Currency", topBar, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-            new Vector2(-margin, -5f), 10f, UIColors.CurrencyIconTint, TextAlignmentOptions.Right);
+            new Vector2(-margin, -12f), 16f, UIColors.CurrencyIconTint, TextAlignmentOptions.Right);
         _currencyText.text = "<color=#1AEDE0>\u25C6</color> 0";
     }
 
@@ -86,9 +88,9 @@ public partial class InGameHUD
         badgeBg.color = UIColors.BadgeBackground;
 
         _roomLabel = CreateLabel("RoomLabel", badge, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0f, 5f), 7f, UIColors.TargetGray, TextAlignmentOptions.Center);
+            new Vector2(0f, 12f), 13f, UIColors.TargetGray, TextAlignmentOptions.Center);
         _roomNumber = CreateLabel("RoomNum", badge, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0f, -3f), 12f, UIColors.ScoreWhite, TextAlignmentOptions.Center);
+            new Vector2(0f, -6f), 24f, UIColors.ScoreWhite, TextAlignmentOptions.Center);
         _roomNumber.fontStyle = FontStyles.Bold;
     }
 
@@ -115,9 +117,9 @@ public partial class InGameHUD
     private void BuildDartTray()
     {
         RectTransform dartRoot = CreatePanel("DartTray", _safeRoot, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-            new Vector2(0f, 36f), new Vector2(180f, 32f));
+            new Vector2(0f, 44f), new Vector2(220f, 40f));
         _dartTray = dartRoot.gameObject.AddComponent<HorizontalLayoutGroup>();
-        _dartTray.spacing = 8f;
+        _dartTray.spacing = 10f;
         _dartTray.childAlignment = TextAnchor.MiddleCenter;
         _dartTray.childControlHeight = false;
         _dartTray.childControlWidth = false;

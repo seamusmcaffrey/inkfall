@@ -18,22 +18,22 @@ public class JuiceConfigSO : ScriptableObject
 
     [Header("Particles - Balloon Pop")]
     public bool balloonPopEnabled = true;
-    [Range(10, 60)] public int popParticleCount = 25;
-    public float popParticleLifetime = 0.55f;
-    public float popParticleSpeed = 5f;
-    public float popParticleGravity = 2f;
-    [Range(1f, 2f)] public float popNeonBoost = 1.4f;
+    [Range(10, 60)] public int popParticleCount = 35;
+    public float popParticleLifetime = 0.7f;
+    public float popParticleSpeed = 6f;
+    public float popParticleGravity = 1.8f;
+    [Range(1f, 2f)] public float popNeonBoost = 1.55f;
 
     [Header("Particles - Paint Splatter")]
     public bool paintSplatterEnabled = true;
-    [Range(20, 80)] public int paintParticleCount = 45;
-    public float paintParticleLifetime = 1.1f;
-    public float paintParticleSpeed = 7f;
-    public float paintParticleGravity = 3f;
-    [Range(1, 6)] public int paintDripCount = 4;
-    public float paintDripSpeed = 0.8f;
-    public float paintDripLifetime = 3.5f;
-    [Range(1f, 2f)] public float paintNeonBoost = 1.45f;
+    [Range(20, 80)] public int paintParticleCount = 65;
+    public float paintParticleLifetime = 1.4f;
+    public float paintParticleSpeed = 9f;
+    public float paintParticleGravity = 2.5f;
+    [Range(1, 6)] public int paintDripCount = 5;
+    public float paintDripSpeed = 1.0f;
+    public float paintDripLifetime = 4.0f;
+    [Range(1f, 2f)] public float paintNeonBoost = 1.65f;
     public float paintDripStartWidth = 0.14f;
     public float paintDripEndWidth = 0.04f;
 

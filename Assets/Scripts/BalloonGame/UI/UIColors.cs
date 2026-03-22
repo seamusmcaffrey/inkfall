@@ -41,7 +41,7 @@ public static class UIColors
 
     // Panel / overlay
     public static readonly Color PanelBackground = new(0.03f, 0.03f, 0.06f, 0.92f);
-    public static readonly Color TopBarBackground = new(0.02f, 0.02f, 0.04f, 0.88f);
+    public static readonly Color TopBarBackground = new(0.02f, 0.02f, 0.04f, 0.94f);
     public static readonly Color BadgeBackground = new(0.08f, 0.08f, 0.14f, 0.95f);
     public static readonly Color BadgeBorder = new(0.25f, 0.25f, 0.35f, 0.6f);
     public static readonly Color ShadowBlack = new(0f, 0f, 0f, 0.88f);

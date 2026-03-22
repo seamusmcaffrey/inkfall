@@ -4,7 +4,7 @@ Shader "Inkshot/BalloonEmblem"
     {
         _EmblemColor ("Emblem Color", Color) = (1, 0.85, 0.2, 1)
         _Shape ("Shape", Range(0, 8)) = 0
-        _Glow ("Glow Intensity", Range(0, 2)) = 0.4
+        _Glow ("Glow Intensity", Range(0, 3)) = 0.4
     }
 
     SubShader
@@ -150,7 +150,7 @@ Shader "Inkshot/BalloonEmblem"
                 else if (shape == 7) alpha = clover(uv);
                 else alpha = target(uv);
 
-                half3 color = _EmblemColor.rgb * (1.0 + _Glow);
+                half3 color = _EmblemColor.rgb * (1.0 + _Glow * 2.0);
                 return half4(color, alpha * _EmblemColor.a);
             }
             ENDHLSL

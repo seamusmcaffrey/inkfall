@@ -10,8 +10,8 @@ public partial class EnvironmentBuilder
     private const float FloorTiling = 3f;
     private const float WallSmoothness = 0.15f;
     private const float WallMetallic = 0.0f;
-    private const float FloorSmoothness = 0.35f;
-    private const float FloorMetallic = 0.05f;
+    private const float FloorSmoothness = 0.55f;
+    private const float FloorMetallic = 0.10f;
     private const float CeilingSmoothness = 0.1f;
     private const float TrimHeight = 0.15f;
     private const float TrimDepth = 0.06f;

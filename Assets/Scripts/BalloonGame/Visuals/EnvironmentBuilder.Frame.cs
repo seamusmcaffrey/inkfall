@@ -25,7 +25,7 @@ public partial class EnvironmentBuilder
         float halfH = bh * 0.5f;
 
         Texture2D frameTex = ProceduralTextures.GenerateFrameTexture(TextureResolution, TextureResolution);
-        Material frameMat = CreateTexturedMaterial(frameTex, Color.white, smoothness: 0.45f, metallic: 0.65f);
+        Material frameMat = CreateTexturedMaterial(frameTex, Color.white, smoothness: 0.55f, metallic: 0.70f);
         Material boltMat = CreateMaterial(BoltColor, smoothness: 0.55f, metallic: 0.75f);
         Material bevelMat = CreateMaterial(BevelHighlightColor, smoothness: 0.3f, metallic: 0.4f);
 

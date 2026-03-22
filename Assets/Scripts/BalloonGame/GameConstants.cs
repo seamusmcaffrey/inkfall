@@ -40,9 +40,9 @@ public static partial class GameConstants
     public static readonly Vector3 LAUNCH_POSITION = new(0f, ROOM_FLOOR_Y + 2f, -8f);
 
     /// <summary>Balloon width as a fraction of slot width (>1 means overlap neighbors).</summary>
-    public const float BALLOON_SLOT_FILL_X = 0.792f;
+    public const float BALLOON_SLOT_FILL_X = 0.88f;
     /// <summary>Balloon height as a fraction of slot height.</summary>
-    public const float BALLOON_SLOT_FILL_Y = 0.891f;
+    public const float BALLOON_SLOT_FILL_Y = 0.95f;
 
     public const float MAX_PULL_DISTANCE = 1.8f;
     public const float AIM_ACTIVATION_RADIUS = 2.5f;

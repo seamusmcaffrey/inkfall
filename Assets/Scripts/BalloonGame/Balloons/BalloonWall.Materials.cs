@@ -3,17 +3,17 @@ using UnityEngine;
 
 public partial class BalloonWall
 {
-    private const float DefaultSmoothness = 0.85f;
-    private const float DefaultSpecularIntensity = 2.0f;
-    private const float DefaultSpecularSize = 160f;
-    private const float DefaultRimIntensity = 0.05f;
-    private const float DefaultBumpScale = 0.3f;
-    private const float DefaultAmbientBoost = 0.06f;
-    private const float DefaultGradientStrength = 0.28f;
-    private const float DefaultEmissionIntensity = 0f;
-    private const float DefaultEnvReflection = 0.5f;
-    private const float DefaultEdgeDarken = 0.15f;
-    private const float DefaultShadowContrast = 0.4f;
+    private const float DefaultSmoothness = 0.95f;
+    private const float DefaultSpecularIntensity = 10.0f;
+    private const float DefaultSpecularSize = 250f;
+    private const float DefaultRimIntensity = 0.30f;
+    private const float DefaultBumpScale = 0.2f;
+    private const float DefaultAmbientBoost = 0.40f;
+    private const float DefaultGradientStrength = 0.18f;
+    private const float DefaultEmissionIntensity = 0.06f;
+    private const float DefaultEnvReflection = 0.65f;
+    private const float DefaultEdgeDarken = 0.10f;
+    private const float DefaultShadowContrast = 0.25f;
     private const float GoldSmoothness = 0.95f;
     private const float GoldMetallic = 0.85f;
     private const float GoldEmissionIntensity = 0.25f;

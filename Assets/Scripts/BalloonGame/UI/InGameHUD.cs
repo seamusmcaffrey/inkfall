@@ -10,13 +10,13 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public partial class InGameHUD : MonoBehaviour
 {
-    private const float TopBarHeight = 28f;
-    private const float BadgeSize = 22f;
-    private const float BadgeBorderWidth = 1f;
-    private const float ProgressBarHeight = 4f;
-    private const float DartIconWidth = 6f;
-    private const float DartIconHeight = 22f;
-    private const float DartTipHeight = 5f;
+    private const float TopBarHeight = 80f;
+    private const float BadgeSize = 52f;
+    private const float BadgeBorderWidth = 2f;
+    private const float ProgressBarHeight = 8f;
+    private const float DartIconWidth = 10f;
+    private const float DartIconHeight = 30f;
+    private const float DartTipHeight = 7f;
 
     private Canvas _canvas;
     private RectTransform _safeRoot;

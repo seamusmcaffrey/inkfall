@@ -18,6 +18,11 @@ public class RoomIntroScreen : MonoBehaviour
     private const float TargetSize = 24f;
     private const float DividerHeight = 2f;
     private const float DividerWidth = 200f;
+    private const float PreviewPanelWidth = 340f;
+    private const float PreviewPanelHeight = 70f;
+    private const float PreviewIconSize = 44f;
+    private const float PreviewIconSpacing = 12f;
+    private const float PerkBadgeSize = 32f;
 
     private CanvasGroup _group;
     private Image _backdrop;
@@ -25,6 +30,8 @@ public class RoomIntroScreen : MonoBehaviour
     private TextMeshProUGUI _roomName;
     private TextMeshProUGUI _targetScore;
     private RectTransform _contentRoot;
+    private RectTransform _previewPanel;
+    private RectTransform _perkBadgeRow;
 
     private void Awake()
     {
@@ -139,6 +146,54 @@ public class RoomIntroScreen : MonoBehaviour
 
         _roomName = CreateCenteredLabel("RoomName", -10f, RoomNameSize);
         _targetScore = CreateCenteredLabel("Target", -65f, TargetSize);
+
+        // Balloon type preview panel
+        _previewPanel = CreatePreviewPanel();
+
+        // Perk badge row at bottom
+        _perkBadgeRow = CreatePerkBadgeRow();
+    }
+
+    private RectTransform CreatePreviewPanel()
+    {
+        GameObject panel = new("PreviewPanel");
+        panel.transform.SetParent(_contentRoot, false);
+        RectTransform r = panel.AddComponent<RectTransform>();
+        r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
+        r.sizeDelta = new Vector2(PreviewPanelWidth, PreviewPanelHeight);
+        r.anchoredPosition = new Vector2(0f, -120f);
+
+        Image bg = panel.AddComponent<Image>();
+        bg.color = new Color(0.06f, 0.06f, 0.10f, 0.85f);
+        bg.raycastTarget = false;
+
+        // Placeholder icons — populated when Show() is called
+        HorizontalLayoutGroup layout = panel.AddComponent<HorizontalLayoutGroup>();
+        layout.spacing = PreviewIconSpacing;
+        layout.childAlignment = TextAnchor.MiddleCenter;
+        layout.childControlWidth = false;
+        layout.childControlHeight = false;
+        layout.padding = new RectOffset(16, 16, 8, 8);
+
+        return r;
+    }
+
+    private RectTransform CreatePerkBadgeRow()
+    {
+        GameObject row = new("PerkBadges");
+        row.transform.SetParent(_contentRoot, false);
+        RectTransform r = row.AddComponent<RectTransform>();
+        r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f);
+        r.sizeDelta = new Vector2(200f, PerkBadgeSize + 8f);
+        r.anchoredPosition = new Vector2(0f, -170f);
+
+        HorizontalLayoutGroup layout = row.AddComponent<HorizontalLayoutGroup>();
+        layout.spacing = 10f;
+        layout.childAlignment = TextAnchor.MiddleCenter;
+        layout.childControlWidth = false;
+        layout.childControlHeight = false;
+
+        return r;
     }
 
     private void CreateDivider()
