@@ -70,36 +70,39 @@ Material:
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
+    - _AmbientBoost: 0.06
     - _Blend: 0
     - _BlendOp: 0
-    - _BumpScale: 0.5
+    - _BumpScale: 0.3
     - _Cull: 2
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
+    - _EdgeDarken: 0.15
+    - _EnvReflection: 0.5
     - _GlossMapScale: 1
-    - _Glossiness: 0.78
+    - _Glossiness: 0.85
     - _GlossyReflections: 1
+    - _GradientStrength: 0.28
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _QueueOffset: 0
+    - _RimIntensity: 0.05
     - _SampleGI: 0
+    - _ShadowContrast: 0.4
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
+    - _SpecularIntensity: 2
+    - _SpecularSize: 160
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
     - _UVSec: 0
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
-    - _SpecularIntensity: 1
-    - _SpecularSize: 160
-    - _RimIntensity: 0.25
-    - _AmbientBoost: 0.03
-    - _GradientStrength: 0.25
     m_Colors:
     - _BaseColor: {r: 0.72, g: 0.08, b: 1, a: 1}
     - _Color: {r: 0.72, g: 0.08, b: 1, a: 1}

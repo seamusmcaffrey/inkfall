@@ -21,12 +21,12 @@ public static class BalloonMeshGenerator
 
     private static Mesh Generate()
     {
-        const int segments = 32;
-        const int rings = 18;
-        const float bodyHeight = 1.25f;
-        const float bodyWidth = 0.68f;
-        const float tieRadius = 0.12f;
-        const float tieLength = 0.25f;
+        const int segments = 96;
+        const int rings = 48;
+        const float bodyHeight = 1.0f;
+        const float bodyWidth = 0.52f;
+        const float tieRadius = 0.06f;
+        const float tieLength = 0.12f;
 
         var vertices = new List<Vector3>();
         var uvs = new List<Vector2>();
@@ -38,13 +38,13 @@ public static class BalloonMeshGenerator
         for (int ring = 1; ring <= rings; ring++)
         {
             float v = ring / (float)(rings + 1);
-            float polar = Mathf.Lerp(0.06f, Mathf.PI - 0.15f, v);
+            float polar = Mathf.Lerp(0.02f, Mathf.PI - 0.08f, v);
             float radius = Mathf.Sin(polar) * bodyWidth;
-            float y = Mathf.Cos(polar) * bodyHeight * 0.55f + 0.04f;
-            radius *= Mathf.Lerp(0.88f, 1.14f, Mathf.SmoothStep(0f, 1f, 1f - Mathf.Abs(v - 0.45f) * 2f));
-            if (v > 0.7f)
+            float y = Mathf.Cos(polar) * bodyHeight * 0.5f;
+            radius *= Mathf.Lerp(0.94f, 1.06f, Mathf.SmoothStep(0f, 1f, 1f - Mathf.Abs(v - 0.5f) * 2f));
+            if (v > 0.85f)
             {
-                radius *= Mathf.Lerp(1f, 0.5f, Mathf.InverseLerp(0.7f, 1f, v));
+                radius *= Mathf.Lerp(1f, 0.25f, Mathf.InverseLerp(0.85f, 1f, v));
             }
 
             for (int segment = 0; segment < segments; segment++)
@@ -59,12 +59,12 @@ public static class BalloonMeshGenerator
         for (int segment = 0; segment < segments; segment++)
         {
             float t = segment / (float)segments * Mathf.PI * 2f;
-            vertices.Add(new Vector3(Mathf.Cos(t) * tieRadius, -bodyHeight * 0.48f, Mathf.Sin(t) * tieRadius));
+            vertices.Add(new Vector3(Mathf.Cos(t) * tieRadius, -bodyHeight * 0.46f, Mathf.Sin(t) * tieRadius));
             uvs.Add(new Vector2(segment / (float)segments, 0.08f));
         }
 
         int tipIndex = vertices.Count;
-        vertices.Add(new Vector3(0f, -bodyHeight * 0.48f - tieLength, 0f));
+        vertices.Add(new Vector3(0f, -bodyHeight * 0.46f - tieLength, 0f));
         uvs.Add(new Vector2(0.5f, 0f));
 
         for (int segment = 0; segment < segments; segment++)

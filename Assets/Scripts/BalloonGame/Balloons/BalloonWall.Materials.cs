@@ -3,14 +3,17 @@ using UnityEngine;
 
 public partial class BalloonWall
 {
-    private const float DefaultSmoothness = 0.78f;
-    private const float DefaultSpecularIntensity = 1.0f;
+    private const float DefaultSmoothness = 0.85f;
+    private const float DefaultSpecularIntensity = 2.0f;
     private const float DefaultSpecularSize = 160f;
-    private const float DefaultRimIntensity = 0.25f;
-    private const float DefaultBumpScale = 0.5f;
-    private const float DefaultAmbientBoost = 0.03f;
-    private const float DefaultGradientStrength = 0.25f;
+    private const float DefaultRimIntensity = 0.05f;
+    private const float DefaultBumpScale = 0.3f;
+    private const float DefaultAmbientBoost = 0.06f;
+    private const float DefaultGradientStrength = 0.28f;
     private const float DefaultEmissionIntensity = 0f;
+    private const float DefaultEnvReflection = 0.5f;
+    private const float DefaultEdgeDarken = 0.15f;
+    private const float DefaultShadowContrast = 0.4f;
     private const float GoldSmoothness = 0.95f;
     private const float GoldMetallic = 0.85f;
     private const float GoldEmissionIntensity = 0.25f;
@@ -55,6 +58,9 @@ public partial class BalloonWall
         if (mat.HasProperty("_BumpScale")) mat.SetFloat("_BumpScale", DefaultBumpScale);
         if (mat.HasProperty("_AmbientBoost")) mat.SetFloat("_AmbientBoost", DefaultAmbientBoost);
         if (mat.HasProperty("_GradientStrength")) mat.SetFloat("_GradientStrength", DefaultGradientStrength);
+        if (mat.HasProperty("_EnvReflection")) mat.SetFloat("_EnvReflection", DefaultEnvReflection);
+        if (mat.HasProperty("_EdgeDarken")) mat.SetFloat("_EdgeDarken", DefaultEdgeDarken);
+        if (mat.HasProperty("_ShadowContrast")) mat.SetFloat("_ShadowContrast", DefaultShadowContrast);
 
         Texture2D normalMap = GameConfigSO.Instance.balloonNormalMap;
         if (normalMap != null && mat.HasProperty("_BumpMap"))
@@ -117,8 +123,7 @@ public partial class BalloonWall
     private Material GetHazardMaterial()
     {
         Color dark = new(0.12f, 0.08f, 0.1f);
-        Color glow = new Color(0.9f, 0.15f, 0.0f) * HazardEmissionIntensity;
-        return GetSpecialMaterial("_hazard", dark, HazardSmoothness, 0f, glow);
+        return GetSpecialMaterial("_hazard", dark, HazardSmoothness, 0f, new Color(0.9f, 0.15f, 0f) * HazardEmissionIntensity);
     }
 
     private Material GetPaintMaterial(BalloonColor balloonColor)
@@ -127,24 +132,17 @@ public partial class BalloonWall
         return GetSpecialMaterial("_paint_" + balloonColor, c, PaintSmoothness, 0f, c * PaintEmissionIntensity);
     }
 
-    private Material GetShieldMaterial()
-    {
-        Color frost = new(0.7f, 0.82f, 0.95f);
-        return GetSpecialMaterial("_shield", frost, ShieldSmoothness, ShieldMetallic, frost * 0.08f);
-    }
+    private Material GetShieldMaterial() =>
+        GetSpecialMaterial("_shield", new(0.7f, 0.82f, 0.95f), ShieldSmoothness, ShieldMetallic, new Color(0.7f, 0.82f, 0.95f) * 0.08f);
 
     private static Shader FindBalloonShader() =>
         Shader.Find("Inkshot/BalloonLit") ?? Shader.Find("Universal Render Pipeline/Lit");
 
     private Color ResolveDisplayColor(BalloonTypeSO type)
     {
-        if (type?.materialOverride != null)
-        {
-            if (type.materialOverride.HasProperty("_BaseColor"))
-                return type.materialOverride.GetColor("_BaseColor");
-            if (type.materialOverride.HasProperty("_Color"))
-                return type.materialOverride.GetColor("_Color");
-        }
+        Material mat = type?.materialOverride;
+        if (mat != null && mat.HasProperty("_BaseColor")) return mat.GetColor("_BaseColor");
+        if (mat != null && mat.HasProperty("_Color")) return mat.GetColor("_Color");
         return (type != null ? type.balloonColor : BalloonColor.Red).ToUnityColor();
     }
 }

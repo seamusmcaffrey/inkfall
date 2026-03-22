@@ -56,7 +56,9 @@ public partial class BalloonWall : MonoBehaviour
                 float scale = PerspectiveScale(row, rows);
                 Vector3 position = PerspectivePosition(row, column, rows, columns, slotX, slotY);
 
-                GameObject balloon = GetBalloonInstance();
+                GameObject balloon = ComparisonModeEnabled
+                    ? CreateComparisonBalloon(row) ?? GetBalloonInstance()
+                    : GetBalloonInstance();
                 if (balloon == null)
                 {
                     continue;
@@ -84,13 +86,16 @@ public partial class BalloonWall : MonoBehaviour
                     jiggle.CaptureBaseScale();
                 }
 
-                var emblem = balloon.GetComponent<BalloonEmblem>();
-                if (emblem != null)
+                if (!ComparisonModeEnabled)
                 {
-                    emblem.Configure(
-                        type != null ? type.specialType : BalloonSpecialType.Standard,
-                        type != null ? type.balloonColor : BalloonColor.Red,
-                        stickerFamily);
+                    var emblem = balloon.GetComponent<BalloonEmblem>();
+                    if (emblem != null)
+                    {
+                        emblem.Configure(
+                            type != null ? type.specialType : BalloonSpecialType.Standard,
+                            type != null ? type.balloonColor : BalloonColor.Red,
+                            stickerFamily);
+                    }
                 }
 
                 node.Initialize(row, column, type, stickerFamily);

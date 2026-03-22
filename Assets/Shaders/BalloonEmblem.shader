@@ -69,7 +69,7 @@ Shader "Inkshot/BalloonEmblem"
                 return smoothstep(wave + 0.04, wave, r);
             }
 
-            half triangle(half2 uv)
+            half triangleShape(half2 uv)
             {
                 half2 p = uv - half2(0.5, 0.42);
                 half edge = abs(p.x) * 1.6 + p.y * 0.8;
@@ -142,7 +142,7 @@ Shader "Inkshot/BalloonEmblem"
                 int shape = (int)round(_Shape);
                 if (shape == 0) alpha = circle(uv);
                 else if (shape == 1) alpha = star(uv);
-                else if (shape == 2) alpha = triangle(uv);
+                else if (shape == 2) alpha = triangleShape(uv);
                 else if (shape == 3) alpha = crown(uv);
                 else if (shape == 4) alpha = shield(uv);
                 else if (shape == 5) alpha = skull(uv);

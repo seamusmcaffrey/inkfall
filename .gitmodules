@@ -1,0 +1,3 @@
+[submodule "tools/claude-code-game-studios"]
+	path = tools/claude-code-game-studios
+	url = https://github.com/Donchitos/Claude-Code-Game-Studios
