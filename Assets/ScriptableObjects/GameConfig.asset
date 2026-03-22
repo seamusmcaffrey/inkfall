@@ -65,6 +65,7 @@ MonoBehaviour:
   prismSweepUniqueColorsRequired: 3
   balloonPrefabOverride: {fileID: 2346095561133664942, guid: 3763f3535841a4842bfe341f2eba7b74, type: 3}
   balloonMeshOverride: {fileID: 0}
+  balloonNormalMap: {fileID: 2800000, guid: 3d2859493ba18d24fbee845e1d7146e3, type: 3}
   defaultPaintRadius: 1.5
   goldBalloonBonus: 250
   hazardBalloonPenalty: 150

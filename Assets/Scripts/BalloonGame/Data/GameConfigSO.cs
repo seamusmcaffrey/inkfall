@@ -83,6 +83,8 @@ public class GameConfigSO : ScriptableObject
     public GameObject balloonPrefabOverride;
     [Tooltip("Imported 3D mesh to use for balloons (without prefab). If null, falls back to procedural mesh.")]
     public Mesh balloonMeshOverride;
+    [Tooltip("Normal map applied to balloon materials at runtime.")]
+    public Texture2D balloonNormalMap;
 
     [Header("Special Balloons")]
     public float defaultPaintRadius = GameConstants.DEFAULT_PAINT_RADIUS;

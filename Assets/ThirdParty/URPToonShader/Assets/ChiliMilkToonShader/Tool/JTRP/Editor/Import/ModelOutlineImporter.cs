@@ -1,5 +1,6 @@
-﻿//https://github.com/Jason-Ma-233/JasonMaToonRenderPipeline/blob/master/Assets/JTRP/Editor/AssetPostprocessor/ModelOutlineImporter.cs
-
+﻿// Disabled: incompatible with Unity 6 Collections API (ParallelWriter renamed).
+// Original: https://github.com/Jason-Ma-233/JasonMaToonRenderPipeline/blob/master/Assets/JTRP/Editor/AssetPostprocessor/ModelOutlineImporter.cs
+#if JTRP_OUTLINE_IMPORTER
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -201,4 +202,4 @@ namespace JTRP.CustomAssetPostprocessor
         }
     }
 }
-
+#endif

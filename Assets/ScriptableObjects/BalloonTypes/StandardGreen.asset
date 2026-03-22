@@ -30,5 +30,5 @@ MonoBehaviour:
   roomUnlock: 1
   requiredMetaUpgradeId: 
   forcedStickerFamily: 0
-  materialOverride: {fileID: 2100000, guid: 5f067bacb6e05b14eb83ff4d0f301dfb, type: 2}
+  materialOverride: {fileID: 2100000, guid: 72af519af6d36423f98faf5ccef084d3, type: 2}
   tintOverride: {r: 0, g: 0, b: 0, a: 0}

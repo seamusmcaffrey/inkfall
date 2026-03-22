@@ -159,3 +159,135 @@ The Indie Unity Asset Library — Complete Guide
   Bottom line: The free tier alone gives you a legitimate production-capable asset library. The ~$50 paid tier fills
    the remaining gaps (music, premium VFX, premium icons, premium animation tooling). You'd be well-equipped to
   build most types of casual/indie games without hitting asset walls.
+
+  ---
+  EXPANDED FREE TIER — Additional Packs (added 2026-03-18)
+
+  3D Models, Characters & Props (5 packs)
+
+  - Animals FREE - Animated Low Poly 3D Models (ithappy) — animated animals, multi-pipeline, 5 stars (3,475 favs)
+  - Food FREE - Low Poly 3D Models Pack (ithappy) — low-poly food items, URP/HDRP compatible
+  - New Dungeon Pack Modular Low Poly Free (Daniel Miranda) — modular dungeon/tunnel pieces, 3.1 MB
+  - Free Low Poly Nature Forest (Pure Poly) — trees, plants, flowers, landscape, URP/HDRP, 23 MB
+  - TinyNature Lite: Low Poly Trees & Rocks (EmacEArt) — low-poly trees and rocks, 1.8 MB
+
+  Textures & Terrain (2 packs)
+
+  - Yughues Free Ground Materials (Nobiax) — moss, clay, soil, gravel, grass, stone, 198 MB, 5 stars (15,219 favs)
+  - Terrain Textures Pack Free (ALP) — terrain textures, 694.5 MB
+
+  UI (3 packs)
+
+  - Free UI Pack (Valley Land Games) — GUI elements, buttons, panels
+  - Game GUI Buttons (BraveWarrior) — squishy/shiny casual-style buttons, 7.9 MB
+  - Simple Free Pixel Art Styled UI Pack (Jakub Varga) — retro pixel UI elements, 5 stars
+
+  2D Tiles & Sprites (1 pack)
+
+  - Pixel Art Top Down - Basic (Cainos) — 2D tiles, trees, terrain, ruins, 5 stars (9,100 favs)
+
+  Expanded free tier total: ~11 additional packs, $0
+
+  ---
+  KENNEY.NL EXTRAS — CC0 Public Domain
+
+  These are downloaded from kenney.nl (not the Asset Store). All CC0 — no attribution, fully commercial.
+
+  - Nature Kit — 330 3D nature assets (trees, rocks, foliage)
+  - Modular Dungeon Kit — 40 3D modular dungeon pieces with animation + color variants
+  - Tiny Dungeon — 130 pixel art dungeon/sewer tiles (16x16)
+  - Survival Kit — 80 3D models with animations, nature/survival theme
+  - Animal Pack Redux — 240 2D animal/pet sprites
+  - Isometric Landscape — 128 2D isometric landscape tiles
+  - Game Icons — 105 game/interface icons
+
+  ---
+  ANT / INSECT SPECIFIC ASSETS
+
+  Free:
+  - Game-Ready Worker Ant (Sketchfab, by Msassasa/LilCick) — rigged, animated, 47.9k tris, CC Attribution
+    https://sketchfab.com/3d-models/game-ready-worker-ant-model-b48893d316cc4b2f98ec1d1e37027e6a
+    Note: requires manual FBX import and attribution in credits
+
+  Paid (cheap):
+  - 3D Animate Ants (handmade) — $10, animated ant models
+  - Ant Animated (Mike Wee) — $10, low-poly animated ant
+
+  ---
+  ACCOUNT STATUS (as of 2026-03-18)
+
+  Claimed (in My Assets):
+  [x] Free 2D Mega Pack (Brackeys)
+  [x] Low Poly Environment - Nature Free (Polytope Studio)
+  [x] Low-Poly Simple Nature Pack (JustCreate)
+  [x] FREE Casual Game SFX Pack
+  [x] (URP) Simple Toon Shader
+  [x] FREE Skybox Extended Shader
+  [x] Fantasy Skybox FREE
+  [x] AllSky Free - 10 Sky / Skybox Set
+  [x] FREE Stylized PBR Textures Pack
+  [x] UX Flat Icons [Free]
+  [x] Fantasy Wooden GUI: Free
+  [x] Clean Vector Icons
+  [x] Hit Impact Effects FREE
+  [x] Cartoon FX Remaster Free
+  [x] Balloons (Loafbrr)
+
+  Need to claim (browser agent task):
+  [ ] Animals FREE - Animated Low Poly 3D Models (ithappy)
+  [ ] Food FREE - Low Poly 3D Models Pack (ithappy)
+  [ ] New Dungeon Pack Modular Low Poly Free (Daniel Miranda)
+  [ ] Yughues Free Ground Materials (Nobiax)
+  [ ] Free Low Poly Nature Forest (Pure Poly)
+  [ ] TinyNature Lite: Low Poly Trees & Rocks (EmacEArt)
+  [ ] Terrain Textures Pack Free (ALP)
+  [ ] Pixel Art Top Down - Basic (Cainos)
+  [ ] Free UI Pack (Valley Land Games)
+  [ ] Game GUI Buttons (BraveWarrior)
+  [ ] Simple Free Pixel Art Styled UI Pack (Jakub Varga)
+  [ ] Free Quick Effects Vol. 1
+  [ ] Free Fire VFX — URP
+  [ ] Hovl Studio Magic Effects Free
+  [ ] SoundBits Free SFX Collection
+  [ ] Free Sound Effects Pack
+  [ ] UI SFX Free Pack
+  [ ] Free Casual & Relaxing Music
+  [ ] POLYGON Starter Pack (Synty)
+  [ ] 25+ Free Stylized Textures (Game Buffs)
+
+  Already imported in Inkfall project:
+  [x] Kenney UI Pack (ThirdParty/KenneyUI/)
+  [x] Kenney Fonts (ThirdParty/KenneyFonts/)
+  [x] Kenney Game Icons (ThirdParty/KenneyGameIcons/)
+  [x] Kenney Input Prompts (ThirdParty/KenneyInputPrompts/)
+  [x] Kenney Particles (ThirdParty/KenneyParticles/)
+  [x] URPToonShader (ThirdParty/URPToonShader/)
+  [x] DOTween (ThirdParty/DOTween/)
+  [x] Loafbrr Balloons (LoafbrrAssets/Balloons/)
+
+  ---
+  GENRE COVERAGE — UPDATED
+
+  ┌────────────────────────────────────────┬────────────────────────────────────────────────────┐
+  │               Game Type                │                      Coverage                      │
+  ├────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Casual/arcade (Inkshot, brick breaker) │ Full                                               │
+  ├────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Runner/endless                         │ Full (props, VFX, audio, UI, nature)               │
+  ├────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Puzzle (match-3, Tetris-like)          │ Full (UI, SFX, music, effects)                     │
+  ├────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ RPG/adventure                          │ Full (low-poly props, fantasy GUI, skyboxes, toon) │
+  ├────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Platformer (2D)                        │ Full (Brackeys + Kenney + audio + pixel tiles)     │
+  ├────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Tower defense                          │ Full (props, icons, VFX, audio, nature)            │
+  ├────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Card/board game                        │ Full (UI kits, icons, audio, DOTween)              │
+  ├────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Idle/tycoon                            │ Strong (UI, icons, food, animals, nature, SFX)     │
+  ├────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Top-down / isometric                   │ Strong (pixel tiles, isometric landscape, nature)  │
+  ├────────────────────────────────────────┼────────────────────────────────────────────────────┤
+  │ Dungeon crawler                        │ Strong (modular dungeon, fantasy GUI, VFX, terrain)│
+  └────────────────────────────────────────┴────────────────────────────────────────────────────┘
